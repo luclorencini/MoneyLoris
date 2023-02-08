@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyLoris.Web", "MoneyLoris.Web\MoneyLoris.Web.csproj", "{02E52245-DA2F-4011-B52F-463C9B2827DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyLoris.Web", "src\MoneyLoris.Web\MoneyLoris.Web.csproj", "{02E52245-DA2F-4011-B52F-463C9B2827DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76A8CA25-E122-438B-AB76-B4C94C071E14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02E52245-DA2F-4011-B52F-463C9B2827DA} = {76A8CA25-E122-438B-AB76-B4C94C071E14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CBE44321-0823-402C-B657-2A555B4764F2}

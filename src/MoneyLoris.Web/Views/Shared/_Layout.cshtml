@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Prática - Centro de Avaliação e Desenvolvimento">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta property="og:title" content="Prática Psi">
+    <meta property="og:description" content="Prática - Centro de Avaliação e Desenvolvimento">
+    <meta property="og:url" content="https://moneyloris.azurewebsites.net/">
+    @*<meta property="og:image" content="https://catalogo.es.gov.br/img/agendaes-logo.svg">*@
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:type" content="website">
+
+    <title>Money Loris - Finanças Pessoas de Boas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="~/css/bs5-overrides.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/common.css" asp-append-version="true" />
+
+    @Html.RenderVueStyles()
+
+</head>
+<body>
+
+    <partial name="_Antiforgery.cshtml" />
+
+    <partial name="_Header.cshtml" />
+
+    <main role="main" id="app">
+        @RenderBody()
+    </main>
+
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x mb-2" style="z-index:1500;"></div>
+
+    <div id="loading-splash" class="d-none">
+        <div class="container">
+            <i aria-hidden="true" class="fas fa-spinner"></i>
+            <div class="message">Trabalhando nisso...</div>
+        </div>
+    </div>
+
+    @Html.RenderVueTemplates()
+
+    @* JS ao final do Body *@
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.global.min.js" integrity="sha512-Pdnl+dKWHA0jEnmhogUHlOw3FqDeujiEc3XQDkvMrPUAvytiU2cZiknw2xDPgDS+u2prg2n+6eKz3CPG588gTQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.global.prod.min.js" integrity="sha512-3CesFAr6COyDB22AiVG2erk2moD1FeL3VMx6UezptTW3qmYdcQhfv6yDGmH4ICNTxd0Rs2AbMQ0Q5lG7J/8n3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+
+    <script src="~/js/common/fetchData.js" asp-append-version="true"></script>
+    <script src="~/js/common/bootstrapHelper.js" asp-append-version="true"></script>
+    <script src="~/js/common/mascaras.js" asp-append-version="true"></script>
+    <script src="~/js/common/utils.js" asp-append-version="true"></script>
+    <script src="~/js/common/webStorageUtils.js" asp-append-version="true"></script>
+    <script src="~/js/common/vue/vueBase.js" asp-append-version="true"></script>
+    <script src="~/js/common/vue/vueReusaveis.js" asp-append-version="true"></script>
+    <script src="~/js/common/mensagemSistema.js" asp-append-version="true"></script>
+
+    <script src="~/js/app/layoutInit.js" asp-append-version="true"></script>
+
+    @Html.RenderVueScripts()
+
+</body>
+</html>
