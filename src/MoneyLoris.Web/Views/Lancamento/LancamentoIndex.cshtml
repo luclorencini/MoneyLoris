@@ -12,10 +12,113 @@
     <i aria-hidden="true" class="fa-solid fa-chevron-right"></i>
 </div>
 
+<section class="container-xxl">
+
+    <div class="list-group mt-2">
+
+        <div class="list-group-item">
+            <div class="lancamento-container">
+                <div class="data">
+                    <div class="d-none d-lg-block d-flex justify-content-center align-items-center">27/01/2023</div>
+
+                    <div class="d-lg-none data-mob">
+                        <div class="dia">27</div>
+                        <div class="mes">JAN</div>
+                    </div>
+
+                </div>
+                <div class="conta">Nubank</div>
+                <div class="categoria">Alimentação / Almoço</div>
+                <div class="descricao">Marmita Praia</div>
+                <div class="valor">- R$ 318,00</div>
+                <div class="opcoes">A</div>
+            </div>
+        </div>
+
+        <div class="list-group-item">
+            ABC
+        </div>
+        <div class="list-group-item">
+            ABC
+        </div>
+
+
+    </div>
+
+</section>
 
 @using (Html.VueStyle())
 {
     <style type="text/css">
+
+        .lancamento-container {
+            display: grid;
+            grid-template-columns: 8rem 15rem 18rem auto 8rem 4rem;
+            grid-template-areas:
+                "ga-data ga-conta ga-categoria ga-descricao ga-valor ga-opcoes"
+        }
+
+            .lancamento-container .data {
+                grid-area: ga-data;
+                border: 1px solid brown;
+            }
+
+            .lancamento-container .conta {
+                grid-area: ga-conta;
+                border: 1px solid pink;
+            }
+
+            .lancamento-container .categoria {
+                grid-area: ga-categoria;
+                border: 1px solid orange;
+            }
+
+            .lancamento-container .descricao {
+                grid-area: ga-descricao;
+                border: 1px solid green;
+            }
+
+            .lancamento-container .valor {
+                grid-area: ga-valor;
+                border: 1px solid blue;
+            }
+
+            .lancamento-container .opcoes {
+                grid-area: ga-opcoes;
+                border: 1px solid red;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .lancamento-container {
+                grid-template-columns: 4rem auto 8rem;
+                grid-template-areas:
+                    "ga-data ga-descricao ga-valor"
+                    "ga-data ga-categoria ga-conta"
+            }
+
+                .lancamento-container .data .data-mob {
+                    display: flex;
+                    flex-direction: column;
+                    color: var(--sys-color-dark-1);
+                    align-items: center;
+                }
+
+                    .lancamento-container .data .data-mob .dia {
+                        font-size: 2rem;
+                        font-weight: bold;
+                    }
+
+                    .lancamento-container .data .data-mob .mes {
+                        font-size: 0.75rem;
+                        font-weight: bold;
+                        margin-top: -0.5rem;
+                    }
+
+                .lancamento-container .opcoes {
+                    display: none;
+                }
+        }
 
         .barra-filtro-periodo {
             display: none;

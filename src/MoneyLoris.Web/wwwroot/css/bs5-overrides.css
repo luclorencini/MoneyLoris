@@ -136,12 +136,15 @@
     }
 
     .container-xxl {
-        padding-left: 0.25rem !important;
-        padding-right: 0.25rem !important;
+        /*padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;*/
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
     .list-group-item {
         padding: 0.375rem 0.5rem;
+        border-radius: 0 !important;
     }
 
     .card-body {
