@@ -17,21 +17,23 @@
 body {
     background-color: var(--sys-color-base) !important;
     min-height: 100vh;
+    font-family: Roboto;
 }
 
 /* #region TITULO e VOLTAR */
 
 .container-titulo {
-    margin-top: 1.25rem;
-    margin-bottom: 1.5rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
     padding-right: 0.75rem !important;
     padding-left: 0.75rem !important;
 }
 
 @media (max-width: 991px) { /*lg*/
     .container-titulo {
-        margin-top: 0.75rem;
-        margin-bottom: 0.75rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        background-color: var(--sys-color-dark-4);
     }
 }
 
@@ -46,9 +48,16 @@ body {
         filter: brightness(80%);
     }
 
-    .botao-voltar i {
-        color: var(--sys-color-dark-3);
+    .botao-voltar .b-web {
+        color: var(--sys-color-dark-2);
         font-size: 3rem;
+    }
+
+    .botao-voltar .b-cel {
+        color: #fff;
+        font-size: 1.5rem;
+        padding: 0 0.35rem;
+        display: none;
     }
 
     .botao-voltar span {
@@ -60,12 +69,18 @@ body {
 
 @media (max-width: 575px) { /*sm*/
 
-    .botao-voltar i {
-        font-size: 2rem;
+    .botao-voltar .b-web {
+        display: none;
+    }
+
+    .botao-voltar .b-cel {
+        display: unset;
     }
 
     .botao-voltar span {
-        font-size: 1.25rem;
+        font-size: 1.35rem;
+        font-weight: 500;
+        color: #fff;
     }
 }
 

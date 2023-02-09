@@ -1,0 +1,43 @@
+﻿<section class="container-xxl container-titulo">
+    <div class="botao-voltar">
+        <i aria-hidden="true" class="b-web fa-solid fa-circle-arrow-left" onclick="window.history.go(-1)"></i>
+        <i aria-hidden="true" class="b-cel fa-solid fa-arrow-left" onclick="window.history.go(-1)"></i>
+        <span>Lançamentos</span>
+    </div>
+</section>
+
+<div class="barra-filtro-periodo">
+    <i aria-hidden="true" class="fa-solid fa-chevron-left"></i>
+    <span>Janeiro 2023</span>
+    <i aria-hidden="true" class="fa-solid fa-chevron-right"></i>
+</div>
+
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .barra-filtro-periodo {
+            display: none;
+        }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .barra-filtro-periodo {
+                padding: 0.75rem 2rem;
+                background-color: var(--sys-color-dark-4);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 1.25rem;
+                font-weight: 500;
+                color: #fff;
+            }
+
+                .barra-filtro-periodo i {
+                    font-size: 1.5rem;
+                }
+        }
+
+    </style>
+}

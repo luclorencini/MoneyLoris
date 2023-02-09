@@ -1,32 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MoneyLoris.Web.Models;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace MoneyLoris.Web.Controllers
+namespace MoneyLoris.Web.Controllers;
+
+[AllowAnonymous]
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return Redirect("/Lancamento");
     }
+
+    // Futura tela pública. Por hora, redireciona pra tela de Lançamento (vai requerer login)
 }
