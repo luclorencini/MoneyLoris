@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -32,7 +32,8 @@
     @Html.RenderVueStyles()
 
 </head>
-<body>
+
+<body translate="no">
 
     <partial name="_Antiforgery.cshtml" />
 
@@ -53,8 +54,9 @@
 
     @Html.RenderVueTemplates()
 
-    @* JS ao final do Body *@
 
+
+    @* JS ao final do Body *@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
