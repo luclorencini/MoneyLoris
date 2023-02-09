@@ -2,42 +2,44 @@
 
     instalar() {
 
-        let appInstall = document.querySelector('#pwaAppInstaller');
+        let appInstaller = document.querySelector('#pwaAppInstaller');
 
         let deferredPrompt;
-     
+
+        if (this.getPWADisplayMode() == 'browser') {
+            appInstaller.classList.remove('d-none');
+        }
+
         window.addEventListener('beforeinstallprompt', e => {
             e.preventDefault();
+
+            //guarda o prompt de instalação automática, para ser mostrada só quando o usuário criar no botão de menu do sistema para instalar
             deferredPrompt = e;
-
-            if (this.showAppHint()) {
-                appInstall.classList.remove('d-none');
-            }
         });
-      
-        appInstall.addEventListener('click', async (e) => {
 
-            if (this.showAppHint()) {
+        appInstaller.addEventListener('click', async (e) => {
 
-                deferredPrompt.prompt();
-                await deferredPrompt.userChoice;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
 
-                deferredPrompt = null;
-            }
+            deferredPrompt = null;
         });
-      
+
         window.addEventListener('appinstalled', e => {
-            appInstall.classList.add('d-none');
-            alert("App instalado com sucesso na tela inicial!");
+            appInstaller.classList.add('d-none');
+            alert("Instalação iniciada.");
         });
 
     },
 
-    showAppHint() {
-        //só mostra prompt de instalação se não veio do link do pwa
-        const urlParams = new URLSearchParams(window.location.search);
-        const source = urlParams.get('source');
-        return (!source || source != 'pwa');
+    getPWADisplayMode() {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (document.referrer.startsWith('android-app://')) {
+            return 'twa';
+        } else if (navigator.standalone || isStandalone) {
+            return 'standalone';
+        }
+        return 'browser';
     }
 }
 
