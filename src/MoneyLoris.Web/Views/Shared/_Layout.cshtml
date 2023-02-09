@@ -15,9 +15,9 @@
     <title>Money Loris - Finanças Pessoas de Boas</title>
 
     @* PWA config *@
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/pwa/manifest.json" />
     <meta name="theme-color" content="#2E7D32" />
-    <link rel="apple-touch-icon" href="/img/pwa/ios/192.png" />
+    <link rel="apple-touch-icon" href="/pwa/img/ios/192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <script src="/sw-register.js" asp-append-version="true"></script>
@@ -73,6 +73,8 @@
     <script src="~/js/common/mensagemSistema.js" asp-append-version="true"></script>
 
     <script src="~/js/app/layoutInit.js" asp-append-version="true"></script>
+    <script src="~/pwa/appInstall.js" asp-append-version="true"></script>
+
 
     @Html.RenderVueScripts()
 
