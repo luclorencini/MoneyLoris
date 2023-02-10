@@ -1,0 +1,50 @@
+﻿<div class="modal" id="contaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Criar Nova Conta</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form ref="form">
+                    <div class="row g-2">
+
+                        <div class="col-12">
+                            <label class="form-label required-asterisk">Nome</label>
+                            <input class="form-control form-control-lg fw-bold" required maxlength="20">
+                        </div>
+
+                        <div class="col-9">
+                            <label class="form-label required-asterisk">Tipo</label>
+                            <select class="form-select">
+                                <option value="1">Carteira</option>
+                                <option value="2">Conta Corrente</option>
+                                <option value="3">Poupança</option>
+                                <option value="4">Cartão de Crédito</option>
+                                <option value="5">Conta de Pagamento</option>
+                                <option value="6">Carteira Digital</option>
+                                <option value="7">Cartão de Benefício</option>
+                                <option value="99">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="col-3">
+                            <label class="form-label">Ordem</label>
+                            <input class="form-control" type="number">
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <button type="button" class="btn btn-danger">Excluir</button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary px-5">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

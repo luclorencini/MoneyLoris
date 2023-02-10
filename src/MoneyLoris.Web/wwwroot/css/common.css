@@ -160,6 +160,22 @@ body {
     background-color: var(--sys-color-light-5) !important;
 }
 
+.sys-bg-dark-1 {
+    background-color: var(--sys-color-dark-1) !important;
+}
+
+.sys-bg-dark-2 {
+    background-color: var(--sys-color-dark-2) !important;
+}
+
+.sys-bg-dark-3 {
+    background-color: var(--sys-color-dark-3) !important;
+}
+
+.sys-bg-dark-4 {
+    background-color: var(--sys-color-dark-4) !important;
+}
+
 .sys-fg-dark-1 {
     color: var(--sys-color-dark-1) !important;
 }

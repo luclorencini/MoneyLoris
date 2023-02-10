@@ -71,22 +71,6 @@
         background-color: var(--sys-color-dark-2) !important;
     }
 
-.btn-secondary {
-    color: #fff;
-    background-color: var(--sys-color-dark-3) !important;
-    border-color: var(--sys-color-dark-3) !important;
-}
-
-.btn-outline-secondary {
-    color: var(--sys-color-dark-3) !important;
-    border-color: var(--sys-color-dark-3) !important;
-}
-
-    .btn-outline-secondary:hover {
-        color: #fff !important;
-        background-color: var(--sys-color-dark-3) !important;
-    }
-
 .form-label {
     margin-bottom: .25rem !important;
     font-size: 0.875rem !important;
