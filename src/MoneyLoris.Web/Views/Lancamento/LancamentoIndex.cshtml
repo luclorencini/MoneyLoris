@@ -14,6 +14,40 @@
 
 <section class="container-xxl">
 
+    <div class="card">
+        <div class="card-body p-2">
+            <div class="row g-0">
+
+                <div class="col col-7 d-none d-lg-block ps-2">
+                    <label class="form-label">Período</label>
+                    <div class="lh-1 fw-bold fs-5">Dom, 1 Jan 2023 - Ter, 31 Jan 2023</div>
+                </div>
+
+                <div class="col col-12 col-lg-5">
+
+                    <div class="balanco-container">
+
+                        <div class="text-center">
+                            <label class="form-label">Receitas</label>
+                            <div class="lh-1 valor-rec din-receita">+ R$ 3.588,12</div>
+                        </div>
+                        <div class="text-center">
+                            <label class="form-label">Despesas</label>
+                            <div class="lh-1 valor-desp din-despesa">- R$ 820,61</div>
+                        </div>
+                        <div class="text-center">
+                            <label class="form-label">Saldo</label>
+                            <div class="lh-1 valor-saldo din-receita">+ R$ 2.767,51</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="list-group mt-2">
 
         <div class="list-group-item d-none d-lg-block">
@@ -123,6 +157,48 @@
 {
     <style type="text/css">
 
+        .balanco-container {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: space-evenly;
+        }
+
+            .balanco-container .valor-rec {
+                font-weight: bold;
+                font-size: 1.25rem;
+            }
+
+            .balanco-container .valor-desp {
+                font-weight: bold;
+                font-size: 1.25rem;
+            }
+
+            .balanco-container .valor-saldo {
+                font-weight: bold;
+                font-size: 1.5rem;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .balanco-container {
+                justify-content: space-between;
+            }
+
+            .balanco-container .valor-rec {
+                font-size: 1rem;
+            }
+
+            .balanco-container .valor-desp {
+                font-size: 1rem;
+            }
+
+            .balanco-container .valor-saldo {
+                font-size: 1rem;
+            }
+        }
+
+
+
         .lancamento-container {
             display: grid;
             grid-template-columns: 7rem 15rem 18rem auto 8rem 4rem;
@@ -194,7 +270,6 @@
 
                 .lancamento-container .categoria {
                     font-size: 0.75rem;
-                    /*font-weight: 500;*/
                     font-style: italic;
                 }
 
@@ -225,9 +300,10 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                font-size: 1.25rem;
+                font-size: 1.35rem;
                 font-weight: 500;
                 color: #fff;
+                height: 3.25rem;
             }
 
                 .barra-filtro-periodo i {
