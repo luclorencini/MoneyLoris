@@ -2,10 +2,10 @@
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;
-public class LancamentoController : BaseController
+public class ContaController : BaseController
 {
     public IActionResult Index()
     {
-        return View("LancamentoIndex");
+        return View("ContaIndex");
     }
 }

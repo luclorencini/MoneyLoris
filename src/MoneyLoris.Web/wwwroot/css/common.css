@@ -11,6 +11,7 @@
     --sys-color-light-4: #E1F5FE; /*azul claro*/
     --sys-color-light-5: #FCE4EC; /*rosa*/
     --sys-container-max-width: 1860px;
+    --sys-color-hover: #F9F9F9;
 }
 /*#endregion*/
 
@@ -26,61 +27,59 @@ body {
     padding-bottom: 1.5rem;
     padding-right: 0.75rem !important;
     padding-left: 0.75rem !important;
-}
-
-@media (max-width: 991px) { /*lg*/
-    .container-titulo {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-        background-color: var(--sys-color-dark-4);
-    }
-}
-
-
-.botao-voltar {
     display: flex;
     align-items: center;
-    cursor: pointer;
 }
 
-    .botao-voltar:hover {
-        filter: brightness(80%);
+    .container-titulo .botao-voltar {
+        cursor: pointer;
     }
 
-    .botao-voltar .b-web {
-        color: var(--sys-color-dark-2);
-        font-size: 3rem;
-    }
+        .container-titulo .botao-voltar:hover {
+            filter: brightness(80%);
+        }
 
-    .botao-voltar .b-cel {
-        color: #fff;
-        font-size: 1.5rem;
-        padding: 0 0.35rem;
-        display: none;
-    }
+        .container-titulo .botao-voltar .b-web {
+            color: var(--sys-color-dark-2);
+            font-size: 3rem;
+        }
 
-    .botao-voltar span {
+        .container-titulo .botao-voltar .b-cel {
+            color: #fff;
+            font-size: 1.5rem;
+            padding: 0 0.35rem;
+            display: none;
+        }
+
+    .container-titulo .titulo {
         font-size: 1.75rem;
         font-weight: bold;
         margin-left: 1rem;
         color: var(--sys-color-dark-1);
     }
 
-@media (max-width: 575px) { /*sm*/
+@media (max-width: 991px) { /*lg*/
 
-    .botao-voltar .b-web {
-        display: none;
+    .container-titulo {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        background-color: var(--sys-color-dark-4);
+        align-items: baseline;
     }
 
-    .botao-voltar .b-cel {
-        display: unset;
-    }
+        .container-titulo .botao-voltar .b-web {
+            display: none;
+        }
 
-    .botao-voltar span {
-        font-size: 1.35rem;
-        font-weight: 500;
-        color: #fff;
-    }
+        .container-titulo .botao-voltar .b-cel {
+            display: unset;
+        }
+
+        .container-titulo .titulo {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: #fff;
+        }
 }
 
 /* #endregion */
@@ -90,7 +89,8 @@ body {
 }
 
     .sys-clicavel:hover {
-        filter: brightness(80%);
+        /* filter: brightness(80%); */
+        background-color: var(--sys-color-hover);
     }
 
 .sys-chip {
