@@ -1,5 +1,5 @@
 ﻿<div class="modal" id="contaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5">Criar Nova Conta</h1>
@@ -7,11 +7,18 @@
             </div>
             <div class="modal-body">
                 <form ref="form">
-                    <div class="row g-2">
+                    <div class="row g-1">
 
-                        <div class="col-12">
+                        <div class="col-9">
                             <label class="form-label required-asterisk">Nome</label>
                             <input class="form-control form-control-lg fw-bold" required maxlength="20">
+                        </div>
+
+                        <div class="col-3 text-center">
+                            <label class="form-label">Ícone</label>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fa-solid fa-credit-card fa-3x" style="color: #000000;"></i>
+                            </div>
                         </div>
 
                         <div class="col-9">
@@ -33,6 +40,77 @@
                             <input class="form-control" type="number">
                         </div>
 
+                        <div class="col-12 mb-2">
+                            <label class="form-label required-asterisk">Cor</label>
+
+                            <div class="d-flex flex-wrap justify-content-center">
+                                <div class="opcao-cor" style="background-color: #0369B9" title="Caixa"></div>
+                                <div class="opcao-cor" style="background-color: #FCF800" title="Banco do Brasil"></div>
+                                <div class="opcao-cor" style="background-color: #FF7000" title="Itaú"></div>
+                                <div class="opcao-cor" style="background-color: #EC0000" title="Santander"></div>
+                                <div class="opcao-cor" style="background-color: #CE0930" title="Bradesco"></div>
+                                <div class="opcao-cor" style="background-color: #820AD1" title="Nubank"></div>
+                                <div class="opcao-cor" style="background-color: #11C56E" title="PicPay"></div>
+                                <div class="opcao-cor" style="background-color: #000000" title=""></div>
+
+                                <div class="opcao-cor" style="background-color: #004384" title="Banestes"></div>
+                                <div class="opcao-cor" style="background-color: #FFD900" title="Will Bank"></div>
+                                <div class="opcao-cor" style="background-color: #F17700" title="Inter"></div>
+                                <div class="opcao-cor" style="background-color: #FF0000" title="Sodexo"></div>
+                                <div class="opcao-cor" style="background-color: #0F92FF" title="Neon"></div>
+                                <div class="opcao-cor" style="background-color: #4F2F87" title="Nu Ultravioleta"></div>
+                                <div class="opcao-cor" style="background-color: #00A992" title="Sofisa"></div>
+                                <div class="opcao-cor" style="background-color: #414141" title=""></div>
+                            </div>
+                        </div>
+
+                        <hr class="my-1" />
+
+                        <div class="col-12">
+                            <h5>Saldo Inicial</h5>
+                            <div class="lh-sm">
+                                <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4"></i>
+                                <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">R$</span>
+                                <input class="form-control" type="text" required maxlength="10">
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required-asterisk">Data Lançamento</label>
+                            <input class="form-control" type="date">
+                        </div>
+
+                        <hr class="my-1" />
+
+                        <div class="col-12">
+                            <h5>Informações do Cartão de Crédito</h5>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required-asterisk">Limite</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">R$</span>
+                                <input class="form-control" type="text" required maxlength="10">
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <label class="form-label">Fecha dia</label>
+                            <input class="form-control" type="number">
+                        </div>
+
+                        <div class="col-3">
+                            <label class="form-label">Vence dia</label>
+                            <input class="form-control" type="number">
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -41,10 +119,32 @@
                     <button type="button" class="btn btn-danger">Excluir</button>
                     <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary px-5">Salvar</button>
+                        <button type="button" class="btn btn-primary px-4">Salvar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .opcao-cor {
+            width: 3.125rem;
+            height: 2.5rem;
+            margin: 0.25rem;
+            cursor: pointer;
+        }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .opcao-cor {
+                width: 9.7vw;
+                margin: 0.2rem;
+            }
+        }
+
+    </style>
+}
