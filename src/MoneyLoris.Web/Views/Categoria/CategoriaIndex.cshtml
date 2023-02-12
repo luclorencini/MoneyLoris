@@ -1,4 +1,7 @@
-﻿<section class="container-xxl container-titulo">
+﻿<partial name="_CategoriaModal"></partial>
+<partial name="_SubcategoriaModal"></partial>
+
+<section class="container-xxl container-titulo">
     <partial name="_BotaoVoltar"></partial>
     <div class="titulo">Categorias</div>
 </section>
@@ -31,7 +34,7 @@
                         </div>
                         <div class="ordem">1</div>
                         <div class="opcoes">
-                            <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                            <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" data-bs-toggle="modal" data-bs-target="#subcategoriaModal"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
                             <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                         </div>
                     </div>
