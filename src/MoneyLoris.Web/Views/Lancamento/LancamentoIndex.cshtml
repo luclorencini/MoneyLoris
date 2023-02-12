@@ -1,6 +1,24 @@
 ﻿<section class="container-xxl container-titulo">
-    <partial name="_BotaoVoltar"></partial>
-    <div class="titulo">Lançamentos</div>
+    <div class="area-titulo">
+        <partial name="_BotaoVoltar"></partial>
+        <div class="titulo">Lançamentos</div>
+    </div>
+    <div class="area-opcoes">
+
+        <div class="input-group btn-lancamento-lg">
+            <button class="btn btn-primary btn-lg px-4 dropdown-toggle" data-bs-toggle="dropdown">
+                <span class="sys-fg-dark-3 fw-bold me-2">Novo Lançamento</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+        </div>
+
+    </div>
 </section>
 
 <div class="barra-filtro-periodo">
@@ -154,6 +172,29 @@
 {
     <style type="text/css">
 
+        .btn-lancamento-lg {
+        }
+
+            .btn-lancamento-lg .btn {
+                width: 16rem;
+            }
+
+                .btn-lancamento-lg .btn.dropdown-toggle::after {
+                    color: var(--sys-color-dark-3);
+                }
+
+            .btn-lancamento-lg .dropdown-menu {
+                width: 16rem;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .btn-lancamento-lg {
+                display: none;
+            }
+        }
+
+
         .balanco-container {
             display: flex;
             flex-wrap: nowrap;
@@ -181,17 +222,17 @@
                 justify-content: space-between;
             }
 
-            .balanco-container .valor-rec {
-                font-size: 1rem;
-            }
+                .balanco-container .valor-rec {
+                    font-size: 1rem;
+                }
 
-            .balanco-container .valor-desp {
-                font-size: 1rem;
-            }
+                .balanco-container .valor-desp {
+                    font-size: 1rem;
+                }
 
-            .balanco-container .valor-saldo {
-                font-size: 1rem;
-            }
+                .balanco-container .valor-saldo {
+                    font-size: 1rem;
+                }
         }
 
 

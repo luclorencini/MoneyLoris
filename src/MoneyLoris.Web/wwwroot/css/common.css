@@ -29,33 +29,42 @@ body {
     padding-left: 0.75rem !important;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
-    .container-titulo .botao-voltar {
-        cursor: pointer;
+    .container-titulo .area-titulo {
+        display: flex;
+        align-items: center;
     }
 
-        .container-titulo .botao-voltar:hover {
-            filter: brightness(80%);
+        .container-titulo .area-titulo .botao-voltar {
+            cursor: pointer;
         }
 
-        .container-titulo .botao-voltar .b-web {
-            color: var(--sys-color-dark-2);
-            font-size: 3rem;
+            .container-titulo .area-titulo .botao-voltar:hover {
+                filter: brightness(80%);
+            }
+
+            .container-titulo .area-titulo .botao-voltar .b-web {
+                color: var(--sys-color-dark-2);
+                font-size: 3rem;
+            }
+
+            .container-titulo .area-titulo .botao-voltar .b-cel {
+                color: #fff;
+                font-size: 1.5rem;
+                padding: 0 0.35rem;
+                display: none;
+            }
+
+        .container-titulo .area-titulo .titulo {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-left: 1rem;
+            color: var(--sys-color-dark-1);
         }
 
-        .container-titulo .botao-voltar .b-cel {
-            color: #fff;
-            font-size: 1.5rem;
-            padding: 0 0.35rem;
-            display: none;
-        }
-
-    .container-titulo .titulo {
-        font-size: 1.75rem;
-        font-weight: bold;
-        margin-left: 1rem;
-        color: var(--sys-color-dark-1);
+    .container-titulo .area-opcoes {
     }
 
 @media (max-width: 991px) { /*lg*/
@@ -67,15 +76,15 @@ body {
         align-items: baseline;
     }
 
-        .container-titulo .botao-voltar .b-web {
+        .container-titulo .area-titulo .botao-voltar .b-web {
             display: none;
         }
 
-        .container-titulo .botao-voltar .b-cel {
+        .container-titulo .area-titulo .botao-voltar .b-cel {
             display: unset;
         }
 
-        .container-titulo .titulo {
+        .container-titulo .area-titulo .titulo {
             font-size: 1.35rem;
             font-weight: 500;
             color: #fff;
