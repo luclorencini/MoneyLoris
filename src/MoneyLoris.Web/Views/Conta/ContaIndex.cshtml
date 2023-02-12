@@ -1,4 +1,6 @@
-﻿<partial name="_ContaModal"></partial>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration _config
+
+<partial name="_ContaModal"></partial>
 
 <section class="container-xxl container-titulo">
     <partial name="_BotaoVoltar"></partial>
@@ -194,6 +196,13 @@
 
 </section>
 
+@{
+    var con = _config["ConnectionStrings:DefaultConnection"];
+}
+
+<p class="mt-5">
+    Conn String: @con
+</p>
 
 @using (Html.VueStyle())
 {
