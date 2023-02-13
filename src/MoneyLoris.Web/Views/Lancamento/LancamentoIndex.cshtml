@@ -190,11 +190,36 @@
 
 
 <div class="barra-bottom d-lg-none">
-    <div class="d-grid gap-2 col-9 mx-auto">
-        <button class="btn btn-primary btn-lg" type="button">
+    <div class="d-grid gap-2 col-10 mx-auto">
+        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="offcanvas" href="#offcanvasLancOpt">
             <i class="fa-solid fa-plus fa-lg sys-fg-dark-3 me-1"></i>
             <span class="sys-fg-dark-3 fw-bold">Lançar</span>
         </button>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasLancOpt" aria-labelledby="offcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasLabel">Novo Lançamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0 d-flex flex-wrap">
+        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa">
+            <i class="fa-solid fa-file-invoice-dollar fg-lanc-despesa"></i>
+            <span>Despesa</span>
+        </div>
+        <div class="opcao-lancamento fg-lanc-receita bg-lanc-receita">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Receita</span>
+        </div>
+        <div class="opcao-lancamento fg-lanc-transferencia bg-lanc-transferencia">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span>Transferência</span>
+        </div>
+        <div class="opcao-lancamento fg-lanc-pag-fatura bg-lanc-pag-fatura">
+            <i class="fa-regular fa-credit-card"></i>
+            <span>Pagamento de Fatura</span>
+        </div>
     </div>
 </div>
 
@@ -425,6 +450,30 @@
             background-color: #fff;
             border-top: 1px solid #ccc;
         }
+
+        .offcanvas-bottom {
+            height: 16rem !important;
+        }
+
+            .offcanvas-bottom .opcao-lancamento {
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 50vw;
+                border: 0px solid red;
+            }
+
+                .offcanvas-bottom .opcao-lancamento i {
+                    font-size: 2.5rem;
+                    margin-top: 0.5rem;
+                }
+
+                .offcanvas-bottom .opcao-lancamento span {
+                    font-size: 1rem;
+                    font-weight: 500;
+                }
 
     </style>
 }

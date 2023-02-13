@@ -16,7 +16,7 @@
 /*#endregion*/
 
 html {
-    background-color: var(--sys-color-dark-4);
+    background-color: var(--sys-color-dark-2);
 }
 
 body {
@@ -405,7 +405,7 @@ body {
 }
 
 .bg-lanc-despesa {
-    color: #FFEBEE; /*MDC RED 50*/
+    background-color: #FFEBEE; /*MDC RED 50*/
 }
 
 .fg-lanc-receita {
@@ -413,7 +413,7 @@ body {
 }
 
 .bg-lanc-receita {
-    color: #E3F2FD; /*MDC BLUE 50*/
+    background-color: #E3F2FD; /*MDC BLUE 50*/
 }
 
 .fg-lanc-transferencia {
@@ -421,7 +421,7 @@ body {
 }
 
 .bg-lanc-transferencia {
-    color: #E8F5E9; /*MDC GREEN 50*/
+    background-color: #E8F5E9; /*MDC GREEN 50*/
 }
 
 .fg-lanc-pag-fatura {
@@ -429,7 +429,7 @@ body {
 }
 
 .bg-lanc-pag-fatura {
-    color: #FFF3E0; /*MDC ORANGE 50*/
+    background-color: #FFF3E0; /*MDC ORANGE 50*/
 }
 
 /* #endregion */
