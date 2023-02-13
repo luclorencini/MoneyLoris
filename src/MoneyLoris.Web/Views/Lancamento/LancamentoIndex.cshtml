@@ -10,11 +10,30 @@
                 <span class="sys-fg-dark-3 fw-bold me-2">Novo Lançamento</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                <li class="dropdown-item">
+                    <div class="icone">
+                        <i class="fa-solid fa-lg fa-file-invoice-dollar fg-lanc-despesa"></i>
+                    </div>
+                    <div class="texto">Despesa</div>
+                </li>
+                <li class="dropdown-item">
+                    <div class="icone">
+                        <i class="fa-solid fa-lg fa-hand-holding-dollar fg-lanc-receita"></i>
+                    </div>
+                    <div class="texto">Receita</div>
+                </li>
+                <li class="dropdown-item">
+                    <div class="icone">
+                        <i class="fa-solid fa-lg fa-money-bill-transfer fg-lanc-transferencia"></i>
+                    </div>
+                    <div class="texto">Transferência</div>
+                </li>
+                <li class="dropdown-item">
+                    <div class="icone">
+                        <i class="fa-regular fa-lg fa-credit-card fg-lanc-pag-fatura"></i>
+                    </div>
+                    <div class="texto">Pagamento de Fatura</div>
+                </li>
             </ul>
         </div>
 
@@ -27,7 +46,7 @@
     <i aria-hidden="true" class="fa-solid fa-chevron-right"></i>
 </div>
 
-<section class="container-xxl">
+<section class="container-xxl lancamento-rolagem">
 
     <div class="card">
         <div class="card-body p-2">
@@ -63,7 +82,7 @@
         </div>
     </div>
 
-    <div class="list-group mt-2">
+    <div class="list-group mt-2 mb-5">
 
         <div class="list-group-item d-none d-lg-block">
             <div class="lancamento-container">
@@ -168,6 +187,18 @@
 
 </section>
 
+
+
+<div class="barra-bottom d-lg-none">
+    <div class="d-grid gap-2 col-9 mx-auto">
+        <button class="btn btn-primary btn-lg" type="button">
+            <i class="fa-solid fa-plus fa-lg sys-fg-dark-3 me-1"></i>
+            <span class="sys-fg-dark-3 fw-bold">Lançar</span>
+        </button>
+    </div>
+</div>
+
+
 @using (Html.VueStyle())
 {
     <style type="text/css">
@@ -185,7 +216,37 @@
 
             .btn-lancamento-lg .dropdown-menu {
                 width: 16rem;
+                border-radius: 0;
             }
+
+                .btn-lancamento-lg .dropdown-menu .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    height: 3rem;
+                    cursor: pointer;
+                }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item:active {
+                        color: unset;
+                        background-color: var(--bs-dropdown-link-hover-bg);
+                    }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item .icone {
+                        width: 3.5rem;
+                        text-align: center;
+                        margin-left: -0.75rem;
+                    }
+
+                        .btn-lancamento-lg .dropdown-menu .dropdown-item .icone i {
+                            font-size: 1.6rem;
+                        }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item .texto {
+                        font-size: 1.15rem;
+                        font-weight: 500;
+                    }
+
+
 
         @@media (max-width: 991px) { /*lg*/
 
@@ -347,6 +408,22 @@
                 .barra-filtro-periodo i {
                     font-size: 1.5rem;
                 }
+        }
+
+        .lancamento-rolagem {
+            padding-bottom: 2rem;
+        }
+
+        .barra-bottom {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
         }
 
     </style>

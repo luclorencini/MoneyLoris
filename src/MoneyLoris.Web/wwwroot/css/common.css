@@ -15,6 +15,10 @@
 }
 /*#endregion*/
 
+html {
+    background-color: var(--sys-color-dark-4);
+}
+
 body {
     background-color: var(--sys-color-base) !important;
     min-height: 100vh;
@@ -393,6 +397,39 @@ body {
 
 .din-despesa {
     color: #E53935; /*MDC RED 600*/
+}
+
+
+.fg-lanc-despesa {
+    color: #E53935; /*MDC RED 600*/
+}
+
+.bg-lanc-despesa {
+    color: #FFEBEE; /*MDC RED 50*/
+}
+
+.fg-lanc-receita {
+    color: #1565C0; /*MDC BLUE 800*/
+}
+
+.bg-lanc-receita {
+    color: #E3F2FD; /*MDC BLUE 50*/
+}
+
+.fg-lanc-transferencia {
+    color: #2E7D32; /*MDC GREEN 800*/
+}
+
+.bg-lanc-transferencia {
+    color: #E8F5E9; /*MDC GREEN 50*/
+}
+
+.fg-lanc-pag-fatura {
+    color: #EF6C00; /*MDC ORANGE 800*/
+}
+
+.bg-lanc-pag-fatura {
+    color: #FFF3E0; /*MDC ORANGE 50*/
 }
 
 /* #endregion */
