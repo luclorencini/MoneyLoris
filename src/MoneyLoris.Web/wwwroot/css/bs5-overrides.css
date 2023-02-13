@@ -71,6 +71,7 @@
         background-color: var(--sys-color-dark-2) !important;
     }
 
+
 .form-label {
     margin-bottom: .25rem !important;
     font-size: 0.875rem !important;
@@ -79,7 +80,19 @@
 
 .form-check-input:checked {
     background-color: var(--sys-color-dark-2) !important;
+    border-color: var(--sys-color-dark-2) !important;
 }
+
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+    border-color: var(--sys-color-dark-2);
+    box-shadow: 0 0 0 0.25rem rgb(25 135 84 / 25%);
+}
+
+.form-select option:hover, .form-select option:checked {
+    background-color: var(--sys-color-dark-4);
+    color: #fff;
+}
+
 
 
 .table > :not(:first-child) {

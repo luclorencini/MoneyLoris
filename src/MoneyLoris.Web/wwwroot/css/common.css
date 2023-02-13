@@ -16,7 +16,10 @@
 /*#endregion*/
 
 html {
-    background-color: var(--sys-color-dark-2);
+    width: 100%;
+    height: 100%;
+    background: var(--sys-color-dark-2) url('../img/moneyloris-mascot-transparent.svg') center center no-repeat;
+    background-size: 15rem;
 }
 
 body {
