@@ -1,4 +1,7 @@
-﻿<section class="container-xxl container-titulo">
+﻿<partial name="_LancamentoModal"></partial>
+<partial name="_TransferenciaModal"></partial>
+
+<section class="container-xxl container-titulo">
     <div class="area-titulo">
         <partial name="_BotaoVoltar"></partial>
         <div class="titulo">Lançamentos</div>
@@ -77,7 +80,7 @@
                 </div>
 
                 <div class="col col-12 col-lg-2">
-                    <label class="form-label lh-1">Conta/Cartão</label>
+                    <label class="form-label lh-1">Conta / Cartão</label>
                     <select class="form-select form-select-sm">
                         <option></option>
                         <optgroup label="Contas">
@@ -90,7 +93,7 @@
                     </select>
                 </div>
                 <div class="col col-12 col-lg-3">
-                    <label class="form-label lh-1">Categoria/subcategoria</label>
+                    <label class="form-label lh-1">Categoria / Subcategoria</label>
                     <select class="form-select form-select-sm">
                         <option></option>
                         <optgroup label="Receitas">
@@ -129,7 +132,7 @@
                         <span>Limpar Filtro</span>
                     </button>
                     <button class="btn btn-sm btn-outline-primary" type="button">
-                        <i class="fa-solid fa-magnifying-glass me-2"></i>
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>
                         <span>Pesquisar</span>
                     </button>
                 </div>
@@ -219,7 +222,7 @@
                 <div class="descricao">Marmita Praia</div>
                 <div class="valor"><span class="fw-bold din-despesa">- R$ 318,00</span></div>
                 <div class="opcoes">
-                    <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    <button type="button" class="btn sys-icon-button" title="Editar" data-bs-toggle="modal" data-bs-target="#lancamentoModal"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                 </div>
             </div>
         </div>
@@ -241,7 +244,7 @@
                 <div class="descricao">Mc Donald's</div>
                 <div class="valor"><span class="fw-bold din-despesa">- R$ 49,50</span></div>
                 <div class="opcoes">
-                    <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    <button type="button" class="btn sys-icon-button" title="Editar" data-bs-toggle="modal" data-bs-target="#transferenciaModal"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                 </div>
             </div>
         </div>

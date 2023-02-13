@@ -1,0 +1,67 @@
+﻿<div class="modal" id="lancamentoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Editar Despesa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form ref="form">
+                    <div class="row g-2">
+
+                        <div class="col-12">
+                            <label class="form-label required-asterisk">Conta / Cartão</label>
+                            <select class="form-select">
+                                <optgroup label="Contas">
+                                    <option value="2">Caixa</option>
+                                    <option value="3">PicPay</option>
+                                </optgroup>
+                                <optgroup label="Cartões">
+                                    <option value="1">Nubank</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required-asterisk">Data</label>
+                            <input class="form-control" type="date">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required-asterisk">Descrição</label>
+                            <input class="form-control fw-bold" required maxlength="50">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required-asterisk">Categoria / Subcategoria</label>
+                            <select class="form-select">
+                                <option value="1">Alimentação</option>
+                                <option value="11">Alimentação / Supermercado</option>
+                                <option value="2">Moradia</option>
+                                <option value="3">Poupança</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required-asterisk">Valor</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">R$</span>
+                                <input class="form-control" type="text" required maxlength="10">
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <button type="button" class="btn btn-danger">Excluir</button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary px-4">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
