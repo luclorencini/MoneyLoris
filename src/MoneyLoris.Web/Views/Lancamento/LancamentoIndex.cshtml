@@ -1,4 +1,5 @@
-﻿<partial name="_LancamentoModal"></partial>
+﻿<partial name="_LancamentoWizard"></partial>
+<partial name="_LancamentoModal"></partial>
 <partial name="_TransferenciaModal"></partial>
 
 <section class="container-xxl container-titulo">
@@ -13,7 +14,7 @@
                 <span class="sys-fg-dark-3 fw-bold me-2">Novo Lançamento</span>
             </button>
             <ul class="dropdown-menu">
-                <li class="dropdown-item">
+                <li class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWizard">
                     <div class="icone">
                         <i class="fa-solid fa-lg fa-file-invoice-dollar fg-lanc-despesa"></i>
                     </div>
@@ -205,7 +206,7 @@
             </div>
         </div>
 
-        <div class="list-group-item sys-clicavel">
+        <div class="list-group-item sys-clicavel" data-bs-toggle="modal" data-bs-target="#lancamentoModal">
             <div class="lancamento-container">
                 <div class="data">
                     <div class="d-none d-lg-block">27/01/2023</div>
@@ -222,12 +223,12 @@
                 <div class="descricao">Marmita Praia</div>
                 <div class="valor"><span class="fw-bold din-despesa">- R$ 318,00</span></div>
                 <div class="opcoes">
-                    <button type="button" class="btn sys-icon-button" title="Editar" data-bs-toggle="modal" data-bs-target="#lancamentoModal"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                 </div>
             </div>
         </div>
 
-        <div class="list-group-item sys-clicavel">
+        <div class="list-group-item sys-clicavel" data-bs-toggle="modal" data-bs-target="#transferenciaModal">
             <div class="lancamento-container">
                 <div class="data">
                     <div class="d-none d-lg-block">27/01/2023</div>
@@ -244,7 +245,7 @@
                 <div class="descricao">Mc Donald's</div>
                 <div class="valor"><span class="fw-bold din-despesa">- R$ 49,50</span></div>
                 <div class="opcoes">
-                    <button type="button" class="btn sys-icon-button" title="Editar" data-bs-toggle="modal" data-bs-target="#transferenciaModal"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                 </div>
             </div>
         </div>
@@ -314,7 +315,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0 d-flex flex-wrap">
-        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa">
+        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWizard">
             <i class="fa-solid fa-file-invoice-dollar fg-lanc-despesa"></i>
             <span>Despesa</span>
         </div>
