@@ -8,10 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.13" />
+    <PackageReference Include="System.IO.Hashing" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\pwa\img\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MoneyLoris.Application.Stubs\MoneyLoris.Application.Stubs.csproj" />
+    <ProjectReference Include="..\MoneyLoris.Application\MoneyLoris.Application.csproj" />
+    <ProjectReference Include="..\MoneyLoris.Infrastructure\MoneyLoris.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
