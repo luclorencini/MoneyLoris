@@ -27,6 +27,31 @@ body {
     min-height: 100vh;
 }
 
+/* region CUSTOM FONTS */
+
+@font-face {
+    font-family: 'Lovelo Black';
+    src: url('/fonts/lovelo-black-webfont.woff2') format('woff2'), url('/fonts/lovelo-black-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lovelo Line Bold';
+    src: url('/fonts/lovelo-linebold-webfont.woff2') format('woff2'), url('/fonts/lovelo-linebold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lovelo Line Light';
+    src: url('/fonts/lovelo-linelight-webfont.woff2') format('woff2'), url('/fonts/lovelo-linelight-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*#endregion*/
+
 /* #region TITULO e VOLTAR */
 
 .container-titulo {

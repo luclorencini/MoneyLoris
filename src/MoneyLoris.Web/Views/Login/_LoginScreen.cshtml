@@ -1,0 +1,105 @@
+﻿<partial name="/Views/Login/_LoginCard.cshtml" />
+<partial name="/Views/Login/_LoginAlterarSenha.cshtml" />
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-login-screen">
+
+        <section class="login-hero">
+            <img class="logo-mascot" src="/img/moneyloris-mascot-transparent.svg">
+            <img class="logo-text" src="/img/moneyloris-logo-text.svg">
+            <div class="slogan">Finanças Pessoais de Boas</div>
+        </section>
+
+        <section class="form-signin text-center">
+            <LoginCard v-bind:exibir="!alterarSenha" v-on:alterar-senha="exibirCardAlterarSenha($event)"></LoginCard>
+            <LoginAlterarSenha v-bind:exibir="alterarSenha" v-bind:login="login" v-on:senha-alterada="exibirCardLogin()"></LoginAlterarSenha>
+        </section>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const LoginScreen = {
+
+            name: 'LoginScreen',
+            template: '#template-login-screen',
+            mixins: [BaseMixin],
+            components: { LoginCard, LoginAlterarSenha },
+
+            data: () => ({
+                login: '',
+                alterarSenha: false
+            }),
+
+            methods: {
+
+                exibirCardLogin() {
+                    this.login = '';
+                    this.alterarSenha = false;
+                },
+
+                exibirCardAlterarSenha(login) {
+                    this.login = login;
+                    this.alterarSenha = true;
+                }
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .login-hero {
+            width: 100vw;
+            background-color: var(--sys-color-dark-2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .login-hero .logo-mascot {
+                height: 12.75rem;
+                margin: 1rem 0;
+            }
+
+            .login-hero .logo-text {
+                height: 3.25rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .login-hero .slogan {
+                margin-bottom: 1rem;
+                color: var(--sys-color-dark-3);
+                font-family: 'Lovelo Black';
+                font-size: 1.25rem;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.1rem;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .login-hero .logo-mascot {
+                height: 11rem;
+                margin: 1.25rem 0;
+            }
+
+            .login-hero .logo-text {
+                height: 3rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .login-hero .slogan {
+                font-size: 1rem;
+            }
+        }
+    </style>
+}

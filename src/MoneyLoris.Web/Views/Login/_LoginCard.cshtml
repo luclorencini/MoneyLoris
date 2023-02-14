@@ -1,0 +1,141 @@
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-login-card">
+
+        <template v-if="exibir">
+
+            <form ref="form">
+
+                <div class="form-floating">
+                    <input type="text" ref="campoLogin" class="form-control" required v-model="login">
+                    <label>Login</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control" required v-model="senha" v-on:keyup.enter="signIn()">
+                    <label>Senha</label>
+                </div>
+
+                <div class="d-flex justify-content-start">
+                    <div class="form-check form-switch form-control-lg mb-3">
+                        <label class="form-check-label"><small>Manter conectado</small></label>
+                        <input class="form-check-input" type="checkbox" v-model="manterConectado">
+                    </div>
+                </div>
+            </form>
+
+            <button class="w-100 btn btn-lg btn-primary" v-on:click="signIn()">Entrar</button>
+
+        </template>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const LoginCard = {
+
+            name: 'LoginCard',
+            template: '#template-login-card',
+            mixins: [BaseMixin],
+            emits: ['alterar-senha'],
+
+            props: {
+                exibir: Boolean
+            },
+
+            data: () => ({
+                login: '',
+                senha: '',
+                manterConectado: false
+            }),
+
+            watch: {
+                async exibir(newValue, oldValue) {
+                    if (newValue == true) {
+
+                        //reseta os campos
+                        this.login = '';
+                        this.senha = '';
+                        this.manterConectado = false;
+
+                        this.ajustaFoco();
+                    }
+                }
+            },
+
+            mounted() {
+                this.ajustaFoco();
+            },
+
+            methods: {
+
+                ajustaFoco() {
+                    //bota foca no campo de login
+                    this.setFocus('campoLogin');
+                },
+
+                async signIn() {
+
+                    let isValido = this.validarForm(this.$refs.form);
+                    if (!isValido) return;
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        let dados = {
+                            login: this.login,
+                            senha: this.senha,
+                            manterConectado: this.manterConectado
+                        };
+
+                        let ret = await fetchData.fetchPostJson('/Login', dados);
+                        if (ret.ok) {
+
+                            if (ret.value) {
+                                //alterar senha
+                                this.$emit('alterar-senha', this.login);
+                            }
+                            else {
+                                //redireciona direto
+                                utils.redirecionar('/Lancamento');
+                            }
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: 2rem auto 5rem auto;
+        }
+
+        .form-floating {
+            position: relative;
+        }
+
+        .form-signin input[type="text"] {
+            margin-bottom: 4px;
+            border-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 15px;
+            border-radius: 0;
+        }
+
+    </style>
+}

@@ -6,8 +6,19 @@
 
         let deferredPrompt;
 
-        if (this.getPWADisplayMode() == 'browser') {
-            appInstaller.classList.remove('d-none');
+        if (appInstaller != null) {
+
+            if (this.getPWADisplayMode() == 'browser') {
+                appInstaller.classList.remove('d-none');
+            }
+
+            appInstaller.addEventListener('click', async (e) => {
+
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+
+                deferredPrompt = null;
+            });
         }
 
         window.addEventListener('beforeinstallprompt', e => {
@@ -15,14 +26,6 @@
 
             //guarda o prompt de instalação automática, para ser mostrada só quando o usuário criar no botão de menu do sistema para instalar
             deferredPrompt = e;
-        });
-
-        appInstaller.addEventListener('click', async (e) => {
-
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-
-            deferredPrompt = null;
         });
 
         window.addEventListener('appinstalled', e => {

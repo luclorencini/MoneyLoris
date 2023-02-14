@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MoneyLoris.Web.Controllers.Base;
 
-//[Authorize]
+[Authorize]
 public class BaseController : Controller
 {
 }

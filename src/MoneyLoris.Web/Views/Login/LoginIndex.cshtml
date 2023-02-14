@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["EsconderHeader"] = true;
+}
+
+<partial name="/Views/Login/_LoginScreen.cshtml" />
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+        VueFactory.createAndMountApp(LoginScreen, '#app');
+    </script>
+}
+
+<LoginScreen></LoginScreen>
