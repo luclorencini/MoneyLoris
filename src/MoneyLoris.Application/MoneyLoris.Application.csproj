@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Business\Categorias\" />
     <Folder Include="Business\Lancamentos\" />
     <Folder Include="Business\Contas\" />
   </ItemGroup>

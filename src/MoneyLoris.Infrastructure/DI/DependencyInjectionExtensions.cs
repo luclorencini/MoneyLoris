@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 
@@ -17,6 +18,7 @@ public static class DependencyInjectionExtensions
         {
             //DI de serviços stub com dados fixos para demonstração e para facilitar a construção do front-end
             services.AddScoped<ILoginService, LoginServiceStub>();
+            services.AddScoped<ICategoriaService, CategoriaServiceStub>();
             //services.AddScoped<IContaService, DemoContaService>();
             return;
         }

@@ -1,0 +1,126 @@
+﻿<partial name="_CategoriaCadastroTreeList"></partial>
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-categoria-listagem">
+
+        <section class="container-xxl container-titulo">
+            <div class="area-titulo">
+                @await Html.PartialAsync("_BotaoVoltar")
+                <div class="titulo">Categorias</div>
+            </div>
+        </section>
+
+        <section class="container-xxl">
+
+            <div class="row g-0 g-lg-2">
+
+                <div class="col-12 col-lg-6 mb-2">
+
+                    <CategoriaCadastroTreeList ref="catDespesa"></CategoriaCadastroTreeList>
+
+                </div>
+
+                <div class="col-12 col-lg-6">
+
+                    <CategoriaCadastroTreeList ref="catReceita"></CategoriaCadastroTreeList>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const CategoriaListagem = {
+
+            name: 'CategoriaListagem',
+            template: '#template-categoria-listagem',
+            mixins: [BaseMixin],
+            components: { CategoriaCadastroTreeList },
+
+            data: () => ({
+                abcd: {}
+            }),
+
+            mounted() {
+                this.$refs.catDespesa.initCategoriasDespesa();
+                this.$refs.catReceita.initCategoriasReceita();
+            },
+
+            methods: {
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+
+        .list-group.list-group-cat {
+            border: 0px solid green;
+        }
+
+            .list-group.list-group-cat .list-group-item {
+                padding-right: 0;
+                overflow: hidden;
+            }
+
+        .list-group.list-group-subcat {
+            margin-top: 0.5rem;
+            margin-bottom: -0.5rem;
+            border-top: var(--bs-list-group-border-width) solid var(--bs-list-group-border-color);
+        }
+
+            .list-group.list-group-subcat .list-group-item {
+                padding-left: 2rem;
+            }
+
+
+        .categoria-item {
+            display: grid;
+            grid-template-columns: auto 6rem 5rem;
+            grid-template-areas:
+                "ga-descricao ga-ordem ga-opcoes";
+            align-items: center;
+        }
+
+            .categoria-item .descricao {
+                grid-area: ga-descricao;
+            }
+
+            .categoria-item .ordem {
+                grid-area: ga-ordem;
+            }
+
+            .categoria-item .opcoes {
+                grid-area: ga-opcoes;
+                margin-right: 0.5rem;
+                display: flex;
+                justify-content: end;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+            .categoria-item {
+                grid-template-columns: auto 3rem 5rem;
+                grid-template-rows: 2rem;
+            }
+        }
+
+    </style>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}

@@ -1,0 +1,324 @@
+﻿<partial name="_CategoriaModal"></partial>
+<partial name="_SubcategoriaModal"></partial>
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-categoria-cadastro-tree-list">
+
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-end mt-3">
+                <h5>Categorias de {{titulo}}</h5>
+                <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#categoriaModal"><span class="sys-fg-dark-3 fw-bold">Novo</span></button>
+            </div>
+        </div>
+
+        <ul class="list-group list-group-cat mt-3">
+
+            <!-- 1 - alimentação -->
+            <li class="list-group-item">
+
+                <div class="categoria-item">
+                    <div class="descricao">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
+                            <div class="fw-bold">Alimentação</div>
+                        </div>
+                    </div>
+                    <div class="ordem">1</div>
+                    <div class="opcoes">
+                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" data-bs-toggle="modal" data-bs-target="#subcategoriaModal"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush list-group-subcat">
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Restaurante</div>
+                                </div>
+                            </div>
+                            <div class="ordem">1.1</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Supermercado</div>
+                                </div>
+                            </div>
+                            <div class="ordem">1.2</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Lanche</div>
+                                </div>
+                            </div>
+                            <div class="ordem">1.3</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- 2 - moradia -->
+            <li class="list-group-item">
+
+                <div class="categoria-item">
+                    <div class="descricao">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
+                            <div class="fw-bold">Moradia</div>
+                        </div>
+                    </div>
+                    <div class="ordem">2</div>
+                    <div class="opcoes">
+                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush list-group-subcat">
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Água</div>
+                                </div>
+                            </div>
+                            <div class="ordem">2.1</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Luz</div>
+                                </div>
+                            </div>
+                            <div class="ordem">2.2</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Condomínio</div>
+                                </div>
+                            </div>
+                            <div class="ordem">2.3</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- 3 - transporte -->
+            <li class="list-group-item">
+                <div class="categoria-item">
+                    <div class="descricao">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
+                            <div class="fw-bold">Transporte</div>
+                        </div>
+                    </div>
+                    <div class="ordem">3</div>
+                    <div class="opcoes">
+                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    </div>
+                </div>
+            </li>
+
+            <!-- 4 - pessoal -->
+            <li class="list-group-item">
+
+                <div class="categoria-item">
+                    <div class="descricao">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
+                            <div class="fw-bold">Pessoal</div>
+                        </div>
+                    </div>
+                    <div class="ordem">4</div>
+                    <div class="opcoes">
+                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush list-group-subcat">
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Academia</div>
+                                </div>
+                            </div>
+                            <div class="ordem">4.1</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="categoria-item">
+                            <div class="descricao">
+                                <div class="d-flex align-items-center">
+                                    <div class="">Vestuário</div>
+                                </div>
+                            </div>
+                            <div class="ordem">4.2</div>
+                            <div class="opcoes">
+                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const CategoriaCadastroTreeList = {
+
+            name: 'CategoriaCadastroTreeList',
+            template: '#template-categoria-cadastro-tree-list',
+            mixins: [BaseMixin],
+            components: { ConfirmationDialog },
+
+            data: () => ({
+                tipo: 1,  //Enums.TipoLancamento: 1 - receita, 2 - despesa
+                lista: []
+            }),
+
+            computed: {
+
+                titulo() {
+                    return this.tipo == 1 ? "Receitas" : "Despesas";
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                async initCategoriasDespesa() {
+                    this.tipo = 2; //despesa
+                    await this.carregar();
+                },
+
+                async initCategoriasReceita() {
+                    this.tipo = 1; //receita
+                    await this.carregar();
+                },
+
+                async carregar() {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        let url = this.tipo == 1 ? '/categoria/ListarCategoriasReceitas' : '/categoria/ListarCategoriasDespesas';
+
+                        let ret = await fetchData.fetchGetJson(url);
+
+                        if (ret.ok) {
+                            this.lista = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .list-group.list-group-cat {
+            border: 0px solid green;
+        }
+
+            .list-group.list-group-cat .list-group-item {
+                padding-right: 0;
+                overflow: hidden;
+            }
+
+        .list-group.list-group-subcat {
+            margin-top: 0.5rem;
+            margin-bottom: -0.5rem;
+            border-top: var(--bs-list-group-border-width) solid var(--bs-list-group-border-color);
+        }
+
+            .list-group.list-group-subcat .list-group-item {
+                padding-left: 2rem;
+            }
+
+
+        .categoria-item {
+            display: grid;
+            grid-template-columns: auto 6rem 5rem;
+            grid-template-areas:
+                "ga-descricao ga-ordem ga-opcoes";
+            align-items: center;
+        }
+
+            .categoria-item .descricao {
+                grid-area: ga-descricao;
+            }
+
+            .categoria-item .ordem {
+                grid-area: ga-ordem;
+            }
+
+            .categoria-item .opcoes {
+                grid-area: ga-opcoes;
+                margin-right: 0.5rem;
+                display: flex;
+                justify-content: end;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+            .categoria-item {
+                grid-template-columns: auto 3rem 5rem;
+                grid-template-rows: 2rem;
+            }
+        }
+
+    </style>
+}
