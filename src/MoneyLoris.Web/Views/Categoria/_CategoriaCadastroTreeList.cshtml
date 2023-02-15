@@ -15,188 +15,40 @@
 
         <ul class="list-group list-group-cat mt-3">
 
-            <!-- 1 - alimentação -->
-            <li class="list-group-item">
+            <li class="list-group-item" v-for="c in lista">
 
                 <div class="categoria-item">
                     <div class="descricao">
                         <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
-                            <div class="fw-bold">Alimentação</div>
+                            <i class="fa-solid sys-fg-dark-4"
+                           v-bind:class="[c.esconder ? 'fa-square-plus' : 'fa-square-minus']"
+                               v-on:click="toggleCategoria(c)"></i>
+                            <div class="fw-bold ms-2">{{c.nome}}</div>
                         </div>
                     </div>
-                    <div class="ordem">1</div>
-                    <div class="opcoes">
-                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" data-bs-toggle="modal" data-bs-target="#subcategoriaModal"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
-                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                    </div>
-                </div>
-
-                <ul class="list-group list-group-flush list-group-subcat">
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Restaurante</div>
-                                </div>
-                            </div>
-                            <div class="ordem">1.1</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Supermercado</div>
-                                </div>
-                            </div>
-                            <div class="ordem">1.2</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Lanche</div>
-                                </div>
-                            </div>
-                            <div class="ordem">1.3</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- 2 - moradia -->
-            <li class="list-group-item">
-
-                <div class="categoria-item">
-                    <div class="descricao">
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
-                            <div class="fw-bold">Moradia</div>
-                        </div>
-                    </div>
-                    <div class="ordem">2</div>
+                    <div class="ordem">{{c.ordem}}</div>
                     <div class="opcoes">
                         <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
                         <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                     </div>
                 </div>
 
-                <ul class="list-group list-group-flush list-group-subcat">
-                    <li class="list-group-item">
+                <ul class="list-group list-group-flush list-group-subcat" v-if="c.subcategorias.length > 0 && !c.esconder">
+                    <li class="list-group-item" v-for="s in c.subcategorias">
                         <div class="categoria-item">
                             <div class="descricao">
                                 <div class="d-flex align-items-center">
-                                    <div class="">Água</div>
+                                    <div class="">{{s.nome}}</div>
                                 </div>
                             </div>
-                            <div class="ordem">2.1</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Luz</div>
-                                </div>
-                            </div>
-                            <div class="ordem">2.2</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Condomínio</div>
-                                </div>
-                            </div>
-                            <div class="ordem">2.3</div>
+                            <div class="ordem"><span v-if="s.ordem">{{c.ordem ? c.ordem : '_'}}.{{s.ordem}}</span></div>
                             <div class="opcoes">
                                 <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                             </div>
                         </div>
                     </li>
                 </ul>
-            </li>
 
-            <!-- 3 - transporte -->
-            <li class="list-group-item">
-                <div class="categoria-item">
-                    <div class="descricao">
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
-                            <div class="fw-bold">Transporte</div>
-                        </div>
-                    </div>
-                    <div class="ordem">3</div>
-                    <div class="opcoes">
-                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
-                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                    </div>
-                </div>
-            </li>
-
-            <!-- 4 - pessoal -->
-            <li class="list-group-item">
-
-                <div class="categoria-item">
-                    <div class="descricao">
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-square-minus sys-fg-dark-4 me-2"></i>
-                            <div class="fw-bold">Pessoal</div>
-                        </div>
-                    </div>
-                    <div class="ordem">4</div>
-                    <div class="opcoes">
-                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
-                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                    </div>
-                </div>
-
-                <ul class="list-group list-group-flush list-group-subcat">
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Academia</div>
-                                </div>
-                            </div>
-                            <div class="ordem">4.1</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">Vestuário</div>
-                                </div>
-                            </div>
-                            <div class="ordem">4.2</div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
             </li>
 
         </ul>
@@ -258,6 +110,11 @@
                             mensagemSistema.showMensagemErro(ret.message);
                         }
                     });
+                },
+
+                toggleCategoria(c) {
+                    if (c.subcategorias && c.subcategorias.length > 0)
+                    c.esconder = !c.esconder;
                 }
 
             }
