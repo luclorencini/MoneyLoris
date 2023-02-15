@@ -15,41 +15,47 @@
 
         <ul class="list-group list-group-cat mt-3" v-ext-loading="loading">
 
-            <li class="list-group-item" v-for="c in lista">
+            <li class="list-group-item text-center" v-if="lista.length == 0">Nenhuma categoria encontrada</li>
 
-                <div class="categoria-item">
-                    <div class="descricao">
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid sys-fg-dark-4"
-                           v-bind:class="[c.esconder ? 'fa-square-plus' : 'fa-square-minus']"
-                               v-on:click="toggleCategoria(c)"></i>
-                            <div class="fw-bold ms-2">{{c.nome}}</div>
+            <template v-else>
+
+                <li class="list-group-item" v-for="c in lista">
+
+                    <div class="categoria-item">
+                        <div class="descricao">
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid sys-fg-dark-4"
+                                v-bind:class="[c.esconder ? 'fa-square-plus' : 'fa-square-minus']"
+                                v-on:click="toggleCategoria(c)"></i>
+                                <div class="fw-bold ms-2">{{c.nome}}</div>
+                            </div>
+                        </div>
+                        <div class="ordem">{{c.ordem}}</div>
+                        <div class="opcoes">
+                            <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" v-on:click="novoSub(c)"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                            <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editar(c.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                         </div>
                     </div>
-                    <div class="ordem">{{c.ordem}}</div>
-                    <div class="opcoes">
-                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" v-on:click="novoSub(c)"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
-                        <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editar(c.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                    </div>
-                </div>
 
-                <ul class="list-group list-group-flush list-group-subcat" v-if="c.subcategorias.length > 0 && !c.esconder">
-                    <li class="list-group-item" v-for="s in c.subcategorias">
-                        <div class="categoria-item">
-                            <div class="descricao">
-                                <div class="d-flex align-items-center">
-                                    <div class="">{{s.nome}}</div>
+                    <ul class="list-group list-group-flush list-group-subcat" v-if="c.subcategorias.length > 0 && !c.esconder">
+                        <li class="list-group-item" v-for="s in c.subcategorias">
+                            <div class="categoria-item">
+                                <div class="descricao">
+                                    <div class="d-flex align-items-center">
+                                        <div class="">{{s.nome}}</div>
+                                    </div>
+                                </div>
+                                <div class="ordem"><span v-if="s.ordem">{{c.ordem ? c.ordem : '_'}}.{{s.ordem}}</span></div>
+                                <div class="opcoes">
+                                    <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editarSub(c, s.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                                 </div>
                             </div>
-                            <div class="ordem"><span v-if="s.ordem">{{c.ordem ? c.ordem : '_'}}.{{s.ordem}}</span></div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editarSub(c, s.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
 
-            </li>
+                </li>
+
+            </template>
 
         </ul>
 
@@ -118,7 +124,7 @@
 
                 toggleCategoria(c) {
                     if (c.subcategorias && c.subcategorias.length > 0)
-                    c.esconder = !c.esconder;
+                        c.esconder = !c.esconder;
                 },
 
                 novo() {
