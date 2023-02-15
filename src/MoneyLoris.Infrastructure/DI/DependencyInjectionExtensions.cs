@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
+using MoneyLoris.Application.Business.Contas;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 
@@ -16,19 +17,38 @@ public static class DependencyInjectionExtensions
 
         if (ativarStubs)
         {
-            //DI de serviços stub com dados fixos para demonstração e para facilitar a construção do front-end
-            services.AddScoped<ILoginService, LoginServiceStub>();
-            services.AddScoped<ICategoriaService, CategoriaServiceStub>();
-            //services.AddScoped<IContaService, DemoContaService>();
-            return;
+            InjetarDependenciasStubs(services);
+        }
+        else
+        {
+            InjetarDependenciasAplicacao(services);
         }
 
+        return;
+    }
+
+    private static void InjetarDependenciasAplicacao(IServiceCollection services)
+    {
         //DI da aplicação
+
         //services.AddScoped<BaseApplicationDbContext, ApplicationDbContext>();
 
         //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
         //services.AddScoped<ILoginService, LoginService>();
+
+        //services.AddScoped<ICategoriaService, CategoriaService>();
+
         //services.AddScoped<IContaService, ContaService>();
+    }
+
+    private static void InjetarDependenciasStubs(IServiceCollection services)
+    {
+        //DI de serviços stub com dados fixos para demonstração e para facilitar a construção do front-end
+
+        services.AddScoped<ILoginService, LoginServiceStub>();
+        services.AddScoped<ICategoriaService, CategoriaServiceStub>();
+        services.AddScoped<IContaService, ContaServiceStub>();
+        return;
     }
 }

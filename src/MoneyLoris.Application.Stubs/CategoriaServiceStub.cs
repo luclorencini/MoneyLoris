@@ -1,17 +1,17 @@
 ﻿using MoneyLoris.Application.Business.Categorias.Dtos;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Common.Base;
-using MoneyLoris.Application.Domain;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
 public class CategoriaServiceStub : ServiceBase, ICategoriaService
 {
-    public async Task<Result<ICollection<CategoriaListItemDto>>> ListarCategoriasUsuario(Enums.TipoLancamento tipo)
+    public async Task<Result<ICollection<CategoriaListItemDto>>> ListarCategoriasUsuario(TipoLancamento tipo)
     {
         ICollection<CategoriaListItemDto> ret = null!;
 
-        if (tipo == Enums.TipoLancamento.Despesa)
+        if (tipo == TipoLancamento.Despesa)
         {
             ret = new List<CategoriaListItemDto>()
             {

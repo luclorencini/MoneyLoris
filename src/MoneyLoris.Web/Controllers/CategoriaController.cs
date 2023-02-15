@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoneyLoris.Application.Business.Categorias.Dtos;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
-using MoneyLoris.Application.Domain;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;
@@ -25,7 +25,7 @@ public class CategoriaController : BaseController
     [Route("/categoria/listar/despesas")]
     public async Task<IActionResult> ListarCategoriasDespesas()
     {
-        var ret = await _categoriaService.ListarCategoriasUsuario(Enums.TipoLancamento.Despesa);
+        var ret = await _categoriaService.ListarCategoriasUsuario(TipoLancamento.Despesa);
         return Ok(ret);
     }
 
@@ -33,7 +33,7 @@ public class CategoriaController : BaseController
     [Route("/categoria/listar/receitas")]
     public async Task<IActionResult> ListarCategoriasReceitas()
     {
-        var ret = await _categoriaService.ListarCategoriasUsuario(Enums.TipoLancamento.Receita);
+        var ret = await _categoriaService.ListarCategoriasUsuario(TipoLancamento.Receita);
         return Ok(ret);
     }
 

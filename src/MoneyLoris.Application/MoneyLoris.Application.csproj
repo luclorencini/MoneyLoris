@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Business\Lancamentos\" />
-    <Folder Include="Business\Contas\" />
   </ItemGroup>
 
 </Project>

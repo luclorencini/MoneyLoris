@@ -1,30 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace MoneyLoris.Application.Domain;
-public static class Enums
+namespace MoneyLoris.Application.Utils;
+public static class EnumsExtensions
 {
-    public enum PerfilUsuario : byte
-    {
-        [Description("Administrador")]
-        Administrador = 1,
-
-        [Description("Usuário")]
-        Usuario = 2
-    }
-
-    public enum TipoLancamento : byte
-    {
-        [Description("Receita")]
-        Receita = 1,
-
-        [Description("Despesa")]
-        Despesa = 2,
-    }
-
-    
-
-    #region Utilitarios
-
     public static bool IsInEnum<T>(this int valor) where T : Enum
     {
         var v = Enum.IsDefined(typeof(T), valor);
@@ -65,6 +43,4 @@ public static class Enums
         object val = Convert.ChangeType(value, value.GetTypeCode());
         return (int?)val;
     }
-
-    #endregion
 }

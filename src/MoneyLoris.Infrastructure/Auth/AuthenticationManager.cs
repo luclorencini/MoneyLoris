@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MoneyLoris.Application.Business.Auth.Interfaces;
-using MoneyLoris.Application.Domain;
 using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Infrastructure.Auth;
 public class AuthenticationManager : IAuthenticationManager
@@ -55,11 +55,11 @@ public class AuthenticationManager : IAuthenticationManager
             new Claim(ClaimTypes.Name, usuario.Nome)
         };
 
-        if (usuario.IdPerfil == Enums.PerfilUsuario.Administrador)
+        if (usuario.IdPerfil == PerfilUsuario.Administrador)
         {
             claims.Add(new Claim(ClaimTypes.Role, "Administrador"));
         }
-        else if (usuario.IdPerfil == Enums.PerfilUsuario.Usuario)
+        else if (usuario.IdPerfil == PerfilUsuario.Usuario)
         {
             claims.Add(new Claim(ClaimTypes.Role, "Usuario"));
         }

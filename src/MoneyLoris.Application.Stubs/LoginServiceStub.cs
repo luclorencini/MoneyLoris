@@ -1,8 +1,8 @@
 ﻿using MoneyLoris.Application.Business.Auth.Dtos;
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Common.Base;
-using MoneyLoris.Application.Domain;
 using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
@@ -37,11 +37,11 @@ public class LoginServiceStub : ServiceBase, ILoginService
 
         if (login == "admin")
         {
-            usuario = new Usuario { Nome = "Admin", Id = 1234, IdPerfil = Enums.PerfilUsuario.Administrador };
+            usuario = new Usuario { Nome = "Admin", Id = 1234, IdPerfil = PerfilUsuario.Administrador };
         }
         else
         {
-            usuario = new Usuario { Nome = "Ronaldo", Id = 1234, IdPerfil = Enums.PerfilUsuario.Usuario };
+            usuario = new Usuario { Nome = "Ronaldo", Id = 1234, IdPerfil = PerfilUsuario.Usuario };
         }
         await _authManager.Login(usuario, isPersistent: false);
     }

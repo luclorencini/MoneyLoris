@@ -1,5 +1,5 @@
 ﻿using MoneyLoris.Application.Common.Base;
-using static MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Domain.Entities;
 public partial class Usuario : EntityBase
