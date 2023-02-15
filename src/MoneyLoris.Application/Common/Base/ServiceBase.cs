@@ -14,6 +14,12 @@ public class ServiceBase
 
     // utilitarios para Stubs, para retornar Tasks sem uma lógica que chama await
 
+    public async Task<Result> TaskSuccess()
+    {
+        await Task.Run(() => { });
+        return Result.Success();
+    }
+
     public async Task<Result<T>> TaskSuccess<T>(T data)
     {
         await Task.Run(() => { });

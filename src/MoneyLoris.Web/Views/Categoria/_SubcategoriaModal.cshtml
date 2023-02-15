@@ -1,41 +1,178 @@
-﻿<div class="modal" id="subcategoriaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Criar Nova Subcategoria</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form ref="form">
-                    <div class="row g-1">
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-subcategoria-modal">
 
-                        <div class="col-12">
-                            <label class="form-label">Categoria</label>
-                            <div class="lh-1 fs-6 fw-bold mb-3">Alimentação</div>
-                        </div>
-
-                        <div class="col-9">
-                            <label class="form-label required-asterisk">Nome</label>
-                            <input class="form-control" required maxlength="20">
-                        </div>
-
-                        <div class="col-3">
-                            <label class="form-label">Ordem</label>
-                            <input class="form-control" type="number">
-                        </div>
-
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{titulo}}</h5>
+                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="d-flex justify-content-between w-100">
-                    <button type="button" class="btn btn-danger">Excluir</button>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary px-4">Salvar</button>
+                    <div class="modal-body">
+                        <form ref="form">
+                            <div class="row g-1">
+
+                                <div class="col-12">
+                                    <label class="form-label">Categoria</label>
+                                    <div class="lh-1 fs-6 fw-bold mb-3">{{categoria.nome}}</div>
+                                </div>
+
+                                <div class="col-9">
+                                    <label class="form-label required-asterisk">Nome</label>
+                                    <input class="form-control" required maxlength="20" v-model="subcategoria.nome">
+                                </div>
+
+                                <div class="col-3">
+                                    <label class="form-label">Ordem</label>
+                                    <input class="form-control" type="number" v-model="subcategoria.ordem">
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-flex justify-content-between w-100">
+                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                            <div class="d-flex justify-content-end w-100">
+                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const SubcategoriaModal = {
+
+            name: 'SubcategoriaModal',
+            template: '#template-subcategoria-modal',
+            mixins: [BaseMixin],
+            emits: ['subcategoria-salva'],
+            components: { ConfirmationDialog },
+
+            data: () => ({
+                categoria: {},
+                subcategoria: {},
+                modal: null,
+            }),
+
+            computed: {
+
+                titulo() {
+                    return (this.isNovo ? "Nova Subcategoria" : "Alterar Subcategoria");
+                },
+
+                isNovo() {
+                    return (this.subcategoria.id == undefined);
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                async carregar(cat, id) {
+
+                    this.categoria = cat;
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        if (id) {
+                            let ret = await fetchData.fetchGetJson(`/categoria/sub/obter/${id}`);
+                            this.subcategoria = ret.value;
+                        }
+                        else {
+                            this.subcategoria = { idCategoria: this.categoria.id };
+                        }
+                    });
+
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                },
+
+                fechar() {
+                    bootstrapHelper.closeModal(this.modal);
+                },
+
+                async salvar() {
+
+                    let isValido = this.validarForm(this.$refs.form);
+
+                    if (isValido) {
+                        let ret = null;
+                        let msg = '';
+
+                        await this.setLoadingAndExecute(async () => {
+                            try {
+                                if (this.subcategoria.id) {
+                                    ret = await fetchData.fetchPostJson('/categoria/sub/alterar', this.subcategoria);
+                                    msg = 'Subcategoria alterada com sucesso.';
+                                }
+                                else {
+                                    ret = await fetchData.fetchPostJson('/categoria/sub/inserir', this.subcategoria);
+                                    msg = 'Subcategoria inserida com sucesso.';
+                                }
+
+                                if (ret.ok) {
+                                    mensagemSistema.showMensagemSucesso(msg);
+                                    this.fechar();
+                                    this.$emit('subcategoria-salva', ret.value.id);
+                                }
+                                else {
+                                    mensagemSistema.showMensagemErro(ret.message);
+                                }
+                            }
+                            catch (e) {
+                                mensagemSistema.showMensagemErro(e);
+                            }
+                        });
+                    }
+                },
+
+                async excluir() {
+
+                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                        titulo: 'Exclusão de Subcategoria',
+                        mensagem: `Deseja excluir esta Subcategoria?`,
+                        okLabel: 'Excluir',
+                    });
+
+                    if (confirma) {
+
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            let ret = await fetchData.fetchPostJson('/categoria/sub/excluir', this.subcategoria.id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso('Subcategoria excluída com sucesso.');
+                                this.fechar();
+                                this.$emit('subcategoria-salva', this.subcategoria.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        });
+                    }
+                },
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}

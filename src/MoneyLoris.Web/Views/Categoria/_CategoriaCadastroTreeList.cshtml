@@ -9,11 +9,11 @@
 
             <div class="d-flex justify-content-between align-items-end mt-3">
                 <h5>Categorias de {{titulo}}</h5>
-                <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#categoriaModal"><span class="sys-fg-dark-3 fw-bold">Novo</span></button>
+                <button class="btn btn-primary px-4" v-on:click="novo()"><span class="sys-fg-dark-3 fw-bold">Novo</span></button>
             </div>
         </div>
 
-        <ul class="list-group list-group-cat mt-3">
+        <ul class="list-group list-group-cat mt-3" v-ext-loading="loading">
 
             <li class="list-group-item" v-for="c in lista">
 
@@ -28,8 +28,8 @@
                     </div>
                     <div class="ordem">{{c.ordem}}</div>
                     <div class="opcoes">
-                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
-                        <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Adicionar Subcategoria" v-on:click="novoSub(c)"><i aria-hidden="true" class="fa-solid fa-folder-tree sys-fg-dark-2"></i></button>
+                        <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editar(c.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                             </div>
                             <div class="ordem"><span v-if="s.ordem">{{c.ordem ? c.ordem : '_'}}.{{s.ordem}}</span></div>
                             <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                                <button type="button" class="btn sys-icon-button" title="Editar" v-on:click="editarSub(c, s.id)"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                             </div>
                         </div>
                     </li>
@@ -52,6 +52,10 @@
             </li>
 
         </ul>
+
+        <CategoriaModal ref="formCategoria" v-on:categoria-salva="carregar()"></CategoriaModal>
+
+        <SubcategoriaModal ref="formSubcategoria" v-on:subcategoria-salva="carregar()"></SubcategoriaModal>
 
     </script>
 }
@@ -65,7 +69,7 @@
             name: 'CategoriaCadastroTreeList',
             template: '#template-categoria-cadastro-tree-list',
             mixins: [BaseMixin],
-            components: { ConfirmationDialog },
+            components: { CategoriaModal, SubcategoriaModal },
 
             data: () => ({
                 tipo: 1,  //Enums.TipoLancamento: 1 - receita, 2 - despesa
@@ -99,7 +103,7 @@
 
                     await this.setLoadingAndExecute(async () => {
 
-                        let url = this.tipo == 1 ? '/categoria/ListarCategoriasReceitas' : '/categoria/ListarCategoriasDespesas';
+                        let url = this.tipo == 1 ? '/categoria/listar/receitas' : '/categoria/listar/despesas';
 
                         let ret = await fetchData.fetchGetJson(url);
 
@@ -115,7 +119,23 @@
                 toggleCategoria(c) {
                     if (c.subcategorias && c.subcategorias.length > 0)
                     c.esconder = !c.esconder;
-                }
+                },
+
+                novo() {
+                    this.$refs.formCategoria.carregar();
+                },
+
+                editar(id) {
+                    this.$refs.formCategoria.carregar(id);
+                },
+
+                novoSub(c) {
+                    this.$refs.formSubcategoria.carregar(c);
+                },
+
+                editarSub(c, id) {
+                    this.$refs.formSubcategoria.carregar(c, id);
+                },
 
             }
         }
