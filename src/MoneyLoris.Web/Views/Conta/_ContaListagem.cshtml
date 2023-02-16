@@ -1,0 +1,317 @@
+﻿<partial name="_Moeda" />
+<partial name="_ContaModal" />
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-conta-listagem">
+
+        <section class="container-xxl container-titulo">
+            <div class="area-titulo">
+                @await Html.PartialAsync("_BotaoVoltar")
+                <div class="titulo">Contas e Cartões</div>
+            </div>
+        </section>
+
+        <section class="container-xxl">
+
+            <div class="row g-0 g-lg-2">
+
+                <div class="col col-9 d-none d-lg-block">
+                    <div class="card" v-if="temConta">
+                        <div class="card-body d-flex justify-content-evenly">
+
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-3x fa-sack-dollar sys-fg-dark-4"></i>
+                                <div class="ms-3">
+                                    <div class="fs-6 fw-bold">Saldo em Contas</div>
+                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoContas"></Moeda></div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-3x fa-piggy-bank sys-fg-dark-4"></i>
+                                <div class="ms-3">
+                                    <div class="fs-6 fw-bold">Poupança</div>
+                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoPoupancas"></Moeda></div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-3x fa-file-invoice sys-fg-dark-4"></i>
+                                <div class="ms-3">
+                                    <div class="fs-6 fw-bold">Dívida em Cartões</div>
+                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoCartoes"></Moeda></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col col-12 col-lg-3">
+                    <div class="card sys-bg-light-4" v-if="temConta">
+                        <div class="card-body text-center">
+                            <div class="d-flex flex-row flex-lg-column align-items-center justify-content-between">
+
+                                <div class="d-flex align-items-center">
+                                    <i class="fa-solid fa-3x fa-dollar-sign sys-fg-dark-2 d-none d-lg-block"></i>
+                                    <div class="ms-3 saldo-hint">
+                                        <div class="fs-6 fw-bold me-3">Saldo Atual:</div>
+                                        <div class="fs-5 fw-bold"><Moeda :valor="saldoTotal"></Moeda></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="container-xxl my-3 my-lg-4">
+            <div class="row g-0">
+                <div class="col d-flex justify-content-end px-3 px-lg-0">
+                    <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#contaModal"><span class="sys-fg-dark-3 fw-bold">Novo</span></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="container-xxl">
+
+            <div class="row g-0 g-lg-3">
+
+                <div class="col col-12 text-center" v-if="!temConta">
+                    <h6>Nenhuma conta ou cartão cadastrado.</h6>
+                </div>
+
+                <template v-else>
+
+                    <template v-for="c in lista">
+
+                        <div class="col col-12 col-lg-6 col-xl-3">
+                            <div class="conta-container sys-clicavel" v-bind:class="[!c.ativo ? 'inativo' : '']">
+                                <div class="icone">
+                                    <i class="fa-solid" v-bind:class="[isCarteira(c) ? 'fa-wallet' : (isCartaoCredito(c) ? 'fa-credit-card' : 'fa-money-check-dollar')]" v-bind:style="{ 'color': '#' + c.cor}"></i>
+                                </div>
+                                <div class="conta">
+                                    <div class="nome">{{c.nome}}</div>
+                                    <div class="descricao"><span>{{c.tipoDescricao}}</span><span v-if="c.ordem"> • #{{c.ordem}}</span></div>
+                                </div>
+                                <div class="opcoes">
+                                    <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
+                                </div>
+                                <div class="saldo">
+                                    <div class="fs-6 fw-bold d-none d-lg-block">{{isCartaoCredito(c)? 'Total de Dívidas' : 'Saldo Atual'}}:</div>
+                                    <div class="fw-bold"><Moeda :valor="c.saldo"></Moeda></div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </template>
+
+                </template>
+
+            </div>
+
+        </section>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const ContaListagem = {
+
+            name: 'ContaListagem',
+            template: '#template-conta-listagem',
+            mixins: [BaseMixin],
+            components: { Moeda },
+
+            data: () => ({
+                lista: []
+            }),
+
+            computed: {
+
+                temConta(){
+                    return this.lista && this.lista.length > 0;
+                },
+
+                saldoContas() {
+                    const contas = this.lista.filter(c => !this.isCartaoCredito(c) && !this.isPoupanca(c));
+                    return this.somarContas(contas);
+                },
+
+                saldoPoupancas() {
+                    const poups = this.lista.filter(c => this.isPoupanca(c));
+                    return this.somarContas(poups);
+                },
+
+                saldoCartoes() {
+                    const poups = this.lista.filter(c => this.isCartaoCredito(c));
+                    return this.somarContas(poups);
+                },
+
+                saldoTotal() {
+                    return this.somarContas(this.lista);
+                }
+            },
+
+            async mounted() {
+                await this.carregar();
+            },
+
+            methods: {
+
+                async carregar() {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        let ret = await fetchData.fetchGetJson('/conta/listar/');
+
+                        if (ret.ok) {
+                            this.lista = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                },
+
+                isCartaoCredito(c) {
+                    return c.tipo == 3; // 3 - cartao de credito
+                },
+
+                isCarteira(c) {
+                    return c.tipo == 1; // 1 - carteira
+                },
+
+                isPoupanca(c) {
+                    return c.tipo == 4; // 4 - poupanca
+                },
+
+                somarContas(contas) {
+                    return contas
+                        .map(c => c.saldo)
+                        .reduce((result, item) => result + item, 0);
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .conta-container {
+            display: grid;
+            grid-template-columns: 4rem auto 2rem;
+            grid-template-rows: 60% 40%;
+            grid-template-areas:
+                "ga-icone ga-conta ga-opcoes"
+                "ga-saldo ga-saldo ga-saldo";
+            background-color: #fff;
+            padding: 0.5rem 0.75rem 1rem 0.75rem;
+        }
+
+            .conta-container .icone {
+                grid-area: ga-icone;
+                display: flex;
+                justify-content: start;
+                align-items: start;
+            }
+
+                .conta-container .icone i {
+                    font-size: 3em;
+                }
+
+            .conta-container .conta {
+                grid-area: ga-conta;
+            }
+
+                .conta-container .conta .nome {
+                    font-size: 1.35rem;
+                    font-weight: bold;
+                }
+
+                .conta-container .conta .descricao {
+                    font-size: 0.85rem;
+                    line-height: 1rem;
+                }
+
+            .conta-container .opcoes {
+                grid-area: ga-opcoes;
+                text-align: right;
+            }
+
+            .conta-container .saldo {
+                grid-area: ga-saldo;
+                font-size: 1.25rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 1rem;
+            }
+
+            .conta-container.inativo {
+                background-color: #e0e0e0;
+            }
+
+                .conta-container.inativo .conta .nome {
+                    color: var(--sys-color-dark-1);
+                    text-decoration: line-through;
+                }
+
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .conta-container {
+                grid-template-columns: 3rem auto 7.5rem 2.5rem;
+                grid-template-rows: auto;
+                grid-template-areas:
+                    "ga-icone ga-conta ga-saldo ga-opcoes";
+                align-items: center;
+                padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+                border-top: 1px solid #ccc;
+            }
+
+                .conta-container .icone i {
+                    font-size: 2em;
+                }
+
+                .conta-container .conta .nome {
+                    font-size: 1.1rem;
+                }
+
+                .conta-container .conta .descricao {
+                    font-size: 0.75rem;
+                    line-height: 0.9rem;
+                }
+
+                .conta-container .saldo {
+                    font-size: 1rem;
+                    align-items: start;
+                    justify-content: end;
+                    padding-top: unset;
+                }
+
+
+            .saldo-hint {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto !important;
+                width: 95vw;
+            }
+        }
+    </style>
+}

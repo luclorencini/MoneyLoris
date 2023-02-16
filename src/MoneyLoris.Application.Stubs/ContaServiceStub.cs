@@ -3,24 +3,33 @@ using MoneyLoris.Application.Business.Contas.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
+using MoneyLoris.Application.Utils;
 
 namespace MoneyLoris.Application.Stubs;
 public class ContaServiceStub : ServiceBase, IContaService
 {
     public async Task<Result<ICollection<ContaCadastroListItemDto>>> Listar()
     {
+
         ICollection<ContaCadastroListItemDto> ret = new List<ContaCadastroListItemDto>()
         {
-            new ContaCadastroListItemDto { Id = 301, Nome = "Carteira", Tipo = TipoConta.Carteira, Ativo = true, Saldo = 45 },
-            new ContaCadastroListItemDto { Id = 302, Nome = "Nubank", Tipo = TipoConta.CartaoCredito, Cor = "820AD1", Ordem = 1, Ativo = true, Saldo = -7846.33 },
-            new ContaCadastroListItemDto { Id = 303, Nome = "PicPay", Tipo = TipoConta.CarteiraDigital, Cor = "11C56E", Ordem = 2, Ativo = true, Saldo = 275.90 },
-            new ContaCadastroListItemDto { Id = 304, Nome = "Caixa", Tipo = TipoConta.ContaCorrente, Cor = "0369B9", Ordem = 3, Ativo = true, Saldo = 10873.75 },
-            new ContaCadastroListItemDto { Id = 305, Nome = "NuConta", Tipo = TipoConta.ContaPagamento, Cor = "820AD1", Ordem = 4, Ativo = true, Saldo = 2198.54 },
-            new ContaCadastroListItemDto { Id = 306, Nome = "Sodexo", Tipo = TipoConta.ContaPagamento, Cor = "FF0000", Ordem = 5, Ativo = false, Saldo = 137 },
-            new ContaCadastroListItemDto { Id = 307, Nome = "Banco do Brasil", Tipo = TipoConta.Poupanca, Cor = "FCF800", Ordem = 6, Ativo = true, Saldo = 3263.98 }
+            new ContaCadastroListItemDto { Id = 301, Nome = "Carteira", Tipo = (byte)TipoConta.Carteira, Ativo = true, Saldo = 45 },
+            new ContaCadastroListItemDto { Id = 302, Nome = "Nubank", Tipo = (byte)TipoConta.CartaoCredito, Cor = "820AD1", Ordem = 1, Ativo = true, Saldo = -7846.33 },
+            new ContaCadastroListItemDto { Id = 303, Nome = "PicPay", Tipo = (byte)TipoConta.CarteiraDigital, Cor = "11C56E", Ordem = 2, Ativo = true, Saldo = 275.90 },
+            new ContaCadastroListItemDto { Id = 304, Nome = "Caixa", Tipo = (byte)TipoConta.ContaCorrente, Cor = "0369B9", Ordem = 3, Ativo = true, Saldo = 10873.75 },
+            new ContaCadastroListItemDto { Id = 305, Nome = "NuConta", Tipo = (byte)TipoConta.ContaPagamento, Cor = "820AD1", Ordem = 4, Ativo = true, Saldo = 2198.54 },
+            new ContaCadastroListItemDto { Id = 306, Nome = "Sodexo", Tipo = (byte)TipoConta.ContaPagamento, Cor = "FF0000", Ordem = 5, Ativo = false, Saldo = 137 },
+            new ContaCadastroListItemDto { Id = 307, Nome = "Banco do Brasil", Tipo = (byte)TipoConta.Poupanca, Cor = "FCF800", Ordem = 6, Ativo = true, Saldo = 3263.98 }
         };
 
-        ret = ret.OrderBy(x => x.Ativo).ThenBy(x => x.Ordem).ToList();
+        foreach (var c in ret)
+            c.TipoDescricao = ((TipoConta)c.Tipo).ObterDescricao();
+
+        ret = ret.OrderByDescending(x => x.Ativo)
+            .ThenByDescending(x => x.Ordem.HasValue)
+            .ThenBy(x => x.Ordem)
+            .ThenBy(x => x.Nome)
+            .ToList();
 
         return await TaskSuccess(ret);
     }

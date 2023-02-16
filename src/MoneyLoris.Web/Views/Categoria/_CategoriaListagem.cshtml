@@ -45,18 +45,11 @@
             mixins: [BaseMixin],
             components: { CategoriaCadastroTreeList },
 
-            data: () => ({
-                abcd: {}
-            }),
-
             mounted() {
                 this.$refs.catDespesa.initCategoriasDespesa();
                 this.$refs.catReceita.initCategoriasReceita();
             },
 
-            methods: {
-
-            }
         }
 
     </script>

@@ -1,0 +1,43 @@
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-moeda">
+
+        <span v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const Moeda = {
+
+            name: 'Moeda',
+            template: '#template-moeda',
+            mixins: [BaseMixin],
+
+            props: {
+                valor: Number
+            },
+
+            computed: {
+
+                positivo() {
+                    return this.valor >= 0;
+                },
+
+                formatado() {
+                    return Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'})
+                        .format(this.valor); 
+                }
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}
