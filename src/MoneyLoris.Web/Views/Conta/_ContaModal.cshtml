@@ -1,131 +1,260 @@
-﻿<div class="modal" id="contaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Criar Nova Conta</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form ref="form">
-                    <div class="row g-1">
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-conta-modal">
 
-                        <div class="col-9">
-                            <label class="form-label required-asterisk">Nome</label>
-                            <input class="form-control form-control-lg fw-bold" required maxlength="20">
-                        </div>
-
-                        <div class="col-3 text-center">
-                            <label class="form-label">Ícone</label>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fa-solid fa-credit-card fa-3x" style="color: #000000;"></i>
-                            </div>
-                        </div>
-
-                        <div class="col-9">
-                            <label class="form-label required-asterisk">Tipo</label>
-                            <select class="form-select">
-                                <option value="1">Carteira</option>
-                                <option value="2">Conta Corrente</option>
-                                <option value="3">Poupança</option>
-                                <option value="4">Cartão de Crédito</option>
-                                <option value="5">Conta de Pagamento</option>
-                                <option value="6">Carteira Digital</option>
-                                <option value="7">Cartão de Benefício</option>
-                                <option value="99">Outros</option>
-                            </select>
-                        </div>
-
-                        <div class="col-3">
-                            <label class="form-label">Ordem</label>
-                            <input class="form-control" type="number">
-                        </div>
-
-                        <div class="col-12 mb-2">
-                            <label class="form-label required-asterisk">Cor</label>
-
-                            <div class="d-flex flex-wrap justify-content-center">
-                                <div class="opcao-cor" style="background-color: #0369B9" title="Caixa"></div>
-                                <div class="opcao-cor" style="background-color: #FCF800" title="Banco do Brasil"></div>
-                                <div class="opcao-cor" style="background-color: #FF7000" title="Itaú"></div>
-                                <div class="opcao-cor" style="background-color: #EC0000" title="Santander"></div>
-                                <div class="opcao-cor" style="background-color: #CE0930" title="Bradesco"></div>
-                                <div class="opcao-cor" style="background-color: #820AD1" title="Nubank"></div>
-                                <div class="opcao-cor" style="background-color: #11C56E" title="PicPay"></div>
-                                <div class="opcao-cor" style="background-color: #000000" title=""></div>
-
-                                <div class="opcao-cor" style="background-color: #004384" title="Banestes"></div>
-                                <div class="opcao-cor" style="background-color: #FFD900" title="Will Bank"></div>
-                                <div class="opcao-cor" style="background-color: #F17700" title="Inter"></div>
-                                <div class="opcao-cor" style="background-color: #FF0000" title="Sodexo"></div>
-                                <div class="opcao-cor" style="background-color: #0F92FF" title="Neon"></div>
-                                <div class="opcao-cor" style="background-color: #4F2F87" title="Nu Ultravioleta"></div>
-                                <div class="opcao-cor" style="background-color: #00A992" title="Sofisa"></div>
-                                <div class="opcao-cor" style="background-color: #414141" title=""></div>
-                            </div>
-                        </div>
-
-                        <hr class="my-1" />
-
-                        <div class="col-12">
-                            <h5>Saldo Inicial</h5>
-                            <div class="lh-sm">
-                                <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4"></i>
-                                <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">R$</span>
-                                <input class="form-control" type="text" required maxlength="10">
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label required-asterisk">Data Lançamento</label>
-                            <input class="form-control" type="date">
-                        </div>
-
-                        <hr class="my-1" />
-
-                        <div class="col-12">
-                            <h5>Informações do Cartão de Crédito</h5>
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label required-asterisk">Limite</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">R$</span>
-                                <input class="form-control" type="text" required maxlength="10">
-                            </div>
-                        </div>
-
-                        <div class="col-3">
-                            <label class="form-label">Fecha dia</label>
-                            <input class="form-control" type="number">
-                        </div>
-
-                        <div class="col-3">
-                            <label class="form-label">Vence dia</label>
-                            <input class="form-control" type="number">
-                        </div>
-
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{titulo}}</h5>
+                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="d-flex justify-content-between w-100">
-                    <button type="button" class="btn btn-danger">Excluir</button>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary px-4">Salvar</button>
+                    <div class="modal-body">
+                        <form ref="form">
+                            <div class="row g-1">
+
+                                <div class="col-9">
+                                    <label class="form-label required-asterisk">Nome</label>
+                                    <input class="form-control form-control-lg fw-bold" required maxlength="20">
+                                </div>
+
+                                <div class="col-3 text-center">
+                                    <label class="form-label">Ícone</label>
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-credit-card fa-3x" style="color: #000000;"></i>
+                                    </div>
+                                </div>
+
+                                <div class="col-9">
+                                    <label class="form-label required-asterisk">Tipo</label>
+                                    <select class="form-select">
+                                        <option value="1">Carteira</option>
+                                        <option value="2">Conta Corrente</option>
+                                        <option value="3">Cartão de Crédito</option>
+                                        <option value="4">Poupança</option>
+                                        <option value="5">Conta de Pagamento</option>
+                                        <option value="6">Carteira Digital</option>
+                                        <option value="7">Cartão de Benefício</option>
+                                        <option value="99">Outros</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-3">
+                                    <label class="form-label">Ordem</label>
+                                    <input class="form-control" type="number">
+                                </div>
+
+                                <div class="col-12 mb-2">
+                                    <label class="form-label required-asterisk">Cor</label>
+
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        <div class="opcao-cor" style="background-color: #0369B9" title="Caixa"></div>
+                                        <div class="opcao-cor" style="background-color: #FCF800" title="Banco do Brasil"></div>
+                                        <div class="opcao-cor" style="background-color: #FF7000" title="Itaú"></div>
+                                        <div class="opcao-cor" style="background-color: #EC0000" title="Santander"></div>
+                                        <div class="opcao-cor" style="background-color: #CE0930" title="Bradesco"></div>
+                                        <div class="opcao-cor" style="background-color: #820AD1" title="Nubank"></div>
+                                        <div class="opcao-cor" style="background-color: #11C56E" title="PicPay"></div>
+                                        <div class="opcao-cor" style="background-color: #000000" title=""></div>
+
+                                        <div class="opcao-cor" style="background-color: #004384" title="Banestes"></div>
+                                        <div class="opcao-cor" style="background-color: #FFD900" title="Will Bank"></div>
+                                        <div class="opcao-cor" style="background-color: #F17700" title="Inter"></div>
+                                        <div class="opcao-cor" style="background-color: #FF0000" title="Sodexo"></div>
+                                        <div class="opcao-cor" style="background-color: #0F92FF" title="Neon"></div>
+                                        <div class="opcao-cor" style="background-color: #4F2F87" title="Nu Ultravioleta"></div>
+                                        <div class="opcao-cor" style="background-color: #00A992" title="Sofisa"></div>
+                                        <div class="opcao-cor" style="background-color: #414141" title=""></div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-1" />
+
+                                <div class="col-12">
+                                    <h5>Saldo Inicial</h5>
+                                    <div class="lh-sm">
+                                        <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4"></i>
+                                        <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control" type="text" required maxlength="10">
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Data Lançamento</label>
+                                    <input class="form-control" type="date">
+                                </div>
+
+                                <hr class="my-1" />
+
+                                <div class="col-12">
+                                    <h5>Informações do Cartão de Crédito</h5>
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Limite</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control" type="text" required maxlength="10">
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <label class="form-label">Fecha dia</label>
+                                    <input class="form-control" type="number">
+                                </div>
+
+                                <div class="col-3">
+                                    <label class="form-label">Vence dia</label>
+                                    <input class="form-control" type="number">
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-flex justify-content-between w-100">
+                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                            <div class="d-flex justify-content-end w-100">
+                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const ContaModal = {
+
+            name: 'ContaModal',
+            template: '#template-conta-modal',
+            mixins: [BaseMixin],
+            emits: ['conta-salva'],
+            components: { ConfirmationDialog },
+
+            data: () => ({
+                conta: {},
+                modal: null,
+            }),
+
+            computed: {
+
+                titulo() {
+                    return (this.isNovo ? "Nova Conta / Cartão" : "Alterar Conta / Cartão");
+                },
+
+                isNovo() {
+                    return (this.conta.id == undefined);
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                async carregar(id) {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        if (id) {
+                            let ret = await fetchData.fetchGetJson(`/conta/obter/${id}`);
+                            this.conta = ret.value;
+                        }
+                        else {
+                            this.conta = {};
+                        }
+                    });
+
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                },
+
+                fechar() {
+                    bootstrapHelper.closeModal(this.modal);
+                },
+
+                async salvar() {
+
+                    let isValido = this.validarForm(this.$refs.form);
+
+                    if (isValido) {
+                        let ret = null;
+                        let msg = '';
+
+                        await this.setLoadingAndExecute(async () => {
+                            try {
+                                if (this.conta.id) {
+                                    ret = await fetchData.fetchPostJson('/conta/alterar', this.conta);
+                                    msg = 'Conta alterada com sucesso.';
+                                }
+                                else {
+                                    ret = await fetchData.fetchPostJson('/conta/inserir', this.conta);
+                                    msg = 'Conta inserida com sucesso.';
+                                }
+
+                                if (ret.ok) {
+                                    mensagemSistema.showMensagemSucesso(msg);
+                                    this.fechar();
+                                    this.$emit('conta-salva', ret.value.id);
+                                }
+                                else {
+                                    mensagemSistema.showMensagemErro(ret.message);
+                                }
+                            }
+                            catch (e) {
+                                mensagemSistema.showMensagemErro(e);
+                            }
+                        });
+                    }
+                },
+
+                async excluir() {
+
+                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                        titulo: 'Exclusão de Conta',
+                        mensagem: `Deseja excluir esta Conta?`,
+                        okLabel: 'Excluir',
+                    });
+
+                    if (confirma) {
+
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            let ret = await fetchData.fetchPostJson('/conta/excluir', this.conta.id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso('Conta excluída com sucesso.');
+                                this.fechar();
+                                this.$emit('conta-salva', this.conta.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        });
+                    }
+                },
+
+            }
+        }
+
+    </script>
+}
 
 @using (Html.VueStyle())
 {
