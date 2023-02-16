@@ -189,8 +189,8 @@ const diretivaMaskUtils = {
                     el.value = mascaras.parseTelefoneDDD(el.value);
                     break;
 
-                case 'crp':
-                    el.value = mascaras.parseCrp(el.value);
+                case 'dinheiro':
+                    el.value = mascaras.parseMoney(el.value);
                     break;
 
                 default:

@@ -16,11 +16,11 @@
 
             <div class="row g-0 g-lg-2">
 
-                <div class="col col-9 d-none d-lg-block">
+                <div class="col-12 col-lg-8 offset-lg-2">
                     <div class="card" v-if="temConta">
                         <div class="card-body d-flex justify-content-evenly">
 
-                            <div class="d-flex align-items-center">
+                            <div class="d-none d-lg-flex align-items-center">
                                 <i class="fa-solid fa-3x fa-sack-dollar sys-fg-dark-4"></i>
                                 <div class="ms-3">
                                     <div class="fs-6 fw-bold">Saldo em Contas</div>
@@ -28,7 +28,7 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex align-items-center">
+                            <div class="d-none d-lg-flex align-items-center">
                                 <i class="fa-solid fa-3x fa-piggy-bank sys-fg-dark-4"></i>
                                 <div class="ms-3">
                                     <div class="fs-6 fw-bold">Poupança</div>
@@ -37,31 +37,13 @@
                             </div>
 
                             <div class="d-flex align-items-center">
-                                <i class="fa-solid fa-3x fa-file-invoice sys-fg-dark-4"></i>
-                                <div class="ms-3">
-                                    <div class="fs-6 fw-bold">Dívida em Cartões</div>
-                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoCartoes"></Moeda></div>
+                                <i class="fa-solid fa-3x fa-dollar-sign sys-fg-dark-2 d-none d-lg-block"></i>
+                                <div class="ms-3 saldo-hint">
+                                    <div class="fs-6 fw-bold me-3">Saldo Atual:</div>
+                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoAtual"></Moeda></div>
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col col-12 col-lg-3">
-                    <div class="card sys-bg-light-4" v-if="temConta">
-                        <div class="card-body text-center">
-                            <div class="d-flex flex-row flex-lg-column align-items-center justify-content-between">
-
-                                <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-3x fa-dollar-sign sys-fg-dark-2 d-none d-lg-block"></i>
-                                    <div class="ms-3 saldo-hint">
-                                        <div class="fs-6 fw-bold me-3">Saldo Atual:</div>
-                                        <div class="fs-5 fw-bold"><Moeda :valor="saldoTotal"></Moeda></div>
-                                    </div>
-                                </div>
-
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,7 +76,7 @@
                         <div class="col col-12 col-lg-6 col-xl-3">
                             <div class="conta-container sys-clicavel" v-bind:class="[!c.ativo ? 'inativo' : '']" v-on:click="editar(c.id)">
                                 <div class="icone">
-                                    <i class="fa-solid" v-bind:class="[isCarteira(c) ? 'fa-wallet' : (isCartaoCredito(c) ? 'fa-credit-card' : 'fa-money-check-dollar')]" v-bind:style="{ 'color': '#' + c.cor}"></i>
+                                    <i class="fa-solid" v-bind:class="utils.cssIconeByTipoConta(c.tipo)" v-bind:style="{ 'color': '#' + c.cor}"></i>
                                 </div>
                                 <div class="conta">
                                     <div class="nome">{{c.nome}}</div>
@@ -104,9 +86,8 @@
                                     <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                                 </div>
                                 <div class="saldo">
-                                    <div class="fs-6 fw-bold d-none d-lg-block">{{isCartaoCredito(c)? 'Total de Dívidas' : 'Saldo Atual'}}:</div>
-                                    <div class="fw-bold"><Moeda :valor="c.saldo"></Moeda></div>
-
+                                    <div class="fs-6 fw-bold d-none d-lg-block">{{utils.isCartaoCredito(c.tipo) ? 'Limite Total' : 'Saldo Atual'}}:</div>
+                                    <div class="fw-bold" v-bind:class="{ 'fst-italic' : utils.isCartaoCredito(c.tipo) }"><Moeda :valor="c.valor"></Moeda></div>
                                 </div>
                             </div>
                         </div>
@@ -141,27 +122,22 @@
 
             computed: {
 
-                temConta(){
+                temConta() {
                     return this.lista && this.lista.length > 0;
                 },
 
                 saldoContas() {
-                    const contas = this.lista.filter(c => !this.isCartaoCredito(c) && !this.isPoupanca(c));
+                    const contas = this.lista.filter(c => !utils.isCartaoCredito(c.tipo) && !utils.isPoupanca(c.tipo));
                     return this.somarContas(contas);
                 },
 
                 saldoPoupancas() {
-                    const poups = this.lista.filter(c => this.isPoupanca(c));
+                    const poups = this.lista.filter(c => utils.isPoupanca(c.tipo));
                     return this.somarContas(poups);
                 },
 
-                saldoCartoes() {
-                    const poups = this.lista.filter(c => this.isCartaoCredito(c));
-                    return this.somarContas(poups);
-                },
-
-                saldoTotal() {
-                    return this.somarContas(this.lista);
+                saldoAtual() {
+                    return this.saldoContas + this.saldoPoupancas;
                 }
             },
 
@@ -185,22 +161,10 @@
                         }
                     });
                 },
-
-                isCartaoCredito(c) {
-                    return c.tipo == 3; // 3 - cartao de credito
-                },
-
-                isCarteira(c) {
-                    return c.tipo == 1; // 1 - carteira
-                },
-
-                isPoupanca(c) {
-                    return c.tipo == 4; // 4 - poupanca
-                },
-
+                
                 somarContas(contas) {
                     return contas
-                        .map(c => c.saldo)
+                        .map(c => c.valor)
                         .reduce((result, item) => result + item, 0);
                 },
 
@@ -317,7 +281,7 @@
 
             .saldo-hint {
                 display: flex;
-                align-items: center;
+                align-items: baseline;
                 justify-content: center;
                 margin: 0 auto !important;
                 width: 95vw;

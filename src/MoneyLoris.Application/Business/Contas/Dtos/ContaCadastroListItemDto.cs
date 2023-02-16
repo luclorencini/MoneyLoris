@@ -9,5 +9,5 @@ public class ContaCadastroListItemDto
     public int? Ordem { get; set; }
     public bool Ativo { get; set; }
 
-    public double Saldo { get; set; }
+    public double Valor { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿const mascaras = {
-
+    
     parseAlfa(txt) {
         let msk = '';
         if (txt) {
@@ -61,13 +61,82 @@
         return msk;
     },
 
-    parseCrp(crp) {
-        let msk = '';
-        if (crp) {
-            let x = crp.replace(/\D/g, '').match(/(\d{0,2})(\d{0,6})/);
-            msk = !x[2] ? x[1] : x[1] + '/' + x[2];
+    parseMoney(value) {
+
+        const separadorDecimal = ",";
+        const separadorMilesimo = ".";
+
+        //if (!value.includes(',')) {
+        //    var value = parseFloat(value).toFixed(2);
+        //}        
+
+        ////fail-safe: se valor vem inteiro, insere zeros ao final
+        //if (!value.includes('.')) {
+        //    value = value + '.00';
+        //}
+        //else if (value.match(/\.(\d{1})/g)) {
+        //    value = value + '0';
+        //}
+        
+
+        let len = value.length;
+        let key = '';
+        let i = 0;
+        const strCheck = '0123456789';
+        let aux = '';
+
+        for (i = 0; i < len; i += 1) {
+            if ((value.charAt(i) !== '0') && (value.charAt(i) !== separadorDecimal)) {
+                break;
+            }
         }
-        return msk;
+        for (; i < len; i += 1) {
+            if (strCheck.indexOf(value.charAt(i)) !== -1) {
+                aux += value.charAt(i);
+            }
+        }
+        aux += key;
+        len = aux.length;
+        if (len === 0) {
+            value = '';
+        }
+        if (len === 1) {
+            value = `0${separadorDecimal}0${aux}`;
+        }
+        if (len === 2) {
+            value = `0${separadorDecimal}${aux}`;
+        }
+        if (len > 2) {
+            let aux2 = '';
+            let len2 = 0;
+            let j = 0;
+            for (j = 0, i = len - 3; i >= 0; i -= 1) {
+                if (j === 3) {
+                    aux2 += separadorMilesimo;
+                    j = 0;
+                }
+                aux2 += aux.charAt(i);
+                j += 1;
+            }
+            value = '';
+            len2 = aux2.length;
+            for (i = len2 - 1; i >= 0; i -= 1) {
+                value += aux2.charAt(i);
+            }
+            value += separadorDecimal + aux.substr(len - 2, len);
+        }
+        return value;
+    },
+
+    unparseMoney(str) {
+
+        //hack
+        str = mascaras.parseMoney(str);
+
+        //retira possiveis pontos separadores de milhar, e transforma a virgula dos centavos em ponto
+        str = str.replace(/\./g, '');
+        str = str.replace(/\,/g, '.');
+        return str;
     },
 
     removeMascara(valor) {

@@ -5,12 +5,12 @@ public class ContaCadastroDto
 {
     public int Id { get; set; }
     public string Nome { get; set; } = default!;
-    public TipoConta Tipo { get; set; }
+    public byte Tipo { get; set; }
     public string Cor { get; set; } = default!;
     public int? Ordem { get; set; }
     public bool Ativo { get; set; }
 
-    public double Limite { get; set; }
+    public decimal Limite { get; set; }
     public byte DiaFechamento { get; set; }
     public byte DiaVencimento { get; set; }
 }

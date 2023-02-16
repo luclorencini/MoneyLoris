@@ -15,19 +15,19 @@
 
                                 <div class="col-9">
                                     <label class="form-label required-asterisk">Nome</label>
-                                    <input class="form-control form-control-lg fw-bold" required maxlength="20">
+                                    <input class="form-control form-control-lg fw-bold" required maxlength="20" v-model="conta.nome">
                                 </div>
 
                                 <div class="col-3 text-center">
                                     <label class="form-label">Ícone</label>
                                     <div class="d-flex align-items-center justify-content-center">
-                                        <i class="fa-solid fa-credit-card fa-3x" style="color: #000000;"></i>
+                                        <i class="fa-solid fa-3x" v-bind:class="utils.cssIconeByTipoConta(conta.tipo)" v-bind:style="{ 'color': '#' + conta.cor}"></i>
                                     </div>
                                 </div>
 
                                 <div class="col-9">
                                     <label class="form-label required-asterisk">Tipo</label>
-                                    <select class="form-select">
+                                    <select class="form-select" v-model="conta.tipo">
                                         <option value="1">Carteira</option>
                                         <option value="2">Conta Corrente</option>
                                         <option value="3">Cartão de Crédito</option>
@@ -41,79 +41,73 @@
 
                                 <div class="col-3">
                                     <label class="form-label">Ordem</label>
-                                    <input class="form-control" type="number">
+                                    <input class="form-control" type="number" v-model="conta.ordem">
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label class="form-label required-asterisk">Cor</label>
 
                                     <div class="d-flex flex-wrap justify-content-center">
-                                        <div class="opcao-cor" style="background-color: #0369B9" title="Caixa"></div>
-                                        <div class="opcao-cor" style="background-color: #FCF800" title="Banco do Brasil"></div>
-                                        <div class="opcao-cor" style="background-color: #FF7000" title="Itaú"></div>
-                                        <div class="opcao-cor" style="background-color: #EC0000" title="Santander"></div>
-                                        <div class="opcao-cor" style="background-color: #CE0930" title="Bradesco"></div>
-                                        <div class="opcao-cor" style="background-color: #820AD1" title="Nubank"></div>
-                                        <div class="opcao-cor" style="background-color: #11C56E" title="PicPay"></div>
-                                        <div class="opcao-cor" style="background-color: #000000" title=""></div>
-
-                                        <div class="opcao-cor" style="background-color: #004384" title="Banestes"></div>
-                                        <div class="opcao-cor" style="background-color: #FFD900" title="Will Bank"></div>
-                                        <div class="opcao-cor" style="background-color: #F17700" title="Inter"></div>
-                                        <div class="opcao-cor" style="background-color: #FF0000" title="Sodexo"></div>
-                                        <div class="opcao-cor" style="background-color: #0F92FF" title="Neon"></div>
-                                        <div class="opcao-cor" style="background-color: #4F2F87" title="Nu Ultravioleta"></div>
-                                        <div class="opcao-cor" style="background-color: #00A992" title="Sofisa"></div>
-                                        <div class="opcao-cor" style="background-color: #414141" title=""></div>
+                                        <template v-for="c in obterCores()">
+                                            <div class="opcao-cor" v-on:click="alterarCor(c.rgb)" v-bind:style="{ 'background-color': '#' + c.rgb}" v-bind:title="c.desc"></div>
+                                        </template>
                                     </div>
                                 </div>
 
-                                <hr class="my-1" />
+                                <template v-if="isNovo">
 
-                                <div class="col-12">
-                                    <h5>Saldo Inicial</h5>
-                                    <div class="lh-sm">
-                                        <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4"></i>
-                                        <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
+                                    <hr class="my-1" />
+
+                                    <div class="col-12">
+                                        <h5>Saldo Inicial</h5>
+                                        <div class="lh-sm">
+                                            <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
+                                            <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-6">
-                                    <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">R$</span>
-                                        <input class="form-control" type="text" required maxlength="10">
+                                    <div class="col-6">
+                                        <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">R$</span>
+                                            <input class="form-control" type="text" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-6">
-                                    <label class="form-label required-asterisk">Data Lançamento</label>
-                                    <input class="form-control" type="date">
-                                </div>
-
-                                <hr class="my-1" />
-
-                                <div class="col-12">
-                                    <h5>Informações do Cartão de Crédito</h5>
-                                </div>
-
-                                <div class="col-6">
-                                    <label class="form-label required-asterisk">Limite</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">R$</span>
-                                        <input class="form-control" type="text" required maxlength="10">
+                                    <div class="col-6">
+                                        <label class="form-label required-asterisk">Data Lançamento</label>
+                                        <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
                                     </div>
-                                </div>
 
-                                <div class="col-3">
-                                    <label class="form-label">Fecha dia</label>
-                                    <input class="form-control" type="number">
-                                </div>
+                                </template>
 
-                                <div class="col-3">
-                                    <label class="form-label">Vence dia</label>
-                                    <input class="form-control" type="number">
-                                </div>
+                                <template v-if="utils.isCartaoCredito(conta.tipo)">
+
+                                    <hr class="my-1" />
+
+                                    <div class="col-12">
+                                        <h5>Informações do Cartão de Crédito</h5>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="form-label required-asterisk">Limite</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">R$</span>
+                                            <input class="form-control" type="text" required maxlength="10" v-model="conta.limite" v-ext-mask="'dinheiro'">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label class="form-label required-asterisk">Fecha dia</label>
+                                        <input class="form-control" type="number" required v-model="conta.diaFechamento">
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label class="form-label required-asterisk">Vence dia</label>
+                                        <input class="form-control" type="number" required v-model="conta.diaVencimento">
+                                    </div>
+
+                                </template>
 
                             </div>
                         </form>
@@ -176,9 +170,16 @@
                         if (id) {
                             let ret = await fetchData.fetchGetJson(`/conta/obter/${id}`);
                             this.conta = ret.value;
+
+                            if (this.conta.limite){
+                                this.conta.limite = parseFloat(this.conta.limite).toFixed(2);
+                            }
+                            if (this.conta.saldoInicial) {
+                                this.conta.saldoInicial = parseFloat(this.conta.saldoInicial).toFixed(2);
+                            }
                         }
                         else {
-                            this.conta = {};
+                            this.conta = { tipo: 1};
                         }
                     });
 
@@ -199,6 +200,21 @@
 
                         await this.setLoadingAndExecute(async () => {
                             try {
+
+                                //conversões
+                                if (this.conta.dataLancamentoInicial){
+                                    this.conta.dataLancamentoInicial = utils.dataYMD(this.conta.dataLancamentoInicial);
+                                }
+
+                                if (this.conta.saldoInicial){
+                                    this.conta.saldoInicial = mascaras.unparseMoney(this.conta.saldoInicial);
+                                }
+
+                                if (this.conta.limite) {
+                                    this.conta.limite = mascaras.unparseMoney(this.conta.limite);
+                                }
+
+                                //submit
                                 if (this.conta.id) {
                                     ret = await fetchData.fetchPostJson('/conta/alterar', this.conta);
                                     msg = 'Conta alterada com sucesso.';
@@ -248,6 +264,32 @@
                             }
                         });
                     }
+                },
+
+                alterarCor(rgb) {
+                    this.conta.cor = rgb;
+                },
+
+                obterCores(){
+                    let cores = [
+                        { rgb: '0369B9', desc: 'Caixa' },
+                        { rgb: 'FCF800', desc: 'Banco do Brasil' },
+                        { rgb: 'FF7000', desc: 'Itaú' },
+                        { rgb: 'EC0000', desc: 'Santander' },
+                        { rgb: 'CE0930', desc: 'Bradesco' },
+                        { rgb: '820AD1', desc: 'Nubank' },
+                        { rgb: '11C56E', desc: 'PicPay' },
+                        { rgb: '000000', desc: '' },
+                        { rgb: '004384', desc: 'Banestes' },
+                        { rgb: 'FFD900', desc: 'Will Bank' },
+                        { rgb: 'F17700', desc: 'Inter' },
+                        { rgb: 'FF0000', desc: 'Sodexo' },
+                        { rgb: '0F92FF', desc: 'Neon' },
+                        { rgb: '4F2F87', desc: 'Nu Ultravioleta' },
+                        { rgb: '00A992', desc: 'Sofisa' },
+                        { rgb: '414141', desc: '' }
+                    ];
+                    return cores;
                 },
 
             }

@@ -111,6 +111,15 @@
         return ext;
     },
 
+    dataYMD(strDate) {
+
+        let d = new Date(strDate);
+
+        let ext = d.toISOString().slice(0, 10);
+
+        return ext;
+    },
+
     horaCurta(strDate) {
 
         let d = new Date(strDate);
@@ -192,4 +201,30 @@
         return true;
     },
 
+    /* region Conta */
+
+    isCartaoCredito(t) {
+        return t == 3; // 3 - cartao de credito
+    },
+
+    isCarteira(t) {
+        return t == 1; // 1 - carteira
+    },
+
+    isPoupanca(t) {
+        return t == 4; // 4 - poupanca
+    },
+
+    cssIconeByTipoConta(t) {
+
+        if (utils.isCartaoCredito(t))
+            return 'fa-credit-card';
+
+        if (utils.isCarteira(t))
+            return 'fa-wallet';
+
+        return 'fa-money-check-dollar';
+    },
+
+    /* endregion */
 }
