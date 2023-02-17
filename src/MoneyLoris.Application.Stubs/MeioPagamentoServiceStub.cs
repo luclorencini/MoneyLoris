@@ -11,13 +11,13 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
     //lista mock
     private readonly ICollection<MeioPagamentoCadastroListItemDto> _meios = new List<MeioPagamentoCadastroListItemDto>()
         {
-            new MeioPagamentoCadastroListItemDto { Id = 301, Nome = "Carteira", Tipo = (byte)TipoMeioPagamento.Carteira, Ativo = true, Valor = 45 },
-            new MeioPagamentoCadastroListItemDto { Id = 302, Nome = "Nubank", Tipo = (byte)TipoMeioPagamento.CartaoCredito, Cor = "820AD1", Ordem = 1, Ativo = true, Valor = 8000 },
-            new MeioPagamentoCadastroListItemDto { Id = 303, Nome = "PicPay", Tipo = (byte)TipoMeioPagamento.CarteiraDigital, Cor = "11C56E", Ordem = 2, Ativo = true, Valor = 275.9 },
-            new MeioPagamentoCadastroListItemDto { Id = 304, Nome = "Caixa", Tipo = (byte)TipoMeioPagamento.ContaCorrente, Cor = "0369B9", Ordem = 3, Ativo = true, Valor = 10873.75 },
-            new MeioPagamentoCadastroListItemDto { Id = 305, Nome = "NuConta", Tipo = (byte)TipoMeioPagamento.ContaPagamento, Cor = "820AD1", Ordem = 4, Ativo = true, Valor = 2198.54 },
-            new MeioPagamentoCadastroListItemDto { Id = 306, Nome = "Sodexo", Tipo = (byte)TipoMeioPagamento.ContaPagamento, Cor = "FF0000", Ordem = 5, Ativo = false, Valor = 137 },
-            new MeioPagamentoCadastroListItemDto { Id = 307, Nome = "Banco do Brasil", Tipo = (byte)TipoMeioPagamento.Poupanca, Cor = "FCF800", Ordem = 6, Ativo = true, Valor = 3263.98 }
+            new MeioPagamentoCadastroListItemDto { Id = 301, Nome = "Carteira", Tipo = TipoMeioPagamento.Carteira, Ativo = true, Valor = 45 },
+            new MeioPagamentoCadastroListItemDto { Id = 302, Nome = "Nubank", Tipo = TipoMeioPagamento.CartaoCredito, Cor = "820AD1", Ordem = 1, Ativo = true, Valor = 8000 },
+            new MeioPagamentoCadastroListItemDto { Id = 303, Nome = "PicPay", Tipo = TipoMeioPagamento.CarteiraDigital, Cor = "11C56E", Ordem = 2, Ativo = true, Valor = 275.9 },
+            new MeioPagamentoCadastroListItemDto { Id = 304, Nome = "Caixa", Tipo = TipoMeioPagamento.ContaCorrente, Cor = "0369B9", Ordem = 3, Ativo = true, Valor = 10873.75 },
+            new MeioPagamentoCadastroListItemDto { Id = 305, Nome = "NuConta", Tipo = TipoMeioPagamento.ContaPagamento, Cor = "820AD1", Ordem = 4, Ativo = true, Valor = 2198.54 },
+            new MeioPagamentoCadastroListItemDto { Id = 306, Nome = "Sodexo", Tipo = TipoMeioPagamento.ContaPagamento, Cor = "FF0000", Ordem = 5, Ativo = false, Valor = 137 },
+            new MeioPagamentoCadastroListItemDto { Id = 307, Nome = "Banco do Brasil", Tipo = TipoMeioPagamento.Poupanca, Cor = "FCF800", Ordem = 6, Ativo = true, Valor = 3263.98 }
         };
 
 
@@ -55,7 +55,7 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
                 Ativo = conta.Ativo
             };
 
-            if (conta.Tipo == (byte)TipoMeioPagamento.CartaoCredito)
+            if (conta.Tipo == TipoMeioPagamento.CartaoCredito)
             {
                 contaCadastro.Limite = 12000.90M;
                 contaCadastro.DiaFechamento = 1;
