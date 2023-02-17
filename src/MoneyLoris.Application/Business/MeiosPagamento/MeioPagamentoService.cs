@@ -1,29 +1,29 @@
-﻿using MoneyLoris.Application.Business.Contas.Dtos;
+﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Shared;
 
-namespace MoneyLoris.Application.Business.Contas;
-public class ContaService : ServiceBase, IContaService
+namespace MoneyLoris.Application.Business.MeiosPagamento;
+public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 {
-    public Task<Result<ICollection<ContaCadastroListItemDto>>> Listar()
+    public Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar()
     {
         //TODO
         throw new NotImplementedException();
     }
 
-    public Task<Result<ContaCadastroDto>> Obter(int id)
+    public Task<Result<MeioPagamentoCadastroDto>> Obter(int id)
     {
         //TODO
         throw new NotImplementedException();
     }
 
-    public Task<Result<int>> Inserir(ContaCriacaoDto model)
+    public Task<Result<int>> Inserir(MeioPagamentoCriacaoDto model)
     {
         //TODO
         throw new NotImplementedException();
     }
 
-    public Task<Result<int>> Alterar(ContaCadastroDto model)
+    public Task<Result<int>> Alterar(MeioPagamentoCadastroDto model)
     {
         //TODO
         throw new NotImplementedException();

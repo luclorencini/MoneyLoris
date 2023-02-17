@@ -9,12 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(options =>
-    {
-        //define serializador json padrão para os enums do sistema. Assim, não precisa ficar anotando cada enum com isso
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+builder.Services.AddControllersWithViews();
+    //.AddJsonOptions(options =>
+    //{
+    //    //define serializador json padrão para os enums do sistema. Assim, não precisa ficar anotando cada enum com isso
+    //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    //});
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 

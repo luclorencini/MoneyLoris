@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoneyLoris.Application.Business.Contas;
-using MoneyLoris.Application.Business.Contas.Dtos;
+using MoneyLoris.Application.Business.MeiosPagamento;
+using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;
@@ -8,11 +8,11 @@ namespace MoneyLoris.Web.Controllers;
 [Route("[controller]/{action=index}")]
 public class ContaController : BaseController
 {
-    private readonly IContaService _contaService;
+    private readonly IMeioPagamentoService _meioPagamentoService;
 
-    public ContaController(IContaService contaService)
+    public ContaController(IMeioPagamentoService meioPagamentoService)
     {
-        _contaService = contaService;
+        _meioPagamentoService = meioPagamentoService;
     }
 
     public IActionResult Index()
@@ -23,49 +23,49 @@ public class ContaController : BaseController
     [HttpGet()]
     public async Task<IActionResult> Listar()
     {
-        var ret = await _contaService.Listar();
+        var ret = await _meioPagamentoService.Listar();
         return Ok(ret);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Obter(int id)
     {
-        var ret = await _contaService.Obter(id);
+        var ret = await _meioPagamentoService.Obter(id);
         return Ok(ret);
     }
 
     [HttpPost()]
-    public async Task<IActionResult> Inserir([FromBody] ContaCriacaoDto conta)
+    public async Task<IActionResult> Inserir([FromBody] MeioPagamentoCriacaoDto conta)
     {
-        var ret = await _contaService.Inserir(conta);
+        var ret = await _meioPagamentoService.Inserir(conta);
         return Ok(ret);
     }
 
     [HttpPost()]
-    public async Task<IActionResult> Alterar([FromBody] ContaCadastroDto conta)
+    public async Task<IActionResult> Alterar([FromBody] MeioPagamentoCadastroDto conta)
     {
-        var ret = await _contaService.Alterar(conta);
+        var ret = await _meioPagamentoService.Alterar(conta);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Excluir([FromBody] int id)
     {
-        var ret = await _contaService.Excluir(id);
+        var ret = await _meioPagamentoService.Excluir(id);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Inativar([FromBody] int id)
     {
-        var ret = await _contaService.Inativar(id);
+        var ret = await _meioPagamentoService.Inativar(id);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Reativar([FromBody] int id)
     {
-        var ret = await _contaService.Reativar(id);
+        var ret = await _meioPagamentoService.Reativar(id);
         return Ok(ret);
     }
 }

@@ -1,5 +1,5 @@
-﻿namespace MoneyLoris.Application.Business.Contas.Dtos;
-public class ContaCadastroListItemDto
+﻿namespace MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+public class MeioPagamentoCadastroListItemDto
 {
     public int Id { get; set; }
     public string Nome { get; set; } = default!;

@@ -1,7 +1,7 @@
 ﻿using MoneyLoris.Application.Domain.Enums;
 
-namespace MoneyLoris.Application.Business.Contas.Dtos;
-public class ContaCadastroDto
+namespace MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+public class MeioPagamentoCadastroDto
 {
     public int Id { get; set; }
     public string Nome { get; set; } = default!;

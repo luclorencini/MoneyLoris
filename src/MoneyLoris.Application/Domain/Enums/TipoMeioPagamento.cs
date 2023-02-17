@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 
 namespace MoneyLoris.Application.Domain.Enums;
-public enum TipoConta : byte
+public enum TipoMeioPagamento : byte
 {
     [Description("Carteira")]
     Carteira = 1,

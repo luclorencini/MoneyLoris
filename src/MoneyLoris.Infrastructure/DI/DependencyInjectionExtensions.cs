@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
-using MoneyLoris.Application.Business.Contas;
+using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 
@@ -39,7 +39,7 @@ public static class DependencyInjectionExtensions
 
         //services.AddScoped<ICategoriaService, CategoriaService>();
 
-        //services.AddScoped<IContaService, ContaService>();
+        //services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)
@@ -48,7 +48,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<ILoginService, LoginServiceStub>();
         services.AddScoped<ICategoriaService, CategoriaServiceStub>();
-        services.AddScoped<IContaService, ContaServiceStub>();
+        services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         return;
     }
 }
