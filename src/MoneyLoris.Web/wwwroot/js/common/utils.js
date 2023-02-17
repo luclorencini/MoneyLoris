@@ -75,31 +75,12 @@
         return ext;
     },
 
-    // mes/ano: 11/2022
-    dataCurtaMesAno(strDate) {
-
-        let d = new Date(strDate);
-
-        let mes = d.getMonth() + 1;
-        if (mes <= 9) {
-            mes = `0${mes}`;
-        }
-
-        let ano = d.getFullYear();
-
-        let ext = `${mes}/${ano}`;
-
-        return ext;
-    },
-
     // dd/mm/aaaa: 17/02/2023
     dataCurta(strDate) {
 
         let d = new Date(strDate);
         let ext = d.toLocaleDateString('pt-BR');
         return ext;
-
-        
     },
 
     // tres letras: JAN
@@ -125,6 +106,34 @@
 
         let d = new Date(strDate);
         let ext = d.toISOString().slice(0, 10);
+        return ext;
+    },
+
+    //retorna objeto DateTime, baseado no retorno string de <input> : '2023-02-17'
+    dateFromInput(strDate) {
+        if (strDate.length == 10)
+            strDate = strDate + 'T00:00:00-03:00';
+
+        let d = new Date(strDate);
+        return d;
+    },
+
+    // DD mmm YYYY: 14 Fev 2023
+    dataExtenso(strDate) {
+
+        if (strDate.length == 10)
+            strDate = strDate + 'T00:00:00-03:00';
+
+        let d = new Date(strDate);
+
+        let dia = d.getDate();
+
+        let mes = d.toLocaleString('pt-BR', { month: 'short' }).substring(0, 3);
+
+        let ano = d.getFullYear();
+
+        let ext = `${dia} ${mes} ${ano}`;
+
         return ext;
     },
 

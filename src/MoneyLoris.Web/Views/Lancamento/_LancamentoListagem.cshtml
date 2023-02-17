@@ -1,6 +1,8 @@
 ﻿<partial name="_Moeda" />
 <partial name="_Pagination" />
 
+<partial name="_LancamentoListagemFiltro"></partial>
+
 <partial name="_LancamentoWizard"></partial>
 <partial name="_LancamentoModal"></partial>
 <partial name="_TransferenciaModal"></partial>
@@ -25,39 +27,8 @@
             </div>
         </section>
 
-        <!-- filtro mobile -->
-        <div class="barra-filtro-periodo">
-            <i aria-hidden="true" class="fa-solid fa-chevron-left"></i>
-            <span>Janeiro 2023</span>
-            <i aria-hidden="true" class="fa-solid fa-chevron-right"></i>
-        </div>
 
-        <!-- filtro offcanvas -->
-        <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Opções de Filtro</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                @await Html.PartialAsync("_LancamentoListagemFiltro")
-            </div>
-        </div>
-
-        <!-- filtros rapidos desktop -->
-        <section class="container-xxl">
-            <div class="row g-1">
-                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
-                    <label class="me-2 fw-bold">Filtros rápidos:</label>
-                    <div class="filtro-rapido-opcao">DEZ 22</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">JAN 23</div>
-                    <div class="filtro-rapido-opcao">FEV 23</div>
-                    <div class="filtro-rapido-opcao">30 dias</div>
-                    <div class="filtro-rapido-opcao">Semana</div>
-                    <div class="filtro-rapido-opcao">Hoje</div>
-                    <div class="filtro-rapido-opcao">Tudo</div>
-                </div>
-            </div>
-        </section>
+        <LancamentoListagemFiltro v-on:lancamento-filtrar="pesquisar($event)"></LancamentoListagemFiltro>
 
 
         <section class="container-xxl lancamento-rolagem">
@@ -68,7 +39,7 @@
 
                         <div class="col col-7 d-none d-lg-block ps-2">
                             <label class="form-label">Período</label>
-                            <div class="lh-1 fw-bold fs-5">Dom, 1 Jan 2023 - Ter, 31 Jan 2023</div>
+                            <div class="lh-1 fw-bold fs-5 text-capitalize">{{this.filtro.labelPeriodo}}</div>
                         </div>
 
                         <div class="col col-12 col-lg-5">
@@ -77,15 +48,15 @@
 
                                 <div class="text-center">
                                     <label class="form-label">Receitas</label>
-                                    <div class="lh-1 valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
+                                    <div class="valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
                                 </div>
                                 <div class="text-center">
                                     <label class="form-label">Despesas</label>
-                                    <div class="lh-1 valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
+                                    <div class="valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
                                 </div>
                                 <div class="text-center">
                                     <label class="form-label">Balanço</label>
-                                    <div class="lh-1 valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
+                                    <div class="valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
                                 </div>
 
                             </div>
@@ -139,11 +110,11 @@
                 </div>
 
                 <div class="list-group-item d-flex flex-column flex-md-row align-items-center justify-content-end">
-                    <Pagination
-            v-bind:currentPage="filtro.currentPage"
-            v-bind:resultsPerPage="filtro.resultsPerPage"
-            v-bind:totalResults="totalResults"
-            v-on:pagination-change="paginar($event)">
+                    <Pagination v-if="totalResults > 0"
+                        v-bind:currentPage="filtro.currentPage"
+                        v-bind:resultsPerPage="filtro.resultsPerPage"
+                        v-bind:totalResults="totalResults"
+                        v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
 
@@ -191,7 +162,7 @@
             name: 'LancamentoListagem',
             template: '#template-lancamento-listagem',
             mixins: [BaseMixin],
-            components: { Moeda, Pagination },
+            components: { Moeda, Pagination, LancamentoListagemFiltro },
 
             data: () => ({
                 filtro: {},
@@ -200,38 +171,19 @@
                 lista: []
             }),
 
-            async mounted() {
-                await this.pesquisar();
-            },
+            //async mounted() {
+            //    await this.pesquisar();
+            //},
 
             methods: {
 
-                //filtro
+                async pesquisar(filter) {
 
-                async filtrarMesAtual() {
-                    let date = new Date();
-                    let ano = date.getFullYear();
-                    let mes = date.getMonth();
-
-                    this.filtro.dataInicio = utils.dataYMD(utils.primeiroDiaMes(ano, mes));
-                    this.filtro.dataFim = utils.dataYMD(utils.ultimoDiaMes(ano, mes));
-
-                    await this.pesquisar();
-                },
-
-
-                // busca
-
-                async limpar() {
-                    this.filtro = {};
-                    await this.pesquisar();
-                },
-
-                async pesquisar() {
+                    //atualiza filtro
+                    this.filtro = filter;
 
                     //reseta paginacao
                     this.filtro.currentPage = 1;
-                    this.filtro.resultsPerPage = 25;
                     await this.carregar();
                 },
 
@@ -249,7 +201,7 @@
 
                 async obterListagem() {
 
-                    await this.setLoadingAndExecute(async () => {
+                    await this.showLoadingSplashAndExecute(async () => {
 
                         ////ajustes
                         //if (this.filtro.ativo == false)
@@ -296,39 +248,47 @@
             display: flex;
             flex-wrap: nowrap;
             justify-content: space-evenly;
+            align-items: end;
         }
 
             .balanco-container .valor-rec {
                 font-weight: bold;
                 font-size: 1.25rem;
+                line-height: 1.25rem;
             }
 
             .balanco-container .valor-desp {
                 font-weight: bold;
                 font-size: 1.25rem;
+                line-height: 1.25rem;
             }
 
             .balanco-container .valor-saldo {
                 font-weight: bold;
                 font-size: 1.5rem;
+                line-height: 1;
             }
 
         @@media (max-width: 991px) { /*lg*/
 
             .balanco-container {
                 justify-content: space-between;
+                margin-bottom: 0.5rem;
             }
 
                 .balanco-container .valor-rec {
                     font-size: 1rem;
+                    line-height: 1rem;
                 }
 
                 .balanco-container .valor-desp {
                     font-size: 1rem;
+                    line-height: 1rem;
                 }
 
                 .balanco-container .valor-saldo {
                     font-size: 1rem;
+                    line-height: 1rem;
                 }
         }
 

@@ -1,8 +1,8 @@
 ﻿@using (Html.VueTemplate())
 {
     <script type="text/html" id="template-moeda">
-        
-        <span v-if="valor" v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
+
+        <span v-if="mostrarValor" v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
         <span v-else class="placeholder-glow"><span class="placeholder w-100"></span></span>
 
     </script>
@@ -24,13 +24,20 @@
 
             computed: {
 
+                mostrarValor() {
+                    return (this.valor != null && this.valor != undefined);
+                },
+
                 positivo() {
                     return this.valor >= 0;
                 },
 
                 formatado() {
-                    return Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'})
-                        .format(this.valor); 
+                    if (this.valor == 0)
+                        return '-';
+                    else
+                        return Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+                            .format(this.valor);
                 }
             }
         }

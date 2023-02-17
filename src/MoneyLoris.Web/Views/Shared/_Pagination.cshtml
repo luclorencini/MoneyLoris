@@ -60,6 +60,21 @@
                 calculatedResultsPerPage: 25
             }),
 
+            watch: {
+
+                currentPage(newValue, oldValue) {
+                    if (newValue != oldValue) {
+                        this.calculatedPage = newValue;
+                    }
+                },
+
+                resultsPerPage(newValue, oldValue) {
+                    if (newValue != oldValue) {
+                        this.calculatedResultsPerPage = newValue;
+                    }
+                }
+            },
+
             mounted() {
 
                 if (this.currentPage) {
