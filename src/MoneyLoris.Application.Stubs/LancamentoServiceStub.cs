@@ -66,7 +66,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 501,
-                Data = new DateTime(2023, 1, 27),
+                Data = SystemTime.Today(),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "Caixa",
@@ -80,7 +80,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 502,
-                Data = new DateTime(2023, 1, 27),
+                Data = SystemTime.Today(),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "Nubank",
@@ -94,7 +94,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 503,
-                Data = new DateTime(2023, 1, 27),
+                Data = SystemTime.Today().AddDays(-1),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "Nubank",
@@ -108,7 +108,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 504,
-                Data = new DateTime(2023, 1, 26),
+                Data = SystemTime.Today().AddDays(-2),
                 Tipo = TipoLancamento.Receita,
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "PicPay",
@@ -122,7 +122,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 505,
-                Data = new DateTime(2023, 1, 25),
+                Data = SystemTime.Today().AddDays(-3),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "Banco do Brasil",
@@ -136,7 +136,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 506,
-                Data = new DateTime(2023, 1, 15),
+                Data = SystemTime.Today().AddDays(-5),
                 Tipo = TipoLancamento.Receita,
                 Operacao = OperacaoLancamento.Transferencia,
                 MeioPagamentoNome = "Banco do Brasil",
@@ -150,7 +150,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 507,
-                Data = new DateTime(2023, 1, 15),
+                Data = SystemTime.Today().AddDays(-5),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.Transferencia,
                 MeioPagamentoNome = "Caixa",
@@ -164,7 +164,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 508,
-                Data = new DateTime(2023, 1, 10),
+                Data = SystemTime.Today().AddDays(-10),
                 Tipo = TipoLancamento.Receita,
                 Operacao = OperacaoLancamento.Transferencia,
                 MeioPagamentoNome = "Nubank",
@@ -178,7 +178,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new LancamentoListItemDto
             {
                 Id = 509,
-                Data = new DateTime(2023, 1, 10),
+                Data = SystemTime.Today().AddDays(-10),
                 Tipo = TipoLancamento.Despesa,
                 Operacao = OperacaoLancamento.Transferencia,
                 MeioPagamentoNome = "Caixa",
@@ -197,7 +197,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             list.Add(new LancamentoListItemDto
             {
                 Id = 600 + i,
-                Data = DateTime.Now.AddDays(-(50 + i)),
+                Data = DateTime.Now.AddDays(-(10 + i)),
                 Tipo = (i % 2 == 0 ? TipoLancamento.Despesa : TipoLancamento.Receita),
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 MeioPagamentoNome = "PicPay",

@@ -32,7 +32,33 @@
             <i aria-hidden="true" class="fa-solid fa-chevron-right"></i>
         </div>
 
-        @await Html.PartialAsync("_LancamentoListagemFiltro")
+        <!-- filtro offcanvas -->
+        <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Opções de Filtro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                @await Html.PartialAsync("_LancamentoListagemFiltro")
+            </div>
+        </div>
+
+        <!-- filtros rapidos desktop -->
+        <section class="container-xxl">
+            <div class="row g-1">
+                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
+                    <label class="me-2 fw-bold">Filtros rápidos:</label>
+                    <div class="filtro-rapido-opcao">DEZ 22</div>
+                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">JAN 23</div>
+                    <div class="filtro-rapido-opcao">FEV 23</div>
+                    <div class="filtro-rapido-opcao">30 dias</div>
+                    <div class="filtro-rapido-opcao">Semana</div>
+                    <div class="filtro-rapido-opcao">Hoje</div>
+                    <div class="filtro-rapido-opcao">Tudo</div>
+                </div>
+            </div>
+        </section>
+
 
         <section class="container-xxl lancamento-rolagem">
 
@@ -114,10 +140,10 @@
 
                 <div class="list-group-item d-flex flex-column flex-md-row align-items-center justify-content-end">
                     <Pagination
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
+            v-bind:currentPage="filtro.currentPage"
+            v-bind:resultsPerPage="filtro.resultsPerPage"
+            v-bind:totalResults="totalResults"
+            v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
 
@@ -180,6 +206,22 @@
 
             methods: {
 
+                //filtro
+
+                async filtrarMesAtual() {
+                    let date = new Date();
+                    let ano = date.getFullYear();
+                    let mes = date.getMonth();
+
+                    this.filtro.dataInicio = utils.dataYMD(utils.primeiroDiaMes(ano, mes));
+                    this.filtro.dataFim = utils.dataYMD(utils.ultimoDiaMes(ano, mes));
+
+                    await this.pesquisar();
+                },
+
+
+                // busca
+
                 async limpar() {
                     this.filtro = {};
                     await this.pesquisar();
@@ -191,7 +233,6 @@
                     this.filtro.currentPage = 1;
                     this.filtro.resultsPerPage = 25;
                     await this.carregar();
-                    
                 },
 
                 async paginar(paginacao) {

@@ -161,6 +161,16 @@
         return ext;
     },
 
+    primeiroDiaMes(ano, mes) {
+        let p = new Date(ano, mes, 1);
+        return p;
+    },
+
+    ultimoDiaMes(ano, mes) {
+        let u = new Date(ano, mes + 1, 0);
+        return u;
+    },
+
     /*
      * Validação de Documentos
      */

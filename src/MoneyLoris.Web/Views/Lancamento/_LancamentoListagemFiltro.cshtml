@@ -1,24 +1,17 @@
-﻿<div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title">Opções de Filtro</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-
-        <div class="container-xxl">
+﻿<div class="container-xxl">
             <div class="row g-1">
 
                 <div class="col col-12 col-lg-4">
                     <label class="form-label lh-1">Descrição</label>
-                    <input class="form-control form-control-sm" maxlength="40" placeholder="Procure lançamentos pela descrição">
+                    <input class="form-control form-control-sm" type="text" maxlength="30" placeholder="Procure lançamentos pela descrição" v-model="filtro.descricao" v-on:keyup.enter="pesquisar()">
                 </div>
 
                 <div class="col col-12 col-lg-3">
                     <label class="form-label lh-1">Período</label>
                     <div class="d-flex align-items-center">
-                        <input class="form-control form-control-sm" type="date" value="2023-01-01">
+                        <input class="form-control form-control-sm" type="date" v-model="filtro.dataInicio">
                         <span class="mx-2">a</span>
-                        <input class="form-control form-control-sm" type="date" value="2023-01-31">
+                        <input class="form-control form-control-sm" type="date" v-model="filtro.dataFim">
                     </div>
                 </div>
 
@@ -71,31 +64,55 @@
                     </div>
                 </div>
                 <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-2">
-                    <button class="btn btn-sm btn-outline-secondary me-2" type="button">
+                    <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()">
                         <span>Limpar Filtro</span>
                     </button>
-                    <button class="btn btn-sm btn-outline-primary" type="button">
+                    <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="pesquisar()">
                         <i class="fa-solid fa-magnifying-glass me-1"></i>
                         <span>Pesquisar</span>
                     </button>
                 </div>
 
-                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
-                    <label class="me-2 fw-bold">Filtros rápidos:</label>
-                    <div class="filtro-rapido-opcao">DEZ 22</div>
-                    <div class="filtro-rapido-opcao">JAN 23</div>
-                    <div class="filtro-rapido-opcao">FEV 23</div>
-                    <div class="filtro-rapido-opcao">30 dias</div>
-                    <div class="filtro-rapido-opcao">Semana</div>
-                    <div class="filtro-rapido-opcao">Hoje</div>
-                    <div class="filtro-rapido-opcao">Tudo</div>
-                </div>
-
             </div>
-        </div>
+        </div>  
 
-    </div>
-</div>
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const LancamentoFiltro = {
+
+            name: 'CompXXX',
+            template: '#template-xxxx',
+            mixins: [BaseMixin],
+            components: { ConfirmationDialog },
+
+            props: {
+                xyz: Object
+            },
+
+            data: () => ({
+                abcd: {}
+            }),
+
+            computed: {
+
+                abc() {
+                    return "";
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+            }
+        }
+
+    </script>
+}
 
 @using (Html.VueStyle())
 {
