@@ -1,8 +1,9 @@
 ﻿@using (Html.VueTemplate())
 {
     <script type="text/html" id="template-moeda">
-
-        <span v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
+        
+        <span v-if="valor" v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
+        <span v-else class="placeholder-glow"><span class="placeholder w-100"></span></span>
 
     </script>
 }

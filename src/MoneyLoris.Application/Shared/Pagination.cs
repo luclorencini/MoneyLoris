@@ -1,4 +1,4 @@
-﻿namespace MoneyLoris.Application.Common;
+﻿namespace MoneyLoris.Application.Shared;
 public class Pagination<T>
 {
     public Pagination(T dataPage, long total)

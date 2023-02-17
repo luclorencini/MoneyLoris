@@ -58,6 +58,7 @@
      * Utilitarios de data
      */
 
+    // ano-mes: 2021-07
     dataCurtaMesAnoInputMonth(strDate) {
 
         let d = new Date(strDate);
@@ -74,6 +75,7 @@
         return ext;
     },
 
+    // mes/ano: 11/2022
     dataCurtaMesAno(strDate) {
 
         let d = new Date(strDate);
@@ -90,7 +92,24 @@
         return ext;
     },
 
+    // dd/mm/aaaa: 17/02/2023
     dataCurta(strDate) {
+
+        let d = new Date(strDate);
+        let ext = d.toLocaleDateString('pt-BR');
+        return ext;
+
+        
+    },
+
+    // tres letras: JAN
+    dataMesShort(strDate) {
+        let d = new Date(strDate);
+        let mes = d.toLocaleString('pt-BR', { month: 'short' });
+        return mes.substring(0, 3).toUpperCase();
+    },
+
+    dataDia(strDate) {
 
         let d = new Date(strDate);
 
@@ -99,24 +118,13 @@
             dia = `0${dia}`;
         }
 
-        let mes = d.getMonth() + 1;
-        if (mes <= 9) {
-            mes = `0${mes}`;
-        }
-
-        let ano = d.getFullYear();
-
-        let ext = `${dia}/${mes}/${ano}`;
-
-        return ext;
+        return dia;
     },
 
     dataYMD(strDate) {
 
         let d = new Date(strDate);
-
         let ext = d.toISOString().slice(0, 10);
-
         return ext;
     },
 

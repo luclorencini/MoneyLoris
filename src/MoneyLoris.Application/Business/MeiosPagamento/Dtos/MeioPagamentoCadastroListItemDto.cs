@@ -10,6 +10,5 @@ public class MeioPagamentoCadastroListItemDto
     public string Cor { get; set; } = default!;
     public int? Ordem { get; set; }
     public bool Ativo { get; set; }
-
-    public double Valor { get; set; }
+    public decimal Valor { get; set; }
 }

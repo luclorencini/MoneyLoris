@@ -1,0 +1,118 @@
+﻿<div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Opções de Filtro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+        <div class="container-xxl">
+            <div class="row g-1">
+
+                <div class="col col-12 col-lg-4">
+                    <label class="form-label lh-1">Descrição</label>
+                    <input class="form-control form-control-sm" maxlength="40" placeholder="Procure lançamentos pela descrição">
+                </div>
+
+                <div class="col col-12 col-lg-3">
+                    <label class="form-label lh-1">Período</label>
+                    <div class="d-flex align-items-center">
+                        <input class="form-control form-control-sm" type="date" value="2023-01-01">
+                        <span class="mx-2">a</span>
+                        <input class="form-control form-control-sm" type="date" value="2023-01-31">
+                    </div>
+                </div>
+
+                <div class="col col-12 col-lg-2">
+                    <label class="form-label lh-1">Conta / Cartão</label>
+                    <select class="form-select form-select-sm">
+                        <option></option>
+                        <optgroup label="Contas">
+                            <option value="2">Caixa</option>
+                            <option value="3">PicPay</option>
+                        </optgroup>
+                        <optgroup label="Cartões">
+                            <option value="1">Nubank</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="col col-12 col-lg-3">
+                    <label class="form-label lh-1">Categoria / Subcategoria</label>
+                    <select class="form-select form-select-sm">
+                        <option></option>
+                        <optgroup label="Receitas">
+                            <option value="1">Salário</option>
+                            <option value="2">Empréstimo</option>
+                            <option value="3">Investimentos</option>
+                        </optgroup>
+                        <optgroup label="Despesas">
+                            <option value="1">Alimentação</option>
+                            <option value="11">Alimentação / Supermercado</option>
+                            <option value="2">Moradia</option>
+                            <option value="3">Poupança</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="col col-12 col-lg-4 d-flex align-items-center mt-3 mt-lg-0">
+                    <label class="form-label me-2">Filtrar por:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
+                        <label class="form-check-label" for="inlineCheckbox1"><small>Despesas</small></label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2" checked>
+                        <label class="form-check-label" for="inlineCheckbox2"><small>Receitas</small></label>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-4 d-flex align-items-center mt-3 mt-lg-0">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault"><small>Somar Transferências e Pag. Faturas</small></label>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-2">
+                    <button class="btn btn-sm btn-outline-secondary me-2" type="button">
+                        <span>Limpar Filtro</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" type="button">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>
+                        <span>Pesquisar</span>
+                    </button>
+                </div>
+
+                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
+                    <label class="me-2 fw-bold">Filtros rápidos:</label>
+                    <div class="filtro-rapido-opcao">DEZ 22</div>
+                    <div class="filtro-rapido-opcao">JAN 23</div>
+                    <div class="filtro-rapido-opcao">FEV 23</div>
+                    <div class="filtro-rapido-opcao">30 dias</div>
+                    <div class="filtro-rapido-opcao">Semana</div>
+                    <div class="filtro-rapido-opcao">Hoje</div>
+                    <div class="filtro-rapido-opcao">Tudo</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .filtro-rapido-opcao {
+            margin: 0 0.25rem;
+            padding: 0.25rem;
+            min-width: 6rem;
+            border: 1px solid var(--sys-color-dark-4);
+            border-radius: 5px;
+            color: var(--sys-color-dark-4);
+            background-color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+        }
+
+    </style>
+}

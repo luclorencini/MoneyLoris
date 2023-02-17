@@ -1,0 +1,81 @@
+﻿<div class="input-group d-none d-lg-block btn-lancamento-lg">
+    <button class="btn btn-primary btn-lg px-4 dropdown-toggle" data-bs-toggle="dropdown">
+        <span class="sys-fg-dark-3 fw-bold me-2">Novo Lançamento</span>
+    </button>
+    <ul class="dropdown-menu">
+        <li class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWizard">
+            <div class="icone">
+                <i class="fa-solid fa-lg fa-file-invoice-dollar fg-lanc-despesa"></i>
+            </div>
+            <div class="texto">Despesa</div>
+        </li>
+        <li class="dropdown-item">
+            <div class="icone">
+                <i class="fa-solid fa-lg fa-hand-holding-dollar fg-lanc-receita"></i>
+            </div>
+            <div class="texto">Receita</div>
+        </li>
+        <li class="dropdown-item">
+            <div class="icone">
+                <i class="fa-solid fa-lg fa-money-bill-transfer fg-lanc-transferencia"></i>
+            </div>
+            <div class="texto">Transferência</div>
+        </li>
+        <li class="dropdown-item">
+            <div class="icone">
+                <i class="fa-regular fa-lg fa-credit-card fg-lanc-pag-fatura"></i>
+            </div>
+            <div class="texto">Pagamento de Fatura</div>
+        </li>
+    </ul>
+</div>
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .btn-lancamento-lg {
+        }
+
+            .btn-lancamento-lg .btn {
+                width: 16rem;
+            }
+
+                .btn-lancamento-lg .btn.dropdown-toggle::after {
+                    color: var(--sys-color-dark-3);
+                }
+
+            .btn-lancamento-lg .dropdown-menu {
+                width: 16rem;
+                border-radius: 0;
+            }
+
+                .btn-lancamento-lg .dropdown-menu .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    height: 3rem;
+                    cursor: pointer;
+                }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item:active {
+                        color: unset;
+                        background-color: var(--bs-dropdown-link-hover-bg);
+                    }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item .icone {
+                        width: 3.5rem;
+                        text-align: center;
+                        margin-left: -0.75rem;
+                    }
+
+                        .btn-lancamento-lg .dropdown-menu .dropdown-item .icone i {
+                            font-size: 1.6rem;
+                        }
+
+                    .btn-lancamento-lg .dropdown-menu .dropdown-item .texto {
+                        font-size: 1.15rem;
+                        font-weight: 500;
+                    }
+
+    </style>
+}
