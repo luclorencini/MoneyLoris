@@ -201,6 +201,17 @@
         return true;
     },
 
+    numberToString2CD(d) {
+
+        if (d) {
+            d = parseFloat(d).toFixed(2);
+        }
+
+        return d;
+    },
+
+   
+
     /* region Conta */
 
     isCartaoCredito(t) {

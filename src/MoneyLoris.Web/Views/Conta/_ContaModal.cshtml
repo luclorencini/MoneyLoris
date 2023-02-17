@@ -27,10 +27,10 @@
 
                                 <div class="col-9">
                                     <label class="form-label required-asterisk">Tipo</label>
-                                    <select class="form-select" v-model="conta.tipo">
+                                    <select class="form-select" v-model="conta.tipo" v-bind:disabled="!podeAlterarTipo">
                                         <option value="1">Carteira</option>
                                         <option value="2">Conta Corrente</option>
-                                        <option value="3">Cartão de Crédito</option>
+                                        <option value="3" v-if="exibirTipoCartaoCredito">Cartão de Crédito</option>
                                         <option value="4">Poupança</option>
                                         <option value="5">Conta de Pagamento</option>
                                         <option value="6">Carteira Digital</option>
@@ -58,7 +58,7 @@
 
                                     <hr class="my-1" />
 
-                                    <div class="col-12">
+                                    <div class="col-12 mt-2">
                                         <h5>Saldo Inicial</h5>
                                         <div class="lh-sm">
                                             <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
@@ -67,10 +67,10 @@
                                     </div>
 
                                     <div class="col-6">
-                                        <label class="form-label required-asterisk">Valor do Saldo/Dívida</label>
+                                        <label class="form-label required-asterisk">Valor {{utils.isCartaoCredito(this.conta.tipo) ? 'da Fatual Atual' : 'do Saldo'}}</label>
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">R$</span>
-                                            <input class="form-control" type="text" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
+                                            <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
                                         </div>
                                     </div>
 
@@ -93,7 +93,7 @@
                                         <label class="form-label required-asterisk">Limite</label>
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">R$</span>
-                                            <input class="form-control" type="text" required maxlength="10" v-model="conta.limite" v-ext-mask="'dinheiro'">
+                                            <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.limite" v-ext-mask="'dinheiro'">
                                         </div>
                                     </div>
 
@@ -150,12 +150,35 @@
             computed: {
 
                 titulo() {
-                    return (this.isNovo ? "Nova Conta / Cartão" : "Alterar Conta / Cartão");
+                    if (this.isNovo) return "Nova Conta / Cartão";
+
+                    if (utils.isCartaoCredito(this.conta.tipo))
+                        return 'Alterar Cartão';
+                    else
+                        return 'Alterar Conta';
                 },
 
                 isNovo() {
                     return (this.conta.id == undefined);
                 },
+
+                podeAlterarTipo(){
+                    if (this.isNovo) return true;
+
+                    if (utils.isCartaoCredito(this.conta.tipo)) 
+                        return false;
+                    else
+                        return true;
+                },
+
+                exibirTipoCartaoCredito(){
+                    if (this.isNovo) return true;
+
+                    if (utils.isCartaoCredito(this.conta.tipo))
+                        return true;
+                    else
+                        return false;
+                }
             },
 
             mounted() {
@@ -171,15 +194,10 @@
                             let ret = await fetchData.fetchGetJson(`/conta/obter/${id}`);
                             this.conta = ret.value;
 
-                            if (this.conta.limite){
-                                this.conta.limite = parseFloat(this.conta.limite).toFixed(2);
-                            }
-                            if (this.conta.saldoInicial) {
-                                this.conta.saldoInicial = parseFloat(this.conta.saldoInicial).toFixed(2);
-                            }
+                            fieldConverter.moneyToString(this.conta, 'limite');
                         }
                         else {
-                            this.conta = { tipo: 1};
+                            this.conta = { tipo: 1, cor: '000000'};
                         }
                     });
 
@@ -192,6 +210,7 @@
 
                 async salvar() {
 
+                    //TODO - validar dia de fechamento e vencimento de fatura
                     let isValido = this.validarForm(this.$refs.form);
 
                     if (isValido) {
@@ -202,17 +221,8 @@
                             try {
 
                                 //conversões
-                                if (this.conta.dataLancamentoInicial){
-                                    this.conta.dataLancamentoInicial = utils.dataYMD(this.conta.dataLancamentoInicial);
-                                }
-
-                                if (this.conta.saldoInicial){
-                                    this.conta.saldoInicial = mascaras.unparseMoney(this.conta.saldoInicial);
-                                }
-
-                                if (this.conta.limite) {
-                                    this.conta.limite = mascaras.unparseMoney(this.conta.limite);
-                                }
+                                fieldConverter.stringToMoney(this.conta, 'saldoInicial');
+                                fieldConverter.stringToMoney(this.conta, 'limite');
 
                                 //submit
                                 if (this.conta.id) {

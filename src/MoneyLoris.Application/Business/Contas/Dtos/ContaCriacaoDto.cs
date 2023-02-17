@@ -3,7 +3,6 @@
 namespace MoneyLoris.Application.Business.Contas.Dtos;
 public class ContaCriacaoDto
 {
-    public int Id { get; set; }
     public string Nome { get; set; } = default!;
     public TipoConta Tipo { get; set; }
     public string Cor { get; set; } = default!;
