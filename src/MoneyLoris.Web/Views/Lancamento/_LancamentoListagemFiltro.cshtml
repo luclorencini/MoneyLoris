@@ -82,11 +82,11 @@
                                 <label class="form-check-label" for="flexSwitchCheckDefault"><small>Somar Transferências e Pag. Faturas</small></label>
                             </div>
                         </div>
-                        <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-2">
-                            <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()">
+                        <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
+                            <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
                                 <span>Limpar Filtro</span>
                             </button>
-                            <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="pesquisar()">
+                            <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="pesquisar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
                                 <i class="fa-solid fa-magnifying-glass me-1"></i>
                                 <span>Pesquisar</span>
                             </button>

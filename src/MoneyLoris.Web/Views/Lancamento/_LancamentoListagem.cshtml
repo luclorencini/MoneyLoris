@@ -75,7 +75,7 @@
                         <div class="conta"><span class="fw-bold">Conta / Cartão</span></div>
                         <div class="categoria"><span class="fw-bold">Categoria / Subcategoria</span></div>
                         <div class="descricao"><span class="fw-bold">Descrição</span></div>
-                        <div class="valor"><span class="fw-bold">Valor</span></div>
+                        <div class="valor"><span>Valor</span></div>
                         <div class="opcoes"></div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                             </div>
                             <div class="categoria"><span>{{l.categoria}}</span><span v-if="l.subcategoria"> / {{l.subcategoria}}</span></div>
                             <div class="descricao">{{l.descricao}}</div>
-                            <div class="valor"><span class="fw-bold"><Moeda :valor="l.valor"></Moeda></span></div>
+                            <div class="valor"><Moeda :valor="l.valor"></Moeda></div>
                             <div class="opcoes">
                                 <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                             </div>
@@ -109,7 +109,7 @@
                     Nenhum registro encontrado
                 </div>
 
-                <div class="list-group-item d-flex flex-column flex-md-row align-items-center justify-content-end">
+                <div class="list-group-item">
                     <Pagination v-if="totalResults > 0"
                         v-bind:currentPage="filtro.currentPage"
                         v-bind:resultsPerPage="filtro.resultsPerPage"
@@ -326,6 +326,7 @@
             .lancamento-container .valor {
                 grid-area: ga-valor;
                 text-align: right;
+                font-weight: bold;
             }
 
             .lancamento-container .opcoes {
@@ -358,12 +359,13 @@
 
                     .lancamento-container .data .data-mob .mes {
                         font-size: 0.65rem;
-                        font-weight: bold;
+                        font-weight: 600;
                         line-height: 0.75rem;
                     }
 
                 .lancamento-container .descricao {
-                    font-weight: bold;
+                    font-weight: 600;
+                    font-size: 0.95rem;
                 }
 
                 .lancamento-container .categoria {
@@ -372,6 +374,8 @@
                 }
 
                 .lancamento-container .valor {
+                    font-weight: 600;
+                    font-size: 0.95rem;
                 }
 
                 .lancamento-container .conta {
