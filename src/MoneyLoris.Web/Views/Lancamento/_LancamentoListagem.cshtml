@@ -2,8 +2,8 @@
 <partial name="_Pagination" />
 
 <partial name="_LancamentoListagemFiltro"></partial>
-
 <partial name="_LancamentoWizard"></partial>
+
 <partial name="_LancamentoModal"></partial>
 <partial name="_TransferenciaModal"></partial>
 
@@ -150,6 +150,8 @@
 
         @await Html.PartialAsync("_BotaoLancamentoMobile")
 
+        <LancamentoWizard ref="lancWizard" v-on:lancamento-realizado="pesquisar()"></LancamentoWizard>
+
     </script>
 }
 
@@ -162,7 +164,7 @@
             name: 'LancamentoListagem',
             template: '#template-lancamento-listagem',
             mixins: [BaseMixin],
-            components: { Moeda, Pagination, LancamentoListagemFiltro },
+            components: { Moeda, Pagination, LancamentoListagemFiltro, LancamentoWizard },            
 
             data: () => ({
                 filtro: {},
@@ -179,8 +181,9 @@
 
                 async pesquisar(filter) {
 
-                    //atualiza filtro
-                    this.filtro = filter;
+                    //atualiza filtro se informado
+                    if (filter)
+                        this.filtro = filter;
 
                     //reseta paginacao
                     this.filtro.currentPage = 1;
@@ -233,6 +236,15 @@
                         }
                     });
                 },
+
+
+                novaDespesa(){
+                    this.$refs.lancWizard.initDespesa();
+                },
+
+                novaReceita() {
+                    this.$refs.lancWizard.initReceita();
+                }
 
             }
         }

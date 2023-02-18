@@ -1,120 +1,196 @@
-﻿<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWizard" style="width: 35rem;">
-    <div class="offcanvas-header">
-        <!--<h5 class="offcanvas-title">Nova Despesa</h5>-->
-        <i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-lancamento-wizard">
 
-        <!--<i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>-->
+        <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasLancamentoWizard" style="width: 35rem;">
+            <div class="offcanvas-header">
+                <!--<h5 class="offcanvas-title">Nova Despesa</h5>-->
+                <i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
+                <button type="button" class="btn-close" v-on:click="fechar()"></button>
+            </div>
+            <div class="offcanvas-body">
 
-        <h5 class="mb-3">Em qual conta ou cartão você vai lançar a despesa?</h5>
+                <!--<i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>-->
 
-        <ul class="list-group">
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-credit-card me-2" style="color: #820AD1;"></i>
-                        <div class="fw-bold fs-5">Nubank</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Cartão de Crédito</small>
+                <h5 class="mb-3">Em qual conta ou cartão você vai lançar a despesa?</h5>
+
+                <ul class="list-group">
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-credit-card me-2" style="color: #820AD1;"></i>
+                                <div class="fw-bold fs-5">Nubank</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Cartão de Crédito</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #11C56E;"></i>
+                                <div class="fw-bold fs-5">PicPay</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Carteira Digital</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #0369B9;"></i>
+                                <div class="fw-bold fs-5">Caixa</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Conta Corrente</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #820AD1;"></i>
+                                <div class="fw-bold fs-5">NuConta</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Conta de Pagamento</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FF0000;"></i>
+                                <div class="fw-bold fs-5">Sodexo</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Cartão de Benefícios</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                    <li class="list-group-item sys-clicavel py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FCF800;"></i>
+                                <div class="fw-bold fs-5">Banco do Brasil</div>
+                                <div class="mx-2">•</div>
+                                <small class="fst-italic">Poupança</small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                </ul>
+
+                <hr />
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col col-12">
+                            <h5 class="mb-3">Qual é o valor?</h5>
+                        </div>
+
+                        <div class="col col-12">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text fw-bold fs-3">R$</span>
+                                <input class="form-control form-control-lg fw-bold fs-2" type="text" required maxlength="10" value="54,90">
+                            </div>
+                        </div>
+
+                        <div class="col col-12">
+                            <h5 class="my-3">Quando foi a despesa?</h5>
+                            <input class="form-control form-control-lg fw-bold fs-3" type="date" value="2023-01-28">
+                        </div>
+
+                        <div class="col col-6">
+                            <h6 class="my-3">Número de parcelas:</h6>
+                            <input class="form-control" type="number" value="1">
+                        </div>
+
+                        <div class="col col-12 text-end">
+                            <button class="btn btn-outline-primary" type="button">
+                                <span>Próximo</span>
+                                <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+
                     </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #11C56E;"></i>
-                        <div class="fw-bold fs-5">PicPay</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Carteira Digital</small>
-                    </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #0369B9;"></i>
-                        <div class="fw-bold fs-5">Caixa</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Conta Corrente</small>
-                    </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #820AD1;"></i>
-                        <div class="fw-bold fs-5">NuConta</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Conta de Pagamento</small>
-                    </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FF0000;"></i>
-                        <div class="fw-bold fs-5">Sodexo</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Cartão de Benefícios</small>
-                    </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-            <li class="list-group-item sys-clicavel py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FCF800;"></i>
-                        <div class="fw-bold fs-5">Banco do Brasil</div>
-                        <div class="mx-2">•</div>
-                        <small class="fst-italic">Poupança</small>
-                    </div>
-                    <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                </div>
-            </li>
-        </ul>
-
-        <hr />
-
-        <div class="container">
-            <div class="row">
-                <div class="col col-12">
-                    <h5 class="mb-3">Qual é o valor?</h5>
                 </div>
 
-                <div class="col col-12">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text fw-bold fs-3">R$</span>
-                        <input class="form-control form-control-lg fw-bold fs-2" type="text" required maxlength="10" value="54,90">
-                    </div>
-                </div>
-
-                <div class="col col-12">
-                    <h5 class="my-3">Quando foi a despesa?</h5>
-                    <input class="form-control form-control-lg fw-bold fs-3" type="date" value="2023-01-28">
-                </div>
-
-                <div class="col col-6">
-                    <h6 class="my-3">Número de parcelas:</h6>
-                    <input class="form-control" type="number" value="1">
-                </div>
-
-                <div class="col col-12 text-end">
-                    <button class="btn btn-outline-primary" type="button">
-                        <span>Próximo</span>
-                        <i class="fa-solid fa-arrow-right ms-1"></i>
-                    </button>
-                </div>
+                <hr />
 
             </div>
         </div>
 
-        <hr />
+    </script>
+}
 
-    </div>
-</div>
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const LancamentoWizard = {
+
+            name: 'LancamentoWizard',
+            template: '#template-lancamento-wizard',
+            mixins: [BaseMixin],
+            components: { ConfirmationDialog },
+            emits: ['lancamento-realizado'],
+
+            props: {
+                xyz: Object
+            },
+
+            data: () => ({
+                offCanvas: null,
+            }),
+
+            computed: {
+
+                abcd() {
+                    return "";
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                fechar() {
+                    bootstrapHelper.closeOffcanvas(this.offCanvas);
+                },
+
+                async initDespesa() {
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
+                },
+
+                async initReceita() {
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
+                },
+
+
+                ///
+
+                async salvar(){
+
+                    this.$emit('lancamento-realizado');
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+
+    @*<style type="text/css">
+    </style>*@
+}

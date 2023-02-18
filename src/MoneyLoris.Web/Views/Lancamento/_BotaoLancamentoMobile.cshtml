@@ -13,11 +13,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0 d-flex flex-wrap">
-        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWizard">
+        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa" v-on:click="novaDespesa()">
             <i class="fa-solid fa-file-invoice-dollar fg-lanc-despesa"></i>
             <span>Despesa</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-receita bg-lanc-receita">
+        <div class="opcao-lancamento fg-lanc-receita bg-lanc-receita" v-on:click="novaReceita()">
             <i class="fa-solid fa-hand-holding-dollar"></i>
             <span>Receita</span>
         </div>

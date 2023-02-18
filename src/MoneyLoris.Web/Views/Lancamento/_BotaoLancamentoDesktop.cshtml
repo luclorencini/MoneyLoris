@@ -3,13 +3,13 @@
         <span class="sys-fg-dark-3 fw-bold me-2">Novo Lançamento</span>
     </button>
     <ul class="dropdown-menu">
-        <li class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWizard">
+        <li class="dropdown-item" v-on:click="novaDespesa()">
             <div class="icone">
                 <i class="fa-solid fa-lg fa-file-invoice-dollar fg-lanc-despesa"></i>
             </div>
             <div class="texto">Despesa</div>
         </li>
-        <li class="dropdown-item">
+        <li class="dropdown-item" v-on:click="novaReceita()">
             <div class="icone">
                 <i class="fa-solid fa-lg fa-hand-holding-dollar fg-lanc-receita"></i>
             </div>
