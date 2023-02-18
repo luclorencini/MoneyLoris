@@ -21,11 +21,11 @@
             <i class="fa-solid fa-hand-holding-dollar"></i>
             <span>Receita</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-transferencia bg-lanc-transferencia">
+        <div class="opcao-lancamento fg-lanc-transferencia bg-lanc-transferencia" v-on:click="novaTransferencia()">
             <i class="fa-solid fa-money-bill-transfer"></i>
             <span>Transferência</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-pag-fatura bg-lanc-pag-fatura">
+        <div class="opcao-lancamento fg-lanc-pag-fatura bg-lanc-pag-fatura" v-on:click="novoPagamentoFatura()">
             <i class="fa-regular fa-credit-card"></i>
             <span>Pagamento de Fatura</span>
         </div>

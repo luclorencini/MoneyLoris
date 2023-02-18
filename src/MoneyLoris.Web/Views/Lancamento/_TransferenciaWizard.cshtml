@@ -1,0 +1,86 @@
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-transferencia-wizard">
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasTransferenciaWizard" style="width: 35rem;">
+            <div class="offcanvas-header">
+                <!--<h5 class="offcanvas-title">Nova Despesa</h5>-->
+                <i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
+                <button type="button" class="btn-close" v-on:click="fechar()"></button>
+            </div>
+            <div class="offcanvas-body">
+                <h5>Transferência</h5>
+            </div>
+        </div>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const TransferenciaWizard = {
+
+            name: 'TransferenciaWizard',
+            template: '#template-transferencia-wizard',
+            mixins: [BaseMixin],
+            components: { ConfirmationDialog },
+            emits: ['transferencia-realizada'],
+
+            props: {
+                xyz: Object
+            },
+
+            data: () => ({
+                offCanvas: null,
+            }),
+
+            computed: {
+
+                abcd() {
+                    return "";
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                fechar() {
+                    bootstrapHelper.closeOffcanvas(this.offCanvas);
+                },
+
+                async initTransferencia() {
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasTransferenciaWizard);
+                },
+
+                async initPagamentoFatura() {
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasTransferenciaWizard);
+                },
+
+
+                ///
+
+                async salvar() {
+
+                    this.$emit('transferencia-realizada');
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+
+    @*<style type="text/css">
+    </style>*@
+}

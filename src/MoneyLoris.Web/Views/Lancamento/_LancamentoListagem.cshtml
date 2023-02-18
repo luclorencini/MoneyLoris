@@ -3,6 +3,7 @@
 
 <partial name="_LancamentoListagemFiltro"></partial>
 <partial name="_LancamentoWizard"></partial>
+<partial name="_TransferenciaWizard"></partial>
 
 <partial name="_LancamentoModal"></partial>
 <partial name="_TransferenciaModal"></partial>
@@ -111,10 +112,10 @@
 
                 <div class="list-group-item">
                     <Pagination v-if="totalResults > 0"
-                        v-bind:currentPage="filtro.currentPage"
-                        v-bind:resultsPerPage="filtro.resultsPerPage"
-                        v-bind:totalResults="totalResults"
-                        v-on:pagination-change="paginar($event)">
+                    v-bind:currentPage="filtro.currentPage"
+                    v-bind:resultsPerPage="filtro.resultsPerPage"
+                    v-bind:totalResults="totalResults"
+                    v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
 
@@ -151,6 +152,7 @@
         @await Html.PartialAsync("_BotaoLancamentoMobile")
 
         <LancamentoWizard ref="lancWizard" v-on:lancamento-realizado="pesquisar()"></LancamentoWizard>
+        <TransferenciaWizard ref="tranWizard" v-on:transferencia-realizada="pesquisar()"></TransferenciaWizard>
 
     </script>
 }
@@ -164,7 +166,7 @@
             name: 'LancamentoListagem',
             template: '#template-lancamento-listagem',
             mixins: [BaseMixin],
-            components: { Moeda, Pagination, LancamentoListagemFiltro, LancamentoWizard },            
+            components: { Moeda, Pagination, LancamentoListagemFiltro, LancamentoWizard, TransferenciaWizard },
 
             data: () => ({
                 filtro: {},
@@ -238,12 +240,20 @@
                 },
 
 
-                novaDespesa(){
+                novaDespesa() {
                     this.$refs.lancWizard.initDespesa();
                 },
 
                 novaReceita() {
                     this.$refs.lancWizard.initReceita();
+                },
+
+                novaTransferencia() {
+                    this.$refs.tranWizard.initTransferencia();
+                },
+
+                novoPagamentoFatura() {
+                    this.$refs.tranWizard.initPagamentoFatura();
                 }
 
             }
