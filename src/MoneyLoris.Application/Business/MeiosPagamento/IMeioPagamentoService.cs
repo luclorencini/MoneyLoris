@@ -13,4 +13,9 @@ public interface IMeioPagamentoService
 
     Task<Result> Inativar(int id);
     Task<Result> Reativar(int id);
+
+
+    Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento();
+    Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterContas();
+    Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterCartoes();
 }

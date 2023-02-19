@@ -84,7 +84,7 @@
                 <!---->
 
                 <template v-if="totalResults > 0">
-                    <div v-for="l in lista" class="list-group-item sys-clicavel">
+                    <div v-for="l in lista" class="list-group-item sys-clicavel" v-on:click="editarLancamento(l)">
                         <div class="lancamento-container">
                             <div class="data">
                                 <div class="d-none d-lg-block">{{utils.dataCurta(l.data)}}</div>
@@ -112,10 +112,10 @@
 
                 <div class="list-group-item">
                     <Pagination v-if="totalResults > 0"
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
+                        v-bind:currentPage="filtro.currentPage"
+                        v-bind:resultsPerPage="filtro.resultsPerPage"
+                        v-bind:totalResults="totalResults"
+                        v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
 
@@ -151,8 +151,12 @@
 
         @await Html.PartialAsync("_BotaoLancamentoMobile")
 
+
         <LancamentoWizard ref="lancWizard" v-on:lancamento-realizado="pesquisar()"></LancamentoWizard>
         <TransferenciaWizard ref="tranWizard" v-on:transferencia-realizada="pesquisar()"></TransferenciaWizard>
+
+        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="pesquisar()"></LancamentoModal>
+        <TransferenciaModal ref="tranModal" v-on:transferencia-salva="pesquisar()"></TransferenciaModal>
 
     </script>
 }
@@ -166,7 +170,10 @@
             name: 'LancamentoListagem',
             template: '#template-lancamento-listagem',
             mixins: [BaseMixin],
-            components: { Moeda, Pagination, LancamentoListagemFiltro, LancamentoWizard, TransferenciaWizard },
+            components: {
+                Moeda, Pagination, LancamentoListagemFiltro,
+                LancamentoWizard, TransferenciaWizard, LancamentoModal, TransferenciaModal
+            },
 
             data: () => ({
                 filtro: {},
@@ -174,10 +181,6 @@
                 balanco: {},
                 lista: []
             }),
-
-            //async mounted() {
-            //    await this.pesquisar();
-            //},
 
             methods: {
 
@@ -254,6 +257,16 @@
 
                 novoPagamentoFatura() {
                     this.$refs.tranWizard.initPagamentoFatura();
+                },
+
+
+                editarLancamento(l){
+                    if (l.operacao == 1){ // 1 - lançamento simples, 2 - transferencia
+                        this.$refs.lancModal.carregar(l.id);
+                    }
+                    else{
+                        this.$refs.tranModal.carregar(l.id);
+                    }
                 }
 
             }

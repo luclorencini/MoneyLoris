@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.MeiosPagamento;
+﻿using System.Reflection.Metadata.Ecma335;
+using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
@@ -19,6 +20,20 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
             new MeioPagamentoCadastroListItemDto { Id = 306, Nome = "Sodexo", Tipo = TipoMeioPagamento.ContaPagamento, Cor = "FF0000", Ordem = 5, Ativo = false, Valor = 137M },
             new MeioPagamentoCadastroListItemDto { Id = 307, Nome = "Banco do Brasil", Tipo = TipoMeioPagamento.Poupanca, Cor = "FCF800", Ordem = 6, Ativo = true, Valor = 3263.98M }
         };
+
+    private ICollection<MeioPagamentoListItemDto> ToListItem() =>
+        _meios
+        .Where(m => m.Ativo)
+        .Select(m => new MeioPagamentoListItemDto
+        {
+            Id = m.Id,
+            Nome = m.Nome,
+            Tipo = m.Tipo,
+            TipoDescricao = ((TipoMeioPagamento)m.Tipo).ObterDescricao(),
+            Cor = m.Cor
+        })
+        .ToList();
+
 
 
     public async Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar()
@@ -89,5 +104,23 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
     public async Task<Result> Reativar(int id)
     {
         return await TaskSuccess();
+    }
+
+
+    public async Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento()
+    {
+        return await TaskSuccess(ToListItem());
+    }
+
+    public async Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterContas()
+    {
+        ICollection<MeioPagamentoListItemDto> lc = ToListItem().Where(m => m.Tipo != TipoMeioPagamento.CartaoCredito).ToList();
+        return await TaskSuccess(lc);
+    }
+
+    public async Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterCartoes()
+    {
+        ICollection<MeioPagamentoListItemDto> lc = ToListItem().Where(m => m.Tipo == TipoMeioPagamento.CartaoCredito).ToList();
+        return await TaskSuccess(lc);
     }
 }

@@ -4,121 +4,216 @@
 
         <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasLancamentoWizard" style="width: 35rem;">
             <div class="offcanvas-header">
-                <!--<h5 class="offcanvas-title">Nova Despesa</h5>-->
-                <i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
+                <h5 class="offcanvas-title">{{titulo}}</h5>
                 <button type="button" class="btn-close" v-on:click="fechar()"></button>
             </div>
             <div class="offcanvas-body">
 
-                <!--<i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>-->
+                <i v-if="passo > 1" v-on:click="retornarPasso()" class="fa-solid fa-circle-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
 
-                <h5 class="mb-3">Em qual conta ou cartão você vai lançar a despesa?</h5>
+                <template v-if="passo == 1">
 
-                <ul class="list-group">
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-credit-card me-2" style="color: #820AD1;"></i>
-                                <div class="fw-bold fs-5">Nubank</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Cartão de Crédito</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #11C56E;"></i>
-                                <div class="fw-bold fs-5">PicPay</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Carteira Digital</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #0369B9;"></i>
-                                <div class="fw-bold fs-5">Caixa</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Conta Corrente</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #820AD1;"></i>
-                                <div class="fw-bold fs-5">NuConta</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Conta de Pagamento</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FF0000;"></i>
-                                <div class="fw-bold fs-5">Sodexo</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Cartão de Benefícios</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                    <li class="list-group-item sys-clicavel py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-wrap align-items-center">
-                                <i class="fa-solid fa-xl fa-money-check-dollar me-2" style="color: #FCF800;"></i>
-                                <div class="fw-bold fs-5">Banco do Brasil</div>
-                                <div class="mx-2">•</div>
-                                <small class="fst-italic">Poupança</small>
-                            </div>
-                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                        </div>
-                    </li>
-                </ul>
+                    <h5 class="mb-3">Em qual conta ou cartão você vai lançar a despesa?</h5>
 
-                <hr />
+                    <ul class="list-group">
+                        <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-on:click="selecionarMeio(m.id)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
+                                    <div>
+                                        <div class="fw-bold fs-6 lh-1">{{m.nome}}</div>
+                                        <small class="fst-italic lh-1">{{m.tipoDescricao}}</small>
+                                    </div>
+                                </div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                    </ul>
 
-                <div class="container">
-                    <div class="row">
-                        <div class="col col-12">
-                            <h5 class="mb-3">Qual é o valor?</h5>
+                </template>
+
+                <template v-else-if="passo == 2">
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col col-12">
+                                <h5 class="mb-3">Qual é o valor?</h5>
+                            </div>
+
+                            <div class="col col-12">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text fw-bold fs-3">R$</span>
+                                    <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2" type="text" inputmode="decimal" required maxlength="10" v-model="dados.valor" v-ext-mask="'dinheiro'">
+                                </div>
+                            </div>
+
+                            <div class="col col-12">
+                                <h5 class="my-3">Quando foi a despesa?</h5>
+                                <input class="form-control form-control-lg fw-bold fs-3" type="date" v-model="dados.data">
+                            </div>
+
+                            <!--
+                            <div class="col col-6">
+                                <h6 class="my-3">Número de parcelas:</h6>
+                                <input class="form-control" type="number" value="1">
+                            </div>
+                            -->
+
+                            <div class="col col-12 mt-4 text-end">
+                                <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso3()">
+                                    <span>Próximo</span>
+                                    <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+
                         </div>
+                    </div>
 
-                        <div class="col col-12">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text fw-bold fs-3">R$</span>
-                                <input class="form-control form-control-lg fw-bold fs-2" type="text" required maxlength="10" value="54,90">
+                </template>
+
+                <template v-else-if="passo == 3">
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col col-12">
+                                <h5 class="mb-3">Informe uma curta descrição:</h5>
+                            </div>
+                            <div class="col col-12">
+                                <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" v-model="dados.descricao">
+                            </div>
+                            <div class="col col-12 mt-4 text-end">
+                                <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
+                                    <span>Próximo</span>
+                                    <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col col-12">
-                            <h5 class="my-3">Quando foi a despesa?</h5>
-                            <input class="form-control form-control-lg fw-bold fs-3" type="date" value="2023-01-28">
+                    <div class="d-flex align-items-center mt-4 mb-2">
+                        <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-1 me-2"></i>
+                        <div class="fs-5">Despesas recentes:</div>
+                    </div>
+
+                    <ul class="list-group">
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-column flex-wrap">
+                                    <div class="fw-bold fs-6">Pacheco</div>
+                                    <small class="fst-italic">Farmácia</small>
+                                </div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-column flex-wrap">
+                                    <div class="fw-bold fs-6">Sempre Tem</div>
+                                    <small class="fst-italic">Alimentação / Mercado</small>
+                                </div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                    </ul>
+
+                </template>
+
+                <template v-else-if="passo == 4">
+
+                     <div class="container">
+                        <div class="row">
+                            <div class="col col-12">
+                                <h5 class="mb-3">Qual categoria?</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-group">
+                        <li class="list-group-item sys-clicavel py-2" v-on:click="avancarPasso5()">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fw-bold fs-6">Alimentação</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fs-6 ms-3">Restaurante</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fs-6 ms-3">Supermercado</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fw-bold fs-6">Moradia</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                        <li class="list-group-item sys-clicavel py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fs-6 ms-3">Água</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                    </ul>
+
+                </template>
+
+                <template v-else-if="passo == 5">
+
+                    <div class="container">
+
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="fs-3">Confira se está tudo certo:</div>
                         </div>
 
-                        <div class="col col-6">
-                            <h6 class="my-3">Número de parcelas:</h6>
-                            <input class="form-control" type="number" value="1">
+                        <div class="d-flex align-items-center my-4">
+                            <div class="resumo-icone-container">
+                                <i class="fa-solid fa-sack-dollar fa-2x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div class="fs-1 fw-bold">R$ 54,90</div>
                         </div>
 
-                        <div class="col col-12 text-end">
-                            <button class="btn btn-outline-primary" type="button">
-                                <span>Próximo</span>
-                                <i class="fa-solid fa-arrow-right ms-1"></i>
+                        <div class="d-flex align-items-center my-3">
+                            <div class="resumo-icone-container">
+                                <i class="fa-regular fa-calendar-days fa-2x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div class="fs-3 fw-bold">Sab, 28 Jan 2023</div>
+                        </div>
+
+                        <div class="d-flex align-items-center my-3">
+                            <div class="resumo-icone-container">
+                                <i class="fa-regular fa-pen-to-square fa-2x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div>
+                                <div class="fs-3 fw-bold">Sempre Tem</div>
+                                <div class="fs-6 fst-italic lh-1">Alimentação / Mercado</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center my-3">
+                            <div class="resumo-icone-container">
+                                <i class="fa-regular fa-credit-card fa-2x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div>
+                                <div class="fs-3 fw-bold">Nubank</div>
+                                <div class="fs-6 fst-italic lh-1">Cartão de Crédito</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center mt-5">
+                             <button class="btn btn-primary btn-lg w-100" type="button">
+                                <span class="sys-fg-dark-3 fw-bold">Lançar Despesa</span>
                             </button>
                         </div>
 
                     </div>
-                </div>
 
-                <hr />
+                </template>
 
             </div>
         </div>
@@ -138,18 +233,18 @@
             components: { ConfirmationDialog },
             emits: ['lancamento-realizado'],
 
-            props: {
-                xyz: Object
-            },
-
             data: () => ({
+                dados: {},
+                tipo: 1,
+                passo: 1,
+                meios: [],
                 offCanvas: null,
             }),
 
             computed: {
 
-                abcd() {
-                    return "";
+                titulo() {
+                    return (this.tipo == 1 ? "Nova Receita" : "Nova Despesa");
                 },
             },
 
@@ -163,20 +258,76 @@
                     bootstrapHelper.closeOffcanvas(this.offCanvas);
                 },
 
-                async initDespesa() {
-
-                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
-                },
-
                 async initReceita() {
+                    await this._init(1); // 1 - receita
+                },
 
+                async initDespesa() {
+                    await this._init(2); // 2 - despesa
+                },
+
+                async _init(t) {
+                    this.tipo = t;
+                    this.dados = {};
+                    this.passo = 1;
+                    await this.obterMeiosPagamento();
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
                 },
 
+                retornarPasso() {
+                    this.passo = this.passo - 1;
+                },
+
+                //avancarPasso() {
+                //    this.passo = this.passo + 1;
+                //},
+
+
+
+                // passo 1
+
+                async obterMeiosPagamento() {
+
+                    await this.setLoadingAndExecute(async () => {
+                        let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+                        this.meios = ret.value;
+                    });
+                },
+
+                selecionarMeio(id) {
+                    this.dados.idMeioPagamento = id;
+                    this.avancarPasso2();
+                },
+
+                // passo 2
+
+                avancarPasso2() {
+                    this.passo = 2;
+                    this.setFocus('campoValor');
+                },
+
+                // passo 3
+
+                avancarPasso3() {
+                    this.passo = 3;
+                    this.setFocus('campoDescricao');
+                },
+
+                // passo 4 - categoria
+
+                avancarPasso4() {
+                    this.passo = 4;
+                },
+
+                // passo 5 - resumo
+
+                avancarPasso5() {
+                    this.passo = 5;
+                },
 
                 ///
 
-                async salvar(){
+                async salvar() {
 
                     this.$emit('lancamento-realizado');
                 }
@@ -189,8 +340,12 @@
 
 @using (Html.VueStyle())
 {
-    @* Não há css específico deste componente *@
+    <style type="text/css">
 
-    @*<style type="text/css">
-    </style>*@
+        .resumo-icone-container {
+            width: 4rem;
+            text-align: center;
+        }
+
+    </style>
 }

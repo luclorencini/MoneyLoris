@@ -1,55 +1,120 @@
-﻿<div class="modal" id="transferenciaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Editar Transferência</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form ref="form">
-                    <div class="row g-2">
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-transferencia-modal">
 
-                        <div class="col-12">
-                            <label class="form-label required-asterisk">Conta Origem</label>
-                            <select class="form-select">
-                                <option value="2">Caixa</option>
-                                <option value="3">PicPay</option>
-                            </select>
-                        </div>
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Editar Transferência</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form ref="form">
+                            <div class="row g-2">
 
-                        <div class="col-12">
-                            <label class="form-label required-asterisk">Conta Destino</label>
-                            <select class="form-select">
-                                <option value="3">PicPay</option>
-                                <option value="2">Caixa</option>
-                            </select>
-                        </div>
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Conta Origem</label>
+                                    <select class="form-select">
+                                        <option value="2">Caixa</option>
+                                        <option value="3">PicPay</option>
+                                    </select>
+                                </div>
 
-                        <div class="col-12">
-                            <label class="form-label required-asterisk">Data</label>
-                            <input class="form-control" type="date">
-                        </div>
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Conta Destino</label>
+                                    <select class="form-select">
+                                        <option value="3">PicPay</option>
+                                        <option value="2">Caixa</option>
+                                    </select>
+                                </div>
 
-                        <div class="col-6">
-                            <label class="form-label required-asterisk">Valor</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">R$</span>
-                                <input class="form-control" type="text" required maxlength="10">
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Data</label>
+                                    <input class="form-control" type="date">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Valor</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control" type="text" required maxlength="10">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-flex justify-content-between w-100">
+                            <button type="button" class="btn btn-danger">Excluir</button>
+                            <div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2 px-4">Salvar</button>
                             </div>
                         </div>
-
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="d-flex justify-content-between w-100">
-                    <button type="button" class="btn btn-danger">Excluir</button>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary px-4">Salvar</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const TransferenciaModal = {
+
+            name: 'TransferenciaModal',
+            template: '#template-transferencia-modal',
+            mixins: [BaseMixin],
+            emits: ['transferencia-salva'],
+            components: { ConfirmationDialog },
+
+            data: () => ({
+                modal: null,
+            }),
+
+            computed: {
+
+                abcd() {
+                    return "";
+                },
+            },
+
+            mounted() {
+
+            },
+
+            methods: {
+
+                async carregar(id) {
+
+
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                },
+
+                fechar() {
+                    bootstrapHelper.closeModal(this.modal);
+                },
+
+                async salvar() {
+
+                },
+
+                async excluir() {
+
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}

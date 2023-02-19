@@ -46,4 +46,23 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         //TODO
         throw new NotImplementedException();
     }
+
+
+    public Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento()
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterContas()
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterCartoes()
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
 }
