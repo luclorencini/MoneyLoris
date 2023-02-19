@@ -109,14 +109,25 @@
         return ext;
     },
 
-    //retorna objeto DateTime, baseado no retorno string de <input> : '2023-02-17'
-    dateFromInput(strDate) {
+    ////
+
+    //retorna objeto DateTime, baseado no retorno string de <input type="date"> : 'YYYY-MM-DD'
+    inputToDate(strDate) {
         if (strDate.length == 10)
             strDate = strDate + 'T00:00:00-03:00';
 
         let d = new Date(strDate);
         return d;
     },
+
+    //retorna string 'YYYY-MM-DD', usado em <input type="date">, a partir de um objeto Date informado
+    dateToInput(date) {
+        const offset = date.getTimezoneOffset()
+        yourDate = new Date(date.getTime() - (offset * 60 * 1000))
+        return date.toISOString().split('T')[0]
+    },
+
+    ////
 
     // DD mmm YYYY: 14 Fev 2023
     dataExtenso(strDate) {

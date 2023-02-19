@@ -301,8 +301,8 @@
 
                     //se período selecionado é o começo e fim do mes, mostra só o nome do mes por extenso e ano
 
-                    const dti = utils.dateFromInput(this.filtro.dataInicio);
-                    const dtf = utils.dateFromInput(this.filtro.dataFim);
+                    const dti = utils.inputToDate(this.filtro.dataInicio);
+                    const dtf = utils.inputToDate(this.filtro.dataFim);
 
                     const ai = dti.getFullYear();
                     const mi = dti.getMonth();

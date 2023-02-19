@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using MoneyLoris.Application.Business.MeiosPagamento;
+﻿using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;

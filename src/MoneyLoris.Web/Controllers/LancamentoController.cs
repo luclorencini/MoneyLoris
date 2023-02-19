@@ -33,4 +33,18 @@ public class LancamentoController : BaseController
         var ret = await _lancamentoService.ObterBalanco(filtro);
         return Ok(ret);
     }
+
+    [HttpPost()]
+    public async Task<IActionResult> SugestoesDespesas([FromBody] string termoBusca)
+    {
+        var ret = await _lancamentoService.ObterSugestoesDespesas(termoBusca);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> SugestoesReceitas([FromBody] string termoBusca)
+    {
+        var ret = await _lancamentoService.ObterSugestoesReceitas(termoBusca);
+        return Ok(ret);
+    }
 }

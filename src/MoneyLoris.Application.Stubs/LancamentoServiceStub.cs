@@ -59,6 +59,64 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return lancs;
     }
 
+    public Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesDespesas(string termoBusca)
+    {
+        //se termo busca não foi informado, traz recentes. Senão, filtra pelo termo
+
+        ICollection<LancamentoSugestaoDto> list =
+            new List<LancamentoSugestaoDto> {
+                new LancamentoSugestaoDto {
+                    Descricao = "Marmitime",
+                    CategoriaNome = "Alimentação", CategoriaId = 601,
+                    SubcategoriaNome = "Marmita", SubcategoriaId = 701
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Mc Donald's",
+                    CategoriaNome = "Alimentação", CategoriaId = 601,
+                    SubcategoriaNome = "Lanche", SubcategoriaId = 702
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Pacheco",
+                    CategoriaNome = "Farmácia", CategoriaId = 602
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Recarga Celular",
+                    CategoriaNome = "Assinaturas", CategoriaId = 603
+                }
+            };
+
+
+        return TaskSuccess(list);
+    }
+
+    public Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesReceitas(string termoBusca)
+    {
+        //se termo busca não foi informado, traz recentes. Senão, filtra pelo termo
+
+        ICollection<LancamentoSugestaoDto> list =
+            new List<LancamentoSugestaoDto> {
+                new LancamentoSugestaoDto {
+                    Descricao = "Posto Shell",
+                    CategoriaNome = "Veículo", CategoriaId = 604,
+                    SubcategoriaNome = "Combustível", SubcategoriaId = 708
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Extrabom",
+                    CategoriaNome = "Alimentação", CategoriaId = 601,
+                    SubcategoriaNome = "Mercado", SubcategoriaId = 705
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Faxina",
+                    CategoriaNome = "Moradia", CategoriaId = 605,
+                    SubcategoriaNome = "Limpeza", SubcategoriaId = 706
+                },
+            };
+
+        return TaskSuccess(list);
+    }
+
+
+
     private ICollection<LancamentoListItemDto> MockList()
     {
         var list = new List<LancamentoListItemDto>
