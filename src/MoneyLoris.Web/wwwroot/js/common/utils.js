@@ -129,21 +129,20 @@
 
     ////
 
-    // DD mmm YYYY: 14 Fev 2023
-    dataExtenso(strDate) {
+    // recebe objeto Date, retorna string no formato DD mmm YYYY: (ex: '2 Fev 2023')
+    dataExtenso(d) {
 
-        if (strDate.length == 10)
-            strDate = strDate + 'T00:00:00-03:00';
-
-        let d = new Date(strDate);
+        if (!d) return '';
 
         let dia = d.getDate();
+
+        let sem = d.toLocaleString('pt-BR', { weekday: 'short' }).substring(0, 3);
 
         let mes = d.toLocaleString('pt-BR', { month: 'short' }).substring(0, 3);
 
         let ano = d.getFullYear();
 
-        let ext = `${dia} ${mes} ${ano}`;
+        let ext = `${sem}, ${dia} ${mes} ${ano}`;
 
         return ext;
     },
@@ -248,7 +247,6 @@
         return d;
     },
 
-   
 
     /* region Conta */
 

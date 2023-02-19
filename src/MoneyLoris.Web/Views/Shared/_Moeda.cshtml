@@ -2,7 +2,7 @@
 {
     <script type="text/html" id="template-moeda">
 
-        <span v-if="mostrarValor" v-bind:class="[positivo ? 'din-receita' : 'din-despesa']">{{formatado}}</span>
+        <span v-if="mostrarValor" v-bind:class="cssClass">{{formatado}}</span>
         <span v-else class="placeholder-glow"><span class="placeholder w-100"></span></span>
 
     </script>
@@ -19,7 +19,9 @@
             mixins: [BaseMixin],
 
             props: {
-                valor: Number
+                valor: Number,
+                retirarCor: Boolean,
+                retirarSinal: Boolean
             },
 
             computed: {
@@ -28,16 +30,28 @@
                     return (this.valor != null && this.valor != undefined);
                 },
 
-                positivo() {
-                    return this.valor >= 0;
+                cssClass() {
+                    let css = '';
+
+                    if (this.retirarCor) return css;
+
+                    css = (this.valor >= 0 ? 'din-receita' : 'din-despesa');
+
+                    return css;
                 },
 
                 formatado() {
                     if (this.valor == 0)
                         return '-';
-                    else
-                        return Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+                    else{
+
+                        const sd = (this.retirarSinal ? 'never' : 'exceptZero');
+
+                        let ret = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', signDisplay: sd })
                             .format(this.valor);
+
+                            return ret;
+                    }
                 }
             }
         }

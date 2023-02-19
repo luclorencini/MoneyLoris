@@ -323,7 +323,9 @@
                     }
 
                     //se não, mostra data inicial e data final
-                    let label = `${utils.dataExtenso(this.filtro.dataInicio)} - ${utils.dataExtenso(this.filtro.dataFim)}`;
+                    const di = utils.inputToDate(this.filtro.dataInicio);
+                    const df = utils.inputToDate(this.filtro.dataFim);
+                    let label = `${utils.dataExtenso(di)} - ${utils.dataExtenso(df)}`;
                     return label;
                 }
             }

@@ -1,7 +1,10 @@
 ﻿const fieldConverter = {
 
     /*
-     * Field Converter - conversor de atributos de objetos
+     * Field Converter - utilitário conversor de atributos de objetos
+     * Seu diferencial é chamar o método que faz a conversão e já atualizar o campo informado,
+     * Retirando a necessidade de fazer ifs e ternarios toda vez que precisar converter um campo.
+     * 
      * obj - o objeto que contém o atributo a ser convertido
      * att - o nome do atributo, em formato string
      * 
@@ -19,7 +22,7 @@
     },
 
     /*
-     * Converte string formato dinheiro (D.DDD,DD) number decimal
+     * Converte string formato dinheiro (D.DDD,DD) em number decimal
      */
     stringToMoney(obj, att) {
         if (obj && obj[att]) {
