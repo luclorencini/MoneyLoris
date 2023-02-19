@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace MoneyLoris.Application.Shared;
 public class Result
@@ -75,5 +70,11 @@ public sealed class Result<T> : Result
     {
         var r = new Result<T>(value);
         return r;
-    }    
+    }
+
+    public static implicit operator Result<T>((T value, string message) data)
+    {
+        var r = new Result<T>(data.value, data.message);
+        return r;
+    }
 }

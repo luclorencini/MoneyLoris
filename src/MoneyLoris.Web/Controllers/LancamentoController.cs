@@ -35,6 +35,13 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
+    public async Task<IActionResult> SugestoesReceitas([FromBody] string termoBusca)
+    {
+        var ret = await _lancamentoService.ObterSugestoesReceitas(termoBusca);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
     public async Task<IActionResult> SugestoesDespesas([FromBody] string termoBusca)
     {
         var ret = await _lancamentoService.ObterSugestoesDespesas(termoBusca);
@@ -42,9 +49,16 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
-    public async Task<IActionResult> SugestoesReceitas([FromBody] string termoBusca)
+    public async Task<IActionResult> LancarReceita([FromBody] LancamentoInsertDto lancamento)
     {
-        var ret = await _lancamentoService.ObterSugestoesReceitas(termoBusca);
+        var ret = await _lancamentoService.InserirReceita(lancamento);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> LancarDespesa([FromBody] LancamentoInsertDto lancamento)
+    {
+        var ret = await _lancamentoService.InserirDespesa(lancamento);
         return Ok(ret);
     }
 }

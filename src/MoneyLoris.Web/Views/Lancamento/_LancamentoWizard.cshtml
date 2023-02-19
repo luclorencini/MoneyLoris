@@ -168,45 +168,45 @@
 
                         <div class="d-flex align-items-center my-4">
                             <div class="resumo-icone-container">
-                                <i class="fa-solid fa-sack-dollar fa-2x sys-fg-dark-2 me-2"></i>
+                                <i class="fa-solid fa-sack-dollar fa-3x sys-fg-dark-2 me-2"></i>
                             </div>
                             <div class="fs-1 fw-bold" v-bind:class="[this.tipo == 1 ? 'din-receita' : 'din-despesa']">
                                 <Moeda :valor="valorDecimal" :retirarCor="true" :retirarSinal="true"/>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center my-3">
+                        <div class="d-flex align-items-center my-4">
                             <div class="resumo-icone-container">
-                                <i class="fa-regular fa-calendar-days fa-2x sys-fg-dark-2 me-2"></i>
+                                <i class="fa-regular fa-calendar-days fa-3x sys-fg-dark-2 me-2"></i>
                             </div>
-                            <div class="fs-3 fw-bold text-capitalize">{{dataPorExtenso}}</div>
+                            <div class="fs-2 fw-bold text-capitalize">{{dataPorExtenso}}</div>
                         </div>
 
-                        <div class="d-flex align-items-center my-3">
+                        <div class="d-flex align-items-center my-4">
                             <div class="resumo-icone-container">
-                                <i class="fa-regular fa-pen-to-square fa-2x sys-fg-dark-2 me-2"></i>
+                                <i class="fa-regular fa-pen-to-square fa-3x sys-fg-dark-2 me-2"></i>
                             </div>
                             <div>
-                                <div class="fs-3 fw-bold">Sempre Tem</div>
+                                <div class="fs-3 fw-bold">{{dados.descricao}}</div>
                                 <div class="fs-6 fst-italic lh-1">
                                     <span>{{dados.nomeCategoria}}</span><span v-if="dados.idSubcategoria"> / {{dados.nomeSubCategoria}}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center my-3">
+                        <div class="d-flex align-items-center my-4">
                             <div class="resumo-icone-container">
-                                <i class="fa-regular fa-credit-card fa-2x sys-fg-dark-2 me-2"></i>
+                                <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioPagamentoSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioPagamentoSelecionado.cor}"></i>
                             </div>
                             <div>
-                                <div class="fs-3 fw-bold">{{dados.nomeMeioPagamento}}</div>
-                                <div class="fs-6 fst-italic lh-1">{{dados.tipoMeioPagamento}}</div>
+                                <div class="fs-3 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
+                                <div class="fs-6 fst-italic lh-1">{{meioPagamentoSelecionado.tipoDescricao}}</div>
                             </div>
                         </div>
 
                         <div class="d-flex align-items-center mt-5">
-                             <button class="btn btn-primary btn-lg w-100" type="button">
-                                <span class="sys-fg-dark-3 fw-bold">Lançar Despesa</span>
+                             <button class="btn btn-primary btn-lg w-100" type="button" v-on:click="salvar()">
+                                <span class="sys-fg-dark-3 fw-bold">Lançar {{labelTipo}}</span>
                             </button>
                         </div>
 
@@ -237,6 +237,7 @@
                 tipo: 1,
                 passo: 1,
                 meios: [],
+                meioPagamentoSelecionado: {},
                 sugestoes: [],
                 offCanvas: null,
             }),
@@ -247,17 +248,17 @@
                     return (this.tipo == 1 ? "Nova Receita" : "Nova Despesa");
                 },
 
-                labelTipo(){
+                labelTipo() {
                     return (this.tipo == 1 ? "Receita" : "Despesa");
                 },
 
-                valorDecimal(){
+                valorDecimal() {
                     let str = mascaras.parseMoney(this.dados.valor);
                     str = mascaras.unparseMoney(str);
                     return parseFloat(str);
                 },
 
-                dataPorExtenso(){
+                dataPorExtenso() {
                     const d = utils.inputToDate(this.dados.data);
                     return utils.dataExtenso(d);
                 }
@@ -311,8 +312,7 @@
 
                 selecionarMeioPagamento(m) {
                     this.dados.idMeioPagamento = m.id;
-                    this.dados.nomeMeioPagamento = m.nome;
-                    this.dados.tipoMeioPagamento = m.tipoDescricao;
+                    this.meioPagamentoSelecionado = m;
                     this.avancarPasso2();
                 },
 
@@ -330,7 +330,7 @@
 
                     let passo2valido = this.validarForm(this.$refs.formPasso2);
 
-                    if (passo2valido){
+                    if (passo2valido) {
                         this.passo = 3;
                         this.setFocus('campoDescricao');
 
@@ -344,7 +344,7 @@
                     }
                 },
 
-                selecionarSugestao(s){
+                selecionarSugestao(s) {
 
                     this.dados.descricao = s.descricao;
                     this.dados.idCategoria = s.categoriaId;
@@ -361,7 +361,7 @@
 
                     let passo3valido = this.validarForm(this.$refs.formPasso3);
 
-                    if (passo3valido){
+                    if (passo3valido) {
                         this.passo = 4;
                     }
                 },
@@ -376,7 +376,28 @@
 
                 async salvar() {
 
-                    this.$emit('lancamento-realizado');
+                    await this.setLoadingAndExecute(async () => {
+
+                        try {
+                            const url = (this.tipo == 1 ? '/lancamento/lancarReceita' : '/lancamento/lancarDespesa');
+
+                            let ret = await fetchData.fetchPostJson(url, this.dados);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('lancamento-realizado');
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+
+
                 }
 
             }
@@ -390,7 +411,7 @@
     <style type="text/css">
 
         .resumo-icone-container {
-            width: 4rem;
+            width: 4.5rem;
             text-align: center;
         }
 

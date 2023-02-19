@@ -115,6 +115,15 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return TaskSuccess(list);
     }
 
+    public async Task<Result<int>> InserirReceita(LancamentoInsertDto lancamento)
+    {
+        return await TaskSuccess((123, "Receita lançada com sucesso."));
+    }
+
+    public async Task<Result<int>> InserirDespesa(LancamentoInsertDto lancamento)
+    {
+        return await TaskSuccess((123, "Despesa lançada com sucesso."));
+    }
 
 
     private ICollection<LancamentoListItemDto> MockList()

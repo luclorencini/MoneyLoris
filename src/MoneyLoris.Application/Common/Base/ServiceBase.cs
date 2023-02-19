@@ -26,6 +26,12 @@ public class ServiceBase
         return data;
     }
 
+    public async Task<Result<T>> TaskSuccess<T>((T value, string message) data)
+    {
+        await Task.Run(() => { });
+        return data;
+    }
+
     public async Task<Result<Pagination<T>>> TaskSuccess<T>(Pagination<T> pagination)
     {
         await Task.Run(() => { });
