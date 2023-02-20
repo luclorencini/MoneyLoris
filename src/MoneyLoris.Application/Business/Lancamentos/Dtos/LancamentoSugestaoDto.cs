@@ -1,9 +1,8 @@
-﻿namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
+﻿using MoneyLoris.Application.Business.Categorias.Dtos;
+
+namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
 public class LancamentoSugestaoDto
 {
     public string Descricao { get; set; } = default!;
-    public int CategoriaId { get; set; }
-    public string CategoriaNome { get; set; } = default!;
-    public int? SubcategoriaId { get; set; }
-    public string SubcategoriaNome { get; set; } = default!;
+    public CategoriaListItemDto Categoria { get; set; } = default!;
 }

@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="col col-12">
                                     <!--<input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >-->
-                                    <input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >
+                                    <input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required >
                                 </div>
 
                                 <div class="col col-6" style="background-color: lime;">{{descricaoBusca}}</div>
@@ -109,7 +109,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex flex-column flex-wrap">
                                     <div class="fw-bold fs-6">{{s.descricao}}</div>
-                                    <small class="fst-italic"><span>{{s.categoriaNome}}</span><span v-if="s.subcategoriaNome"> / {{s.subcategoriaNome}}</span></small>
+                                    <small class="fst-italic"><span>{{s.categoria.categoriaNome}}</span><span v-if="s.categoria.subcategoriaNome"> / {{s.categoria.subcategoriaNome}}</span></small>
                                 </div>
                                 <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
                             </div>
@@ -299,7 +299,9 @@
                     });
 
                     input.addEventListener('input', e => {
-                        this.dados.descricao = input.value;
+                        if (!this.dados.descricao) this.dados.descricao = '';
+
+                        this.dados.descricao = this.dados.descricao + k;
                     });
 
                 }
@@ -307,13 +309,13 @@
 
             methods: {
 
-                async buscarAsParada(k) {
-
-                    if (!this.dados.descricao) this.dados.descricao = '';
-
-                    this.dados.descricao = this.dados.descricao + k;
-                    await this.buscarSugestoes(k);
-                },
+                //async buscarAsParada(k) {
+                //
+                //    if (!this.dados.descricao) this.dados.descricao = '';
+                //
+                //    this.dados.descricao = this.dados.descricao + k;
+                //    await this.buscarSugestoes(k);
+                //},
 
                 fechar() {
                     bootstrapHelper.closeOffcanvas(this.offCanvas);
@@ -338,11 +340,6 @@
                 retornarPasso() {
                     this.passo = this.passo - 1;
                 },
-
-                //avancarPasso() {
-                //    this.passo = this.passo + 1;
-                //},
-
 
 
                 // passo 1
@@ -392,17 +389,8 @@
                 },
 
                 selecionarSugestao(s) {
-
                     this.dados.descricao = s.descricao;
-
-                    this.selecionarCategoria(s);
-
-                    //this.dados.idCategoria = s.categoriaId;
-                    //this.dados.nomeCategoria = s.categoriaNome;
-                    //this.dados.idSubcategoria = s.subcategoriaId;
-                    //this.dados.nomeSubCategoria = s.subcategoriaNome;
-                    //
-                    //this.avancarPasso5();
+                    this.selecionarCategoria(s.categoria);
                 },
 
                 // passo 4 - categoria
@@ -448,6 +436,10 @@
                     await this.setLoadingAndExecute(async () => {
 
                         try {
+
+                            //conversoes
+                            fieldConverter.stringToMoney(this.dados, 'valor');
+
                             const url = (this.tipo == 1 ? '/lancamento/lancarReceita' : '/lancamento/lancarDespesa');
 
                             let ret = await fetchData.fetchPostJson(url, this.dados);

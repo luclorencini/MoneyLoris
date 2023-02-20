@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.Lancamentos;
+﻿using MoneyLoris.Application.Business.Categorias.Dtos;
+using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
@@ -71,21 +72,29 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new List<LancamentoSugestaoDto> {
                 new LancamentoSugestaoDto {
                     Descricao = "Marmitime",
-                    CategoriaNome = "Alimentação", CategoriaId = 601,
-                    SubcategoriaNome = "Marmita", SubcategoriaId = 701
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Alimentação", CategoriaId = 601,
+                        SubcategoriaNome = "Marmita", SubcategoriaId = 701
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Mc Donald's",
-                    CategoriaNome = "Alimentação", CategoriaId = 601,
-                    SubcategoriaNome = "Lanche", SubcategoriaId = 702
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Alimentação", CategoriaId = 601,
+                        SubcategoriaNome = "Lanche", SubcategoriaId = 702
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Pacheco",
-                    CategoriaNome = "Farmácia", CategoriaId = 602
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Farmácia", CategoriaId = 602
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Recarga Celular",
-                    CategoriaNome = "Assinaturas", CategoriaId = 603
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Assinaturas", CategoriaId = 603
+                    }
                 }
             };
         }
@@ -95,18 +104,24 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new List<LancamentoSugestaoDto> {
                 new LancamentoSugestaoDto {
                     Descricao = "Posto Shell",
-                    CategoriaNome = "Veículo", CategoriaId = 604,
-                    SubcategoriaNome = "Combustível", SubcategoriaId = 708
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Veículo", CategoriaId = 604,
+                        SubcategoriaNome = "Combustível", SubcategoriaId = 708
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Extrabom",
-                    CategoriaNome = "Alimentação", CategoriaId = 601,
-                    SubcategoriaNome = "Mercado", SubcategoriaId = 705
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Alimentação", CategoriaId = 601,
+                        SubcategoriaNome = "Mercado", SubcategoriaId = 705
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Faxina",
-                    CategoriaNome = "Moradia", CategoriaId = 605,
-                    SubcategoriaNome = "Limpeza", SubcategoriaId = 706
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Moradia", CategoriaId = 605,
+                        SubcategoriaNome = "Limpeza", SubcategoriaId = 706
+                    }
                 }
             };
         }
@@ -123,15 +138,21 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             new List<LancamentoSugestaoDto> {
                 new LancamentoSugestaoDto {
                     Descricao = "Salário",
-                    CategoriaNome = "Salário", CategoriaId = 610
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Salário", CategoriaId = 610
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Reembolso Jurandir",
-                    CategoriaNome = "Reembolso", CategoriaId = 611
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Reembolso", CategoriaId = 611
+                    }
                 },
                 new LancamentoSugestaoDto {
                     Descricao = "Rendimento Poupança",
-                    CategoriaNome = "Investimentos", CategoriaId = 612
+                    Categoria = new CategoriaListItemDto {
+                        CategoriaNome = "Investimentos", CategoriaId = 612
+                    }
                 },
             };
 
