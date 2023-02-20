@@ -83,11 +83,10 @@
                                 </div>
                                 <div class="col col-12">
                                     <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" >
-                                    <!--<input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required>-->
                                 </div>
 
-                                <div class="col col-6" style="background-color: lime;">{{descricaoBusca}}</div>
-                                <div class="col col-6" style="background-color: coral;">{{dados.descricao}}</div>
+                                <div class="col col-6" style="background-color: lime;">{{dados.descricao}}</div>
+                                <div class="col col-6" style="background-color: aqua;">{{campoTeste}}</div>
 
                                 <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
@@ -221,11 +220,12 @@
 
                 meios: [],
                 meioPagamentoSelecionado: {},
-                descricaoBusca: '',
                 sugestoes: [],
                 categorias: [],
 
                 offCanvas: null,
+
+                campoTeste: ''
             }),
 
             computed: {
@@ -251,10 +251,6 @@
             },
 
             mounted() {
-
-                //clean-up
-                this.dados = {};
-                this.descricaoBusca = '';
             },
 
             methods: {
@@ -272,8 +268,15 @@
                 },
 
                 async _init(t) {
+
+                    //clean-up
                     this.tipo = t;
                     this.dados = {};
+                    this.meios = [];
+                    this.meioPagamentoSelecionado = {};
+                    this.sugestoes = [];
+                    this.categorias = [];
+
                     this.passo = 1;
                     await this.obterMeiosPagamento();
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
@@ -317,35 +320,35 @@
                     if (passo2valido) {
                         this.passo = 3;
                         this.setFocus('campoDescricao');
-                        //this.setupCampoDescricao();
-                        //await this.buscarSugestoes();
+                        await this.buscarSugestoes();
                     }
                 },
 
                 async filtrarSugestoesInput() {
                     let val = this.$refs.campoDescricao.value;
-                    this.descricaoBusca = val;
+                    this.dados.descricao = val;
+                    this.campoTeste = val;
                     await this.buscarSugestoes(val);
                 },
 
-                setupCampoDescricao() {
-
-                    this.$nextTick(() => {
-
-                        //testes
-                        let input = window.document.getElementById('campoDescricao');
-
-                        if (input) {
-
-                            input.focus();
-
-                            input.addEventListener('input', e => {
-                                this.descricaoBusca = input.value;
-                            });
-
-                        }
-                    });
-                },
+                //setupCampoDescricao() {
+                //
+                //    this.$nextTick(() => {
+                //
+                //        //testes
+                //        let input = window.document.getElementById('campoDescricao');
+                //
+                //        if (input) {
+                //
+                //            input.focus();
+                //
+                //            input.addEventListener('input', e => {
+                //                this.descricaoBusca = input.value;
+                //            });
+                //
+                //        }
+                //    });
+                //},
 
                 async buscarSugestoes(termo) {
 
