@@ -82,7 +82,7 @@
                                     <h5 class="mb-3">Informe uma curta descrição:</h5>
                                 </div>
                                 <div class="col col-12">
-                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="dados.descricao">
+                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="dados.descricao" v-bind:input="buscarSugestoes()">
                                 </div>
                                 <div class="col col-12 mt-4 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
@@ -333,15 +333,17 @@
                     if (passo2valido) {
                         this.passo = 3;
                         this.setFocus('campoDescricao');
-
-                        //obter sugestoes
-                        const url = (this.tipo == 1 ? '/lancamento/sugestoesReceitas' : '/lancamento/sugestoesDespesas');
-
-                        await this.setLoadingAndExecute(async () => {
-                            let ret = await fetchData.fetchPostJson(url, this.dados.descricao);
-                            this.sugestoes = ret.value;
-                        });
+                        await this.buscarSugestoes();
                     }
+                },
+
+                async buscarSugestoes() {
+
+                    await this.setLoadingAndExecute(async () => {
+                        const url = (this.tipo == 1 ? '/lancamento/sugestoesReceitas' : '/lancamento/sugestoesDespesas');
+                        let ret = await fetchData.fetchPostJson(url, this.dados.descricao);
+                        this.sugestoes = ret.value;
+                    });
                 },
 
                 selecionarSugestao(s) {

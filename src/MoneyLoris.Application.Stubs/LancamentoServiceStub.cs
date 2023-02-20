@@ -61,9 +61,13 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
 
     public Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesDespesas(string termoBusca)
     {
+        ICollection<LancamentoSugestaoDto> list = null!;
+
         //se termo busca não foi informado, traz recentes. Senão, filtra pelo termo
 
-        ICollection<LancamentoSugestaoDto> list =
+        if (String.IsNullOrWhiteSpace(termoBusca))
+        {
+            list =
             new List<LancamentoSugestaoDto> {
                 new LancamentoSugestaoDto {
                     Descricao = "Marmitime",
@@ -84,16 +88,10 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
                     CategoriaNome = "Assinaturas", CategoriaId = 603
                 }
             };
-
-
-        return TaskSuccess(list);
-    }
-
-    public Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesReceitas(string termoBusca)
-    {
-        //se termo busca não foi informado, traz recentes. Senão, filtra pelo termo
-
-        ICollection<LancamentoSugestaoDto> list =
+        }
+        else
+        {
+            list =
             new List<LancamentoSugestaoDto> {
                 new LancamentoSugestaoDto {
                     Descricao = "Posto Shell",
@@ -109,6 +107,31 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
                     Descricao = "Faxina",
                     CategoriaNome = "Moradia", CategoriaId = 605,
                     SubcategoriaNome = "Limpeza", SubcategoriaId = 706
+                }
+            };
+        }
+
+
+        return TaskSuccess(list);
+    }
+
+    public Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesReceitas(string termoBusca)
+    {
+        //se termo busca não foi informado, traz recentes. Senão, filtra pelo termo
+
+        ICollection<LancamentoSugestaoDto> list =
+            new List<LancamentoSugestaoDto> {
+                new LancamentoSugestaoDto {
+                    Descricao = "Salário",
+                    CategoriaNome = "Salário", CategoriaId = 610
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Reembolso Jurandir",
+                    CategoriaNome = "Reembolso", CategoriaId = 611
+                },
+                new LancamentoSugestaoDto {
+                    Descricao = "Rendimento Poupança",
+                    CategoriaNome = "Investimentos", CategoriaId = 612
                 },
             };
 
