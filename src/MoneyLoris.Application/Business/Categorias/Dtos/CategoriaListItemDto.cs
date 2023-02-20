@@ -1,7 +1,8 @@
 ﻿namespace MoneyLoris.Application.Business.Categorias.Dtos;
 public class CategoriaListItemDto
 {
-    public int IdCategoria { get; set; }
-    public int? IdSubcategoria { get; set; }
-    public string Nome { get; set; } = default!;
+    public int CategoriaId { get; set; }
+    public string CategoriaNome { get; set; } = default!;
+    public int? SubcategoriaId { get; set; }
+    public string SubcategoriaNome { get; set; } = default!;
 }

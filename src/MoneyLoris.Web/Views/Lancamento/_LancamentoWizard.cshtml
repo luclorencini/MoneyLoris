@@ -82,7 +82,8 @@
                                     <h5 class="mb-3">Informe uma curta descrição:</h5>
                                 </div>
                                 <div class="col col-12">
-                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >
+                                    <!--<input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >-->
+                                    <input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >
                                 </div>
 
                                 <div class="col col-6" style="background-color: lime;">{{descricaoBusca}}</div>
@@ -128,6 +129,15 @@
                     </div>
 
                     <ul class="list-group">
+
+                        <li v-for="c in categorias" class="list-group-item sys-clicavel py-2" v-on:click="selecionarCategoria(c)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fs-6" v-bind:class="{'ms-4' : c.subcategoriaId}">{{c.subcategoriaId ? c.subcategoriaNome : c.categoriaNome}}</div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+
+                        <!--
                         <li class="list-group-item sys-clicavel py-2" v-on:click="avancarPasso5()">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="fw-bold fs-6">Alimentação</div>
@@ -158,6 +168,7 @@
                                 <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
                             </div>
                         </li>
+                        -->
                     </ul>
 
                 </template>
@@ -191,7 +202,7 @@
                                 <i class="fa-regular fa-pen-to-square fa-3x sys-fg-dark-2 me-2"></i>
                             </div>
                             <div>
-                                <div class="fs-3 fw-bold">{{dados.descricao}}</div>
+                                <div class="fs-4 fw-bold">{{dados.descricao}}</div>
                                 <div class="fs-6 fst-italic lh-1">
                                     <span>{{dados.nomeCategoria}}</span><span v-if="dados.idSubcategoria"> / {{dados.nomeSubCategoria}}</span>
                                 </div>
@@ -203,7 +214,7 @@
                                 <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioPagamentoSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioPagamentoSelecionado.cor}"></i>
                             </div>
                             <div>
-                                <div class="fs-3 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
+                                <div class="fs-4 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
                                 <div class="fs-6 fst-italic lh-1">{{meioPagamentoSelecionado.tipoDescricao}}</div>
                             </div>
                         </div>
@@ -237,15 +248,14 @@
             emits: ['lancamento-realizado'],
 
             data: () => ({
-                dados: {
-                    descricao: ''
-                },
+
+                dados: {},
                 tipo: 1,
                 passo: 1,
-                
+
                 meios: [],
                 meioPagamentoSelecionado: {},
-                
+
                 descricaoBusca: '',
                 sugestoes: [],
 
@@ -253,7 +263,7 @@
                 categoriaSelecionada: {},
 
                 offCanvas: null,
-                
+
             }),
 
             computed: {
@@ -278,15 +288,21 @@
                 }
             },
 
-            //watch: {
-            //    async descricaoBusca(newValue, oldValue) {
-            //        this.dados.descricao = newValue;
-            //        await this.buscarSugestoes(newValue);
-            //    }
-            //},
-
             mounted() {
 
+                let input = window.document.getElementById('campoDescricao');
+
+                if (input) {
+
+                    input.addEventListener('keydown', e => {
+                        this.descricaoBusca = input.value;
+                    });
+
+                    input.addEventListener('input', e => {
+                        this.dados.descricao = input.value;
+                    });
+
+                }
             },
 
             methods: {
@@ -378,35 +394,45 @@
                 selecionarSugestao(s) {
 
                     this.dados.descricao = s.descricao;
-                    this.dados.idCategoria = s.categoriaId;
-                    this.dados.nomeCategoria = s.categoriaNome;
-                    this.dados.idSubcategoria = s.subcategoriaId;
-                    this.dados.nomeSubCategoria = s.subcategoriaNome;
 
-                    this.avancarPasso5();
+                    this.selecionarCategoria(s);
+
+                    //this.dados.idCategoria = s.categoriaId;
+                    //this.dados.nomeCategoria = s.categoriaNome;
+                    //this.dados.idSubcategoria = s.subcategoriaId;
+                    //this.dados.nomeSubCategoria = s.subcategoriaNome;
+                    //
+                    //this.avancarPasso5();
                 },
 
                 // passo 4 - categoria
 
-                avancarPasso4() {
+                async avancarPasso4() {
 
                     let passo3valido = this.validarForm(this.$refs.formPasso3);
 
                     if (passo3valido) {
                         this.passo = 4;
+                        await this.obterCategorias();
                     }
                 },
 
-                async obterCategorias(){
+                async obterCategorias() {
 
                     await this.setLoadingAndExecute(async () => {
-                        let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+                        let ret = await fetchData.fetchGetJson(`/common/categorias/${this.tipo}`);
                         this.categorias = ret.value;
                     });
                 },
 
-                selecionarCategoria(c){
+                selecionarCategoria(c) {
 
+                    this.dados.idCategoria = c.categoriaId;
+                    this.dados.nomeCategoria = c.categoriaNome;
+                    this.dados.idSubcategoria = c.subcategoriaId;
+                    this.dados.nomeSubCategoria = c.subcategoriaNome;
+
+                    this.avancarPasso5();
                 },
 
                 // passo 5 - resumo

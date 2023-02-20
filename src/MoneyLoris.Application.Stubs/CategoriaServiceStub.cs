@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MoneyLoris.Application.Business.Categorias.Dtos;
+﻿using MoneyLoris.Application.Business.Categorias.Dtos;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
@@ -118,11 +117,11 @@ public class CategoriaServiceStub : ServiceBase, ICategoriaService
 
         foreach (var c in lista)
         {
-            ret.Add(new CategoriaListItemDto { IdCategoria = c.Id, Nome = c.Nome });
+            ret.Add(new CategoriaListItemDto { CategoriaId = c.Id, CategoriaNome = c.Nome });
 
             foreach (var s in c.Subcategorias)
             {
-                ret.Add(new CategoriaListItemDto { IdCategoria = c.Id, IdSubcategoria = s.Id, Nome = s.Nome });
+                ret.Add(new CategoriaListItemDto { CategoriaId = c.Id, CategoriaNome = c.Nome, SubcategoriaId = s.Id, SubcategoriaNome = s.Nome });
             }
 
         }

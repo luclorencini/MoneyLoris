@@ -39,7 +39,7 @@ public class CommonController : BaseController
         return Ok(ret);
     }
 
-    [HttpGet()]
+    [HttpGet("{tipo}")]
     public async Task<IActionResult> Categorias(TipoLancamento tipo)
     {
         var ret = await _categoriaService.ObterCategoriasUsuario(tipo);
