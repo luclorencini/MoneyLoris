@@ -82,7 +82,7 @@
                                     <h5 class="mb-3">Informe uma curta descrição:</h5>
                                 </div>
                                 <div class="col col-12">
-                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" >
+                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >
                                 </div>
 
                                 <div class="col col-6" style="background-color: lime;">{{descricaoBusca}}</div>
@@ -237,7 +237,9 @@
             emits: ['lancamento-realizado'],
 
             data: () => ({
-                dados: {},
+                dados: {
+                    descricao: ''
+                },
                 tipo: 1,
                 passo: 1,
                 
@@ -246,6 +248,9 @@
                 
                 descricaoBusca: '',
                 sugestoes: [],
+
+                categorias: [],
+                categoriaSelecionada: {},
 
                 offCanvas: null,
                 
@@ -274,23 +279,25 @@
             },
 
             //watch: {
-            //     'dados.descricao' : async (newValue, oldValue) => {
-            //        await this.buscarSugestoes();
-            //        }
+            //    async descricaoBusca(newValue, oldValue) {
+            //        this.dados.descricao = newValue;
+            //        await this.buscarSugestoes(newValue);
+            //    }
             //},
-
-            watch: {
-                async descricaoBusca(newValue, oldValue) {
-                    this.dados.descricao = newValue;
-                    await this.buscarSugestoes(newValue);
-                }
-            },
 
             mounted() {
 
             },
 
             methods: {
+
+                async buscarAsParada(k) {
+
+                    if (!this.dados.descricao) this.dados.descricao = '';
+
+                    this.dados.descricao = this.dados.descricao + k;
+                    await this.buscarSugestoes(k);
+                },
 
                 fechar() {
                     bootstrapHelper.closeOffcanvas(this.offCanvas);
@@ -388,6 +395,18 @@
                     if (passo3valido) {
                         this.passo = 4;
                     }
+                },
+
+                async obterCategorias(){
+
+                    await this.setLoadingAndExecute(async () => {
+                        let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+                        this.categorias = ret.value;
+                    });
+                },
+
+                selecionarCategoria(c){
+
                 },
 
                 // passo 5 - resumo

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;
@@ -8,10 +10,12 @@ namespace MoneyLoris.Web.Controllers;
 public class CommonController : BaseController
 {
     private readonly IMeioPagamentoService _meioPagamentoService;
+    private readonly ICategoriaService _categoriaService;
 
-    public CommonController(IMeioPagamentoService meioPagamentoService)
+    public CommonController(IMeioPagamentoService meioPagamentoService, ICategoriaService categoriaService)
     {
         _meioPagamentoService = meioPagamentoService;
+        _categoriaService = categoriaService;
     }
 
     [HttpGet()]
@@ -36,10 +40,9 @@ public class CommonController : BaseController
     }
 
     [HttpGet()]
-    public async Task<IActionResult> Categorias()
+    public async Task<IActionResult> Categorias(TipoLancamento tipo)
     {
-        //var ret = await _meioPagamentoService.ObterContas();
-        //return Ok(ret);
-        return Ok();
+        var ret = await _categoriaService.ObterCategoriasUsuario(tipo);
+        return Ok(ret);
     }
 }

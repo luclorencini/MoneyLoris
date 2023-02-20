@@ -6,7 +6,7 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Categorias;
 public class CategoriaService : ICategoriaService
 {
-    public async Task<Result<ICollection<CategoriaListItemDto>>> ListarCategoriasUsuario(TipoLancamento tipo)
+    public async Task<Result<ICollection<CategoriaCadastroListItemDto>>> ListarCategoriasUsuario(TipoLancamento tipo)
     {
         //TODO
         throw new NotImplementedException();
@@ -56,6 +56,12 @@ public class CategoriaService : ICategoriaService
     }
 
     public Task<Result<int>> ExcluirSubcategoria(int id)
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<ICollection<CategoriaListItemDto>>> ObterCategoriasUsuario(TipoLancamento tipo)
     {
         //TODO
         throw new NotImplementedException();
