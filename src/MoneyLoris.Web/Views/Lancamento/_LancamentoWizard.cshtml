@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="col col-12">
                                     <!--<input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="descricaoBusca" v-on:keydown="buscarAsParada($event.key)" >-->
-                                    <input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required >
+                                    <input id="campoDescricao" class="form-control form-control-lg fs-4" type="text" required>
                                 </div>
 
                                 <div class="col col-6" style="background-color: lime;">{{descricaoBusca}}</div>
@@ -129,46 +129,12 @@
                     </div>
 
                     <ul class="list-group">
-
                         <li v-for="c in categorias" class="list-group-item sys-clicavel py-2" v-on:click="selecionarCategoria(c)">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="fs-6" v-bind:class="{'ms-4' : c.subcategoriaId}">{{c.subcategoriaId ? c.subcategoriaNome : c.categoriaNome}}</div>
                                 <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
                             </div>
                         </li>
-
-                        <!--
-                        <li class="list-group-item sys-clicavel py-2" v-on:click="avancarPasso5()">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fw-bold fs-6">Alimentação</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                        <li class="list-group-item sys-clicavel py-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fs-6 ms-3">Restaurante</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                        <li class="list-group-item sys-clicavel py-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fs-6 ms-3">Supermercado</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                        <li class="list-group-item sys-clicavel py-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fw-bold fs-6">Moradia</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                        <li class="list-group-item sys-clicavel py-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fs-6 ms-3">Água</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                        -->
                     </ul>
 
                 </template>
@@ -255,15 +221,11 @@
 
                 meios: [],
                 meioPagamentoSelecionado: {},
-
                 descricaoBusca: '',
                 sugestoes: [],
-
                 categorias: [],
-                categoriaSelecionada: {},
 
                 offCanvas: null,
-
             }),
 
             computed: {
@@ -290,32 +252,12 @@
 
             mounted() {
 
-                let input = window.document.getElementById('campoDescricao');
-
-                if (input) {
-
-                    input.addEventListener('keydown', e => {
-                        this.descricaoBusca = input.value;
-                    });
-
-                    input.addEventListener('input', e => {
-                        if (!this.dados.descricao) this.dados.descricao = '';
-
-                        this.dados.descricao = this.dados.descricao + k;
-                    });
-
-                }
+                //clean-up
+                this.dados = {};
+                this.descricaoBusca = '';
             },
 
             methods: {
-
-                //async buscarAsParada(k) {
-                //
-                //    if (!this.dados.descricao) this.dados.descricao = '';
-                //
-                //    this.dados.descricao = this.dados.descricao + k;
-                //    await this.buscarSugestoes(k);
-                //},
 
                 fechar() {
                     bootstrapHelper.closeOffcanvas(this.offCanvas);
@@ -374,9 +316,34 @@
 
                     if (passo2valido) {
                         this.passo = 3;
-                        this.setFocus('campoDescricao');
+                        //this.setFocus('campoDescricao');
+                        this.setupCampoDescricao();
                         await this.buscarSugestoes();
                     }
+                },
+
+                setupCampoDescricao() {
+
+                    this.$nextTick(() => {
+
+                        //testes
+                        let input = window.document.getElementById('campoDescricao');
+
+                        if (input) {
+
+                            input.focus();
+
+                            input.addEventListener('input', e => {
+                                this.descricaoBusca = input.value;
+                            });
+
+                            input.addEventListener('keydown', e => {
+                                if (!this.dados.descricao) this.dados.descricao = '';
+                                this.dados.descricao = this.dados.descricao + e.key;
+                            });
+
+                        }
+                    });
                 },
 
                 async buscarSugestoes(termo) {
@@ -429,8 +396,6 @@
                     this.passo = 5;
                 },
 
-                ///
-
                 async salvar() {
 
                     await this.setLoadingAndExecute(async () => {
@@ -457,8 +422,6 @@
                             mensagemSistema.showMensagemErro(e);
                         }
                     });
-
-
                 }
 
             }
