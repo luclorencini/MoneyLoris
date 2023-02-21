@@ -3,7 +3,7 @@
     <script type="text/html" id="template-subcategoria-modal">
 
         <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
-            <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{titulo}}</h5>
@@ -115,6 +115,9 @@
 
                         await this.setLoadingAndExecute(async () => {
                             try {
+
+                                fieldConverter.stringToInt(this.subcategoria, 'ordem');
+
                                 if (this.subcategoria.id) {
                                     ret = await fetchData.fetchPostJson('/categoria/sub/alterar', this.subcategoria);
                                     msg = 'Subcategoria alterada com sucesso.';

@@ -10,7 +10,7 @@
      * 
      * exemplo de uso:
      *    converter.moneyToString(this.conta, 'limite');
-     */ 
+     */
 
     /*
      * Converte number decimal em string formato dinheiro (D.DDD,DD)
@@ -36,6 +36,9 @@
     stringToInt(obj, att) {
         if (obj && obj[att]) {
             obj[att] = parseInt(obj[att]);
+        }
+        else {
+            obj[att] = null;
         }
     }
 

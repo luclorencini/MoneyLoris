@@ -3,9 +3,10 @@
     <script type="text/html" id="template-categoria-modal">
 
         <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
-            <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
                         <h5 class="modal-title">{{titulo}}</h5>
                         <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
                     </div>
@@ -107,6 +108,10 @@
 
                         await this.setLoadingAndExecute(async () => {
                             try {
+
+                                //conversões
+                                fieldConverter.stringToInt(this.categoria, 'ordem');
+
                                 if (this.categoria.id) {
                                     ret = await fetchData.fetchPostJson('/categoria/alterar', this.categoria);
                                     msg = 'Categoria alterada com sucesso.';
