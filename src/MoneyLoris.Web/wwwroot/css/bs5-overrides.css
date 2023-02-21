@@ -94,43 +94,14 @@
 }
 
 
-
 .table > :not(:first-child) {
     border-top: 1px solid currentColor !important;
 }
 
 
-.toast {
-    width: 50vw !important;
-    min-width: 980px;
-}
-
-    .toast .toast-header i {
-        font-size: 1.5rem;
-    }
-
-    .toast .toast-header strong {
-        font-size: 1rem;
-    }
-
-    .toast .toast-header .btn-close {
-        opacity: 1;
-    }
-
-    .toast .toast-body {
-        font-weight: 500;
-        font-size: 1rem;
-        background-color: #e8f5e9;
-    }
-
-
 /* #region OVERRIDES MOBILE */
 
 @media (max-width: 991px) { /*lg*/
-
-    .toast {
-        width: 100vw !important;
-    }
 
     .container-xxl {
         padding-left: 0 !important;

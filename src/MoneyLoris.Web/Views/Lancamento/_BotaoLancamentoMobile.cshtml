@@ -1,31 +1,31 @@
 ﻿<div class="barra-bottom d-lg-none">
     <div class="d-grid col-12 px-2">
-        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="offcanvas" href="#offcanvasLancOpt">
+        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="offcanvas" href="#offcanvasLancOptMobile">
             <i class="fa-solid fa-plus fa-lg sys-fg-dark-3 me-1"></i>
             <span class="sys-fg-dark-3 fw-bold">Lançar</span>
         </button>
     </div>
 </div>
 
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasLancOpt" aria-labelledby="offcanvasLabel">
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasLancOptMobile" aria-labelledby="offcanvasLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasLabel">Novo Lançamento</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0 d-flex flex-wrap">
-        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa" v-on:click="novaDespesa()">
+        <div class="opcao-lancamento fg-lanc-despesa bg-lanc-despesa" data-bs-dismiss="offcanvas" aria-label="Close" v-on:click="novaDespesa()">
             <i class="fa-solid fa-file-invoice-dollar fg-lanc-despesa"></i>
             <span>Despesa</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-receita bg-lanc-receita" v-on:click="novaReceita()">
+        <div class="opcao-lancamento fg-lanc-receita bg-lanc-receita" data-bs-dismiss="offcanvas" aria-label="Close" v-on:click="novaReceita()">
             <i class="fa-solid fa-hand-holding-dollar"></i>
             <span>Receita</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-transferencia bg-lanc-transferencia" v-on:click="novaTransferencia()">
+        <div class="opcao-lancamento fg-lanc-transferencia bg-lanc-transferencia" data-bs-dismiss="offcanvas" aria-label="Close" v-on:click="novaTransferencia()">
             <i class="fa-solid fa-money-bill-transfer"></i>
             <span>Transferência</span>
         </div>
-        <div class="opcao-lancamento fg-lanc-pag-fatura bg-lanc-pag-fatura" v-on:click="novoPagamentoFatura()">
+        <div class="opcao-lancamento fg-lanc-pag-fatura bg-lanc-pag-fatura" data-bs-dismiss="offcanvas" aria-label="Close" v-on:click="novoPagamentoFatura()">
             <i class="fa-regular fa-credit-card"></i>
             <span>Pagamento de Fatura</span>
         </div>

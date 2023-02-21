@@ -4,16 +4,15 @@
 
         <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasLancamentoWizard" style="width: 35rem;">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title">{{titulo}}</h5>
+                <i v-on:click="retornarPasso()" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel"></i>
+                <h5 class="offcanvas-title">Lançar {{labelTipo}}</h5>
                 <button type="button" class="btn-close" v-on:click="fechar()"></button>
             </div>
-            <div class="offcanvas-body">
-
-                <i v-if="passo > 1" v-on:click="retornarPasso()" class="fa-solid fa-circle-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
+            <div class="offcanvas-body pt-0">
 
                 <template v-if="passo == 1">
 
-                    <h5 class="mb-3">Em qual conta ou cartão você vai lançar a despesa?</h5>
+                    <h5 class="my-2">Em qual conta ou cartão você vai lançar a {{labelTipo}}?</h5>
 
                     <ul class="list-group">
                         <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-on:click="selecionarMeioPagamento(m)">
@@ -34,33 +33,26 @@
 
                 <template v-else-if="passo == 2">
 
-                    <form ref="formPasso2">
+                    <form ref="formPasso2" onsubmit="return false;">
                         <div class="container">
                             <div class="row">
-                                <div class="col col-12">
-                                    <h5 class="mb-3">Qual é o valor?</h5>
-                                </div>
 
                                 <div class="col col-12">
+                                    <h5 class="my-2">Qual é o valor?</h5>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text fw-bold fs-3">R$</span>
-                                        <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2" type="text" inputmode="decimal" required maxlength="10" v-model="dados.valor" v-ext-mask="'dinheiro'">
+                                        <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
+                                            type="text" inputmode="decimal" required maxlength="10"
+                                            v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso3()">
                                     </div>
                                 </div>
 
                                 <div class="col col-12">
-                                    <h5 class="my-3">Quando foi a despesa?</h5>
+                                    <h5 class="my-2">Quando foi a despesa?</h5>
                                     <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
                                 </div>
 
-                                <!--
-                                <div class="col col-6">
-                                    <h6 class="my-3">Número de parcelas:</h6>
-                                    <input class="form-control" type="number" value="1">
-                                </div>
-                                -->
-
-                                <div class="col col-12 mt-4 text-end">
+                                <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso3()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>
@@ -75,18 +67,15 @@
 
                 <template v-else-if="passo == 3">
 
-                    <form ref="formPasso3">
+                    <form ref="formPasso3" onsubmit="return false;">
                         <div class="container">
                             <div class="row">
-                                <div class="col col-12">
-                                    <h5 class="mb-3">Informe uma curta descrição:</h5>
-                                </div>
-                                <div class="col col-12">
-                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" >
-                                </div>
 
-                                <div class="col col-6" style="background-color: lime;">{{dados.descricao}}</div>
-                                <div class="col col-6" style="background-color: aqua;">{{campoTeste}}</div>
+                                <div class="col col-12">
+                                    <h5 class="my-2">Informe uma curta descrição:</h5>
+                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
+                                    v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" v-on:keyup.enter="avancarPasso4()">
+                                </div>
 
                                 <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
@@ -98,13 +87,13 @@
                         </div>
                     </form>
 
-                    <div class="d-flex align-items-center mt-4 mb-2">
-                        <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-1 me-2"></i>
+                    <div class="d-flex align-items-center mt-1 mb-2">
+                        <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-4 me-2"></i>
                         <div class="fs-5">{{labelTipo}}s recentes:</div>
                     </div>
 
                     <ul class="list-group" v-if="sugestoes.length > 0">
-                        <li v-for="s in sugestoes" class="list-group-item sys-clicavel py-2" v-on:click="selecionarSugestao(s)">
+                        <li v-for="s in sugestoes" class="list-group-item sys-clicavel py-1" v-on:click="selecionarSugestao(s)">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex flex-column flex-wrap">
                                     <div class="fw-bold fs-6">{{s.descricao}}</div>
@@ -119,13 +108,7 @@
 
                 <template v-else-if="passo == 4">
 
-                     <div class="container">
-                        <div class="row">
-                            <div class="col col-12">
-                                <h5 class="mb-3">Qual categoria?</h5>
-                            </div>
-                        </div>
-                    </div>
+                    <h5 class="my-2">Qual categoria?</h5>
 
                     <ul class="list-group">
                         <li v-for="c in categorias" class="list-group-item sys-clicavel py-2" v-on:click="selecionarCategoria(c)">
@@ -168,7 +151,7 @@
                             </div>
                             <div>
                                 <div class="fs-4 fw-bold">{{dados.descricao}}</div>
-                                <div class="fs-6 fst-italic lh-1">
+                                <div class="fs-5 fst-italic lh-1">
                                     <span>{{dados.nomeCategoria}}</span><span v-if="dados.idSubcategoria"> / {{dados.nomeSubCategoria}}</span>
                                 </div>
                             </div>
@@ -224,15 +207,9 @@
                 categorias: [],
 
                 offCanvas: null,
-
-                campoTeste: ''
             }),
 
             computed: {
-
-                titulo() {
-                    return (this.tipo == 1 ? "Nova Receita" : "Nova Despesa");
-                },
 
                 labelTipo() {
                     return (this.tipo == 1 ? "Receita" : "Despesa");
@@ -277,17 +254,25 @@
                     this.sugestoes = [];
                     this.categorias = [];
 
-                    this.passo = 1;
-                    await this.obterMeiosPagamento();
+                    await this.iniciarPasso1();
+
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
                 },
 
                 retornarPasso() {
-                    this.passo = this.passo - 1;
+                    if (this.passo == 1)
+                        this.fechar();
+                    else
+                        this.passo = this.passo - 1;
                 },
 
 
                 // passo 1
+
+                async iniciarPasso1() {
+                    this.passo = 1;
+                    await this.obterMeiosPagamento();
+                },
 
                 async obterMeiosPagamento() {
 
@@ -327,28 +312,8 @@
                 async filtrarSugestoesInput() {
                     let val = this.$refs.campoDescricao.value;
                     this.dados.descricao = val;
-                    this.campoTeste = val;
                     await this.buscarSugestoes(val);
                 },
-
-                //setupCampoDescricao() {
-                //
-                //    this.$nextTick(() => {
-                //
-                //        //testes
-                //        let input = window.document.getElementById('campoDescricao');
-                //
-                //        if (input) {
-                //
-                //            input.focus();
-                //
-                //            input.addEventListener('input', e => {
-                //                this.descricaoBusca = input.value;
-                //            });
-                //
-                //        }
-                //    });
-                //},
 
                 async buscarSugestoes(termo) {
 

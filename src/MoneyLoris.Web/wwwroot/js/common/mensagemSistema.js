@@ -5,20 +5,8 @@ const mensagemSistema = {
     */
     showMensagemSucesso(mensagem) {
 
-        let html2 = `
-<div class="toast ext-toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="container">
-        <div class="toast-body">
-            <i aria-hidden="true" class="fas fa-check-circle text-success me-1"></i>
-            <span class="me-auto">${mensagem}</span>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-</div>
-`;
-
         let html = `
-<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
     <div class="toast-header text-white bg-success">
         <i aria-hidden="true" class="fas fa-check text-white me-2"></i>
         <strong class="me-auto">Tudo certo!</strong>
