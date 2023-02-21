@@ -465,3 +465,70 @@ main {
 }
 
 /* #endregion */
+
+
+/* #region SPLASH Message */
+
+@keyframes kf-splash {
+    0% {
+        opacity: 0.5;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.splash-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--sys-color-dark-2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    pointer-events: none;
+    animation: kf-splash 1.5s forwards;
+}
+
+    .splash-message .container {
+        text-align: center;
+        pointer-events: none;
+    }
+
+        .splash-message .container img {
+            width: 17vw;
+        }
+
+        .splash-message .container .message {
+            font-size: 5.5rem;
+            line-height: 6.5rem;
+            font-weight: bold;
+            color: var(--sys-color-dark-3);
+            margin-top: 0.25rem;
+        }
+
+@media (max-width: 575px) { /*sm*/
+    .splash-message .container img {
+        width: 45vw;
+    }
+
+    .splash-message .container .message {
+        font-size: 3.5rem;
+        line-height: 4.5rem;
+        margin-top: 2rem;
+    }
+}
+
+/* #endregion */

@@ -379,7 +379,7 @@
                             let ret = await fetchData.fetchPostJson(url, this.dados);
 
                             if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso(ret.message);
+                                mensagemSistema.showSplashSucesso(`${this.labelTipo} salva!`);
                                 this.fechar();
                                 this.$emit('lancamento-realizado');
                             }

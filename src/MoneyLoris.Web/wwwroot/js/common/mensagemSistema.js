@@ -60,5 +60,32 @@ const mensagemSistema = {
         document.body.insertAdjacentHTML('beforeend', html);
         let el = document.getElementById('erroModal');
         bootstrapHelper.openModal(el);
+    },
+
+
+    /**
+    * @param {string} mensagem
+    */
+    showSplashSucesso(mensagem) {
+
+        if (!mensagem)
+            mensagem = 'Tudo certo!';
+
+        let html = `
+<div id="splashSucesso" class="splash-message">
+    <div class="container">
+        <img src="./img/moneyloris-mascot-transparent.svg">
+        <div class="message">${mensagem}</div>
+    </div>
+</div>
+`;
+
+        //se já existir o splash no dom, remove-o
+        let elSplashJaExistente = document.getElementById('splashSucesso');
+        if (elSplashJaExistente)
+            elSplashJaExistente.remove();
+
+        //insere o splash
+        document.body.insertAdjacentHTML('beforeend', html);
     }
 }
