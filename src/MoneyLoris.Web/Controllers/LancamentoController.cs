@@ -97,6 +97,13 @@ public class LancamentoController : BaseController
         return Ok(ret);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ObterTransferencia(int id)
+    {
+        var ret = await _lancamentoService.ObterTransferencia(id);
+        return Ok(ret);
+    }
+
     [HttpPost()]
     public async Task<IActionResult> AlterarTransferencia([FromBody] TransferenciaUpdateDto transferencia)
     {

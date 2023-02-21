@@ -6,7 +6,7 @@
             <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5">Editar Despesa</h1>
+                        <h1 class="modal-title fs-5">Editar {{labelTipo}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -15,34 +15,27 @@
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Conta / Cartão</label>
-                                    <select class="form-select">
-                                        <optgroup label="Contas">
-                                            <option value="2">Caixa</option>
-                                            <option value="3">PicPay</option>
-                                        </optgroup>
-                                        <optgroup label="Cartões">
-                                            <option value="1">Nubank</option>
-                                        </optgroup>
+                                    <select class="form-select" v-model="lancamento.idMeioPagamento">
+                                        <option v-for="m in meios" :value="m.id">{{m.nome}}</option>
                                     </select>
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Data</label>
-                                    <input class="form-control" type="date">
+                                    <input class="form-control" type="date" v-model="lancamento.data">
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Descrição</label>
-                                    <input class="form-control fw-bold" required maxlength="50">
+                                    <input class="form-control fw-bold" required maxlength="50" v-model="lancamento.descricao">
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Categoria / Subcategoria</label>
-                                    <select class="form-select">
-                                        <option value="1">Alimentação</option>
-                                        <option value="11">Alimentação / Supermercado</option>
-                                        <option value="2">Moradia</option>
-                                        <option value="3">Poupança</option>
+                                    <select class="form-select" v-model="lancamento.idCatSub">
+                                        <option v-for="c in categorias" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                            {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                        </option>
                                     </select>
                                 </div>
 
@@ -50,7 +43,7 @@
                                     <label class="form-label required-asterisk">Valor</label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">R$</span>
-                                        <input class="form-control" type="text" required maxlength="10">
+                                        <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="lancamento.valor" v-ext-mask="'dinheiro'">
                                     </div>
                                 </div>
 
@@ -59,10 +52,10 @@
                     </div>
                     <div class="modal-footer">
                         <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger">Excluir</button>
-                            <div>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2 px-4">Salvar</button>
+                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                            <div class="d-flex justify-content-end w-100">
+                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                             </div>
                         </div>
                     </div>
@@ -87,36 +80,58 @@
             emits: ['lancamento-salvo'],
             components: { ConfirmationDialog },
 
-            props: {
-                xyz: Object
-            },
-
             data: () => ({
                 lancamento: {},
+
+                meios: [],
+                categorias: [],
+
                 modal: null,
             }),
 
             computed: {
 
-                abcd() {
-                    return "";
+                labelTipo() {
+                    return (this.tipo == 1 ? "Receita" : "Despesa");
                 },
             },
 
             mounted() {
-
             },
 
             methods: {
 
                 async carregar(id) {
 
-                    await this.showLoadingSplashAndExecute(async () => {
-                        let ret = await fetchData.fetchGetJson(`/lancamento/obterLancamento/${id}`);
-                        this.lancamento = ret.value;
-                    });
+                    try {
 
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            //busca lançamento
+                            let ret = await fetchData.fetchGetJson(`/lancamento/obterLancamento/${id}`);
+                            this.lancamento = ret.value;
+
+                            //conversoes e tratamentos
+                            fieldConverter.moneyToString(this.lancamento, 'valor');
+                            fieldConverter.dateStringIsoToInputString(this.lancamento, 'data');
+                            this.lancamento.idCatSub = utils.catSubToString(this.lancamento.idCategoria, this.lancamento.idSubcategoria);
+
+                            //busca meios
+                            let rm = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+                            this.meios = rm.value;
+
+                            //busca categorias
+                            let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
+                            this.categorias = rc.value;
+
+                        });
+
+                        this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+
+                    }
+                    catch (e) {
+                        mensagemSistema.showMensagemErro(e);
+                    }
                 },
 
                 fechar() {
@@ -134,12 +149,16 @@
                             try {
 
                                 //conversões
-                                //fieldConverter.stringToInt(this.categoria, 'ordem');
+                                fieldConverter.stringToMoney(this.lancamento, 'valor');
+
+                                let catIds = utils.parseCatSub(this.lancamento.idCatSub);
+                                this.lancamento.idCategoria = catIds[0];
+                                this.lancamento.idSubcategoria = catIds[1];
 
                                 ret = await fetchData.fetchPostJson('/lancamento/alterarLancamento', this.lancamento);
 
                                 if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(msg);
+                                    mensagemSistema.showMensagemSucesso(ret.message);
                                     this.fechar();
                                     this.$emit('lancamento-salvo', ret.value.id);
                                 }
@@ -166,7 +185,7 @@
 
                         await this.showLoadingSplashAndExecute(async () => {
 
-                            let ret = await fetchData.fetchPostJson('/lancamento/excluirTransferencia', this.lancamento.id);
+                            let ret = await fetchData.fetchPostJson('/lancamento/excluirLancamento', this.lancamento.id);
 
                             if (ret.ok) {
                                 mensagemSistema.showMensagemSucesso(ret.message);

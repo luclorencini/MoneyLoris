@@ -18,6 +18,7 @@ public interface ILancamentoService
 
     Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto transferencia);
     Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia);
+    Task<Result<TransferenciaUpdateDto>> ObterTransferencia(int id);
     Task<Result<int>> AlterarTransferencia(TransferenciaUpdateDto lancamento);
     Task<Result<int>> ExcluirTransferencia(int idLancamentoOrigem);
 }

@@ -102,6 +102,8 @@
         return dia;
     },
 
+
+    //TODO - usar dateToInput(date)
     dataYMD(strDate) {
 
         let d = new Date(strDate);
@@ -271,6 +273,26 @@
             return 'fa-wallet';
 
         return 'fa-money-check-dollar';
+    },
+
+    /* endregion */
+
+    /* region Categoria e Subcategoria */
+
+    //transforma idCategoria e idSubcategoria numa unica string separada por traço.
+    //se subcategoria for nula, ela vira zero
+    catSubToString(idCat, idSub) {
+        if (!idSub) idSub = 0;
+        return `${idCat}-${idSub}`;
+    },
+
+    //recebe uma string concatenada de idCategoria e idSubcategoria e retorna um array de 2 posições
+    // arr[0]: idCategoria, arr[1]: idSubcategoria (essa pode ser null)
+    parseCatSub(str) {
+        let arr = str.split('-');
+        let idCat = parseInt(arr[0]);
+        let idSub = parseInt((arr[1] == '0' ? null : arr[1]));
+        return [idCat, idSub];
     },
 
     /* endregion */

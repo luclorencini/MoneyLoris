@@ -57,30 +57,30 @@
 
                                 @*<template v-if="isNovo">
 
-                                    <hr class="my-1" />
+                            <hr class="my-1" />
 
-                                    <div class="col-12 mt-2">
-                                        <h5>Saldo Inicial</h5>
-                                        <div class="lh-sm">
-                                            <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
-                                            <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
-                                        </div>
-                                    </div>
+                            <div class="col-12 mt-2">
+                                <h5>Saldo Inicial</h5>
+                                <div class="lh-sm">
+                                    <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
+                                    <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
+                                </div>
+                            </div>
 
-                                    <div class="col-6">
-                                        <label class="form-label required-asterisk">Valor {{utils.isCartaoCredito(this.conta.tipo) ? 'da Fatual Atual' : 'do Saldo'}}</label>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">R$</span>
-                                            <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
-                                        </div>
-                                    </div>
+                            <div class="col-6">
+                                <label class="form-label required-asterisk">Valor {{utils.isCartaoCredito(this.conta.tipo) ? 'da Fatual Atual' : 'do Saldo'}}</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">R$</span>
+                                    <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
+                                </div>
+                            </div>
 
-                                    <div class="col-6">
-                                        <label class="form-label required-asterisk">Data Lançamento</label>
-                                        <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
-                                    </div>
+                            <div class="col-6">
+                                <label class="form-label required-asterisk">Data Lançamento</label>
+                                <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
+                            </div>
 
-                                </template>*@
+                        </template>*@
 
                                 <template v-if="utils.isCartaoCredito(conta.tipo)">
 
@@ -163,16 +163,16 @@
                     return (this.conta.id == undefined);
                 },
 
-                podeAlterarTipo(){
+                podeAlterarTipo() {
                     if (this.isNovo) return true;
 
-                    if (utils.isCartaoCredito(this.conta.tipo)) 
+                    if (utils.isCartaoCredito(this.conta.tipo))
                         return false;
                     else
                         return true;
                 },
 
-                exibirTipoCartaoCredito(){
+                exibirTipoCartaoCredito() {
                     if (this.isNovo) return true;
 
                     if (utils.isCartaoCredito(this.conta.tipo))
@@ -197,7 +197,7 @@
                             fieldConverter.moneyToString(this.conta, 'limite');
                         }
                         else {
-                            this.conta = { tipo: 1, cor: '000000'};
+                            this.conta = { tipo: 1, cor: '000000' };
                         }
                     });
 
@@ -215,7 +215,6 @@
 
                     if (isValido) {
                         let ret = null;
-                        let msg = '';
 
                         await this.setLoadingAndExecute(async () => {
                             try {
@@ -227,17 +226,12 @@
                                 fieldConverter.stringToInt(this.conta, 'ordem');
 
                                 //submit
-                                if (this.conta.id) {
-                                    ret = await fetchData.fetchPostJson('/conta/alterar', this.conta);
-                                    msg = 'Conta alterada com sucesso.';
-                                }
-                                else {
-                                    ret = await fetchData.fetchPostJson('/conta/inserir', this.conta);
-                                    msg = 'Conta inserida com sucesso.';
-                                }
+                                let url = (this.conta.id ? '/conta/alterar' : '/conta/inserir');
+
+                                ret = await fetchData.fetchPostJson(url, this.conta);
 
                                 if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(msg);
+                                    mensagemSistema.showMensagemSucesso(ret.message);
                                     this.fechar();
                                     this.$emit('conta-salva', ret.value.id);
                                 }
@@ -282,7 +276,7 @@
                     this.conta.cor = rgb;
                 },
 
-                obterCores(){
+                obterCores() {
                     let cores = [
                         { rgb: '0369B9', desc: 'Caixa' },
                         { rgb: 'FCF800', desc: 'Banco do Brasil' },

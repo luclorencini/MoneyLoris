@@ -19,6 +19,9 @@
         if (obj && obj[att]) {
             obj[att] = utils.numberToString2CD(obj[att]);
         }
+        else {
+            obj[att] = null;
+        }
     },
 
     /*
@@ -28,6 +31,9 @@
         if (obj && obj[att]) {
             obj[att] = mascaras.unparseMoney(obj[att]);
         }
+        else {
+            obj[att] = null;
+        }
     },
 
     /*
@@ -36,6 +42,31 @@
     stringToInt(obj, att) {
         if (obj && obj[att]) {
             obj[att] = parseInt(obj[att]);
+        }
+        else {
+            obj[att] = null;
+        }
+    },
+
+    /*
+     * Converte objeto Date no formato string YYYY-MM-DD proprio para campo <input type="date">
+     */
+    dateToInputString(obj, att) {
+        if (obj && obj[att]) {
+            obj[att] = utils.dateToInput(obj[att]);
+        }
+        else {
+            obj[att] = null;
+        }
+    },
+
+    /*
+     * Converte string data serializada iso "2023-02-20T00:00:00-03:00" no formato string YYYY-MM-DD proprio para campo <input type="date">
+     */
+    dateStringIsoToInputString(obj, att) {
+        if (obj && obj[att]) {
+            let d = new Date(obj[att]);
+            obj[att] = utils.dateToInput(d);
         }
         else {
             obj[att] = null;
