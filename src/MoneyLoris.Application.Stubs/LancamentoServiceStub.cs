@@ -169,6 +169,16 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return await TaskSuccess((123, "Despesa lançada com sucesso."));
     }
 
+    public async Task<Result<int>> InserirTransferencia(TransferenciaInsertDto transferencia)
+    {
+        return await TaskSuccess((123, "Transferência lançada com sucesso."));
+    }
+
+    public async Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia)
+    {
+        return await TaskSuccess((123, "Pagamento de Fatura lançada com sucesso."));
+    }
+
 
     private ICollection<LancamentoListItemDto> MockList()
     {

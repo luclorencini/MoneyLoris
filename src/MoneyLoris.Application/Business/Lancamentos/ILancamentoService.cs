@@ -12,4 +12,6 @@ public interface ILancamentoService
 
     Task<Result<int>> InserirReceita(LancamentoInsertDto lancamento);
     Task<Result<int>> InserirDespesa(LancamentoInsertDto lancamento);
+    Task<Result<int>> InserirTransferencia(TransferenciaInsertDto transferencia);
+    Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia);
 }

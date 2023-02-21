@@ -61,4 +61,18 @@ public class LancamentoController : BaseController
         var ret = await _lancamentoService.InserirDespesa(lancamento);
         return Ok(ret);
     }
+
+    [HttpPost()]
+    public async Task<IActionResult> LancarTransferencia([FromBody] TransferenciaInsertDto transferencia)
+    {
+        var ret = await _lancamentoService.InserirTransferencia(transferencia);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> LancarPagamentoFatura([FromBody] TransferenciaInsertDto transferencia)
+    {
+        var ret = await _lancamentoService.InserirPagamentoFatura(transferencia);
+        return Ok(ret);
+    }
 }

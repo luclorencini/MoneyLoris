@@ -15,7 +15,7 @@
                     <h5 class="my-2">Em qual conta ou cartão você vai lançar a {{labelTipo}}?</h5>
 
                     <ul class="list-group">
-                        <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-on:click="selecionarMeioPagamento(m)">
+                        <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamento }" v-on:click="selecionarMeioPagamento(m)">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex flex-wrap align-items-center">
                                     <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
@@ -74,7 +74,7 @@
                                 <div class="col col-12">
                                     <h5 class="my-2">Informe uma curta descrição:</h5>
                                     <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
-                                    v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" v-on:keyup.enter="avancarPasso4()">
+                                        v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" v-on:keyup.enter="avancarPasso4()">
                                 </div>
 
                                 <div class="col col-12 mt-3 text-end">
@@ -88,8 +88,14 @@
                     </form>
 
                     <div class="d-flex align-items-center mt-1 mb-2">
-                        <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-4 me-2"></i>
-                        <div class="fs-5">{{labelTipo}}s recentes:</div>
+                        <template v-if="!dados.descricao">
+                            <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-4 me-2"></i>
+                            <div class="fs-5">{{labelTipo}}s recentes:</div>
+                        </template>
+                        <template v-else>
+                            <i class="fa-solid fa-magnifying-glass fa-xl sys-fg-dark-4 me-2"></i>
+                            <div class="fs-5">Resultado de pesquisa:</div>
+                        </template>
                     </div>
 
                     <ul class="list-group" v-if="sugestoes.length > 0">
@@ -192,7 +198,7 @@
             name: 'LancamentoWizard',
             template: '#template-lancamento-wizard',
             mixins: [BaseMixin],
-            components: { Moeda, ConfirmationDialog },
+            components: { Moeda },
             emits: ['lancamento-realizado'],
 
             data: () => ({
@@ -402,6 +408,14 @@
 @using (Html.VueStyle())
 {
     <style type="text/css">
+
+        .meio-list-selected {
+            background-color: var(--sys-color-light-4);
+        }
+
+            .meio-list-selected:hover {
+                filter: brightness(.95);
+            }
 
         .resumo-icone-container {
             width: 4.5rem;

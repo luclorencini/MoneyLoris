@@ -4,12 +4,149 @@
 
         <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasTransferenciaWizard" style="width: 35rem;">
             <div class="offcanvas-header">
-                <!--<h5 class="offcanvas-title">Nova Despesa</h5>-->
-                <i aria-hidden="true" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 sys-clicavel"></i>
+                <i v-on:click="retornarPasso()" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel"></i>
+                <h5 class="offcanvas-title">Lançar {{labelTipo}}</h5>
                 <button type="button" class="btn-close" v-on:click="fechar()"></button>
             </div>
-            <div class="offcanvas-body">
-                <h5>Transferência</h5>
+            <div class="offcanvas-body pt-0">
+
+                <template v-if="passo == 1">
+
+                    <h5 class="my-2">De qual conta o dinheiro vai sair?</h5>
+
+                    <ul class="list-group">
+                        <li v-for="m in meiosOrigem" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamentoOrigem }" v-on:click="selecionarMeioPagamentoOrigem(m)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
+                                    <div>
+                                        <div class="fw-bold fs-6 lh-1">{{m.nome}}</div>
+                                        <small class="fst-italic lh-1">{{m.tipoDescricao}}</small>
+                                    </div>
+                                </div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                    </ul>
+
+                </template>
+
+                <template v-if="passo == 2">
+
+                    <h5 v-if="tipoTransferencia == 1" class="my-2">Para qual conta você vai mandar o dinheiro?</h5>
+                    <h5 v-else class="my-2">Qual cartão você vai pagar a fatura?</h5>
+
+                    <ul class="list-group sys-animations-fadein">
+                        <li v-for="m in meiosDestino" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamentoDestino }" v-on:click="selecionarMeioPagamentoDestino(m)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
+                                    <div>
+                                        <div class="fw-bold fs-6 lh-1">{{m.nome}}</div>
+                                        <small class="fst-italic lh-1">{{m.tipoDescricao}}</small>
+                                    </div>
+                                </div>
+                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                            </div>
+                        </li>
+                    </ul>
+
+                </template>
+
+                <template v-else-if="passo == 3">
+
+                    <form ref="formPasso3" onsubmit="return false;">
+                        <div class="container">
+                            <div class="row">
+
+                                <div class="col col-12">
+                                    <h5 class="my-2">Qual é o valor?</h5>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text fw-bold fs-3">R$</span>
+                                        <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
+                                            type="text" inputmode="decimal" required maxlength="10"
+                                            v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso4()">
+                                    </div>
+                                </div>
+
+                                <div class="col col-12">
+                                    <h5 class="my-2">Quando foi a transferência?</h5>
+                                    <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
+                                </div>
+
+                                <div class="col col-12 mt-3 text-end">
+                                    <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
+                                        <span>Próximo</span>
+                                        <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+
+                </template>
+
+                <template v-else-if="passo == 4">
+
+                    <div class="container">
+
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="fs-3">Confira se está tudo certo:</div>
+                        </div>
+
+                        <div class="d-flex align-items-center my-4">
+                            <div class="resumo-icone-container">
+                                <i class="fa-solid fa-sack-dollar fa-3x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div class="fs-1 fw-bold" v-bind:class="[this.tipoTransferencia == 1 ? 'din-receita' : 'din-despesa']">
+                                <Moeda :valor="valorDecimal" :retirarCor="true" :retirarSinal="true"/>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center my-4">
+                            <div class="resumo-icone-container">
+                                <i class="fa-regular fa-calendar-days fa-3x sys-fg-dark-2 me-2"></i>
+                            </div>
+                            <div class="fs-2 fw-bold text-capitalize">{{dataPorExtenso}}</div>
+                        </div>
+
+                        <div class="resumo-transferencia my-4">
+
+                            <div class="d-flex align-items-center">
+                                <div class="resumo-icone-container">
+                                    <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioOrigemSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioOrigemSelecionado.cor}"></i>
+                                </div>
+                                <div>
+                                    <div class="fs-4 fw-bold">{{meioOrigemSelecionado.nome}}</div>
+                                    <div class="fs-6 fst-italic lh-1">{{meioOrigemSelecionado.tipoDescricao}}</div>
+                                </div>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-down fa-3x sys-fg-dark-4 my-3"></i>
+
+                            <div class="d-flex align-items-center">
+                                <div class="resumo-icone-container">
+                                    <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioDestinoSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioDestinoSelecionado.cor}"></i>
+                                </div>
+                                <div>
+                                    <div class="fs-4 fw-bold">{{meioDestinoSelecionado.nome}}</div>
+                                    <div class="fs-6 fst-italic lh-1">{{meioDestinoSelecionado.tipoDescricao}}</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex align-items-center mt-5">
+                             <button class="btn btn-primary btn-lg w-100" type="button" v-on:click="salvar()">
+                                <span class="sys-fg-dark-3 fw-bold">Lançar {{labelTipo}}</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </template>
+
             </div>
         </div>
 
@@ -25,26 +162,42 @@
             name: 'TransferenciaWizard',
             template: '#template-transferencia-wizard',
             mixins: [BaseMixin],
-            components: { ConfirmationDialog },
+            components: { Moeda },
             emits: ['transferencia-realizada'],
 
-            props: {
-                xyz: Object
-            },
-
             data: () => ({
+
+                dados: {},
+                tipoTransferencia: 1,
+                passo: 1,
+
+                meiosOrigem: [],
+                meioOrigemSelecionado: {},
+                meiosDestino: [],
+                meioDestinoSelecionado: {},
+
                 offCanvas: null,
             }),
 
             computed: {
 
-                abcd() {
-                    return "";
+                labelTipo() {
+                    return (this.tipoTransferencia == 1 ? "Transferência" : "Pagamento de Fatura");
                 },
+
+                valorDecimal() {
+                    let str = mascaras.parseMoney(this.dados.valor);
+                    str = mascaras.unparseMoney(str);
+                    return parseFloat(str);
+                },
+
+                dataPorExtenso() {
+                    const d = utils.inputToDate(this.dados.data);
+                    return utils.dataExtenso(d);
+                }
             },
 
             mounted() {
-
             },
 
             methods: {
@@ -54,23 +207,126 @@
                 },
 
                 async initTransferencia() {
-
-                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasTransferenciaWizard);
+                    await this._init(1); // 1 - transferencia entre contas
                 },
 
                 async initPagamentoFatura() {
+                    await this._init(2); // 2 - pagamento de faturas
+                },
+
+                async _init(t) {
+
+                    //clean-up
+                    this.tipoTransferencia = t;
+                    this.dados = {};
+                    this.meiosOrigem = [];
+                    this.meioOrigemSelecionado = {};
+                    this.meiosDestino = [];
+                    this.meioDestinoSelecionado = {};
+
+                    await this.iniciarPasso1();
 
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasTransferenciaWizard);
                 },
 
+                retornarPasso() {
+                    if (this.passo == 1)
+                        this.fechar();
+                    else
+                        this.passo = this.passo - 1;
+                },
 
-                ///
+
+                // passo 1
+
+                async iniciarPasso1() {
+                    this.passo = 1;
+                    await this.obterMeiosPagamentoOrigem();
+                },
+
+                async obterMeiosPagamentoOrigem() {
+
+                    await this.setLoadingAndExecute(async () => {
+                        let ret = await fetchData.fetchGetJson(`/common/contas`);
+                        this.meiosOrigem = ret.value;
+                    });
+                },
+
+                selecionarMeioPagamentoOrigem(m) {
+                    this.dados.idMeioPagamentoOrigem = m.id;
+                    this.meioOrigemSelecionado = m;
+                    this.avancarPasso2();
+                },
+
+                // passo 2
+
+                async avancarPasso2() {
+                    this.passo = 2;
+                    await this.obterMeiosPagamentoDestino();
+                },
+
+                async obterMeiosPagamentoDestino() {
+
+                    let url = (this.tipoTransferencia == 1 ? '/common/contas' : '/common/cartoes');
+
+                    await this.setLoadingAndExecute(async () => {
+                        let ret = await fetchData.fetchGetJson(url);
+                        this.meiosDestino = ret.value;
+                    });
+                },
+
+                selecionarMeioPagamentoDestino(m) {
+                    this.dados.idMeioPagamentoDestino = m.id;
+                    this.meioDestinoSelecionado = m;
+                    this.avancarPasso3();
+                },
+
+                // passo 3
+
+                avancarPasso3() {
+                    this.passo = 3;
+                    this.dados.data = utils.dateToInput(new Date());
+                    this.setFocus('campoValor');
+                },
+
+                // passo 4 - resumo
+
+                avancarPasso4() {
+
+                    let passo3valido = this.validarForm(this.$refs.formPasso3);
+
+                    if (passo3valido) {
+                        this.passo = 4;
+                    }
+                },
 
                 async salvar() {
 
-                    this.$emit('transferencia-realizada');
-                }
+                    await this.setLoadingAndExecute(async () => {
 
+                        try {
+
+                            //conversoes
+                            fieldConverter.stringToMoney(this.dados, 'valor');
+
+                            const url = (this.tipoTransferencia == 1 ? '/lancamento/lancarTransferencia' : '/lancamento/lancarPagamentoFatura');
+
+                            let ret = await fetchData.fetchPostJson(url, this.dados);
+
+                            if (ret.ok) {
+                                mensagemSistema.showSplashSucesso(`${this.labelTipo} salva`);
+                                this.fechar();
+                                this.$emit('transferencia-realizada');
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
             }
         }
 
@@ -79,8 +335,29 @@
 
 @using (Html.VueStyle())
 {
-    @* Não há css específico deste componente *@
+    <style type="text/css">
 
-    @*<style type="text/css">
-    </style>*@
+        .meio-list-selected {
+            background-color: var(--sys-color-light-4);
+        }
+
+            .meio-list-selected:hover {
+                filter: brightness(.95);
+            }
+
+        .resumo-icone-container {
+            width: 4.5rem;
+            text-align: center;
+        }
+
+        .resumo-transferencia {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--sys-color-dark-4);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+    </style>
 }
