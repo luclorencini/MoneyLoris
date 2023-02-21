@@ -111,6 +111,10 @@
 
                 async carregar(id) {
 
+                    await this.showLoadingSplashAndExecute(async () => {
+                        let ret = await fetchData.fetchGetJson(`/lancamento/obterLancamento/${id}`);
+                        this.lancamento = ret.value;
+                    });
 
                     this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
                 },
@@ -121,11 +125,60 @@
 
                 async salvar() {
 
+                    let isValido = this.validarForm(this.$refs.form);
+
+                    if (isValido) {
+                        let ret = null;
+
+                        await this.setLoadingAndExecute(async () => {
+                            try {
+
+                                //conversões
+                                //fieldConverter.stringToInt(this.categoria, 'ordem');
+
+                                ret = await fetchData.fetchPostJson('/lancamento/alterarLancamento', this.lancamento);
+
+                                if (ret.ok) {
+                                    mensagemSistema.showMensagemSucesso(msg);
+                                    this.fechar();
+                                    this.$emit('lancamento-salvo', ret.value.id);
+                                }
+                                else {
+                                    mensagemSistema.showMensagemErro(ret.message);
+                                }
+                            }
+                            catch (e) {
+                                mensagemSistema.showMensagemErro(e);
+                            }
+                        });
+                    }
                 },
 
                 async excluir() {
 
-                }
+                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                        titulo: 'Exclusão de Lançamento',
+                        mensagem: `Deseja realmente excluir este Lançamento?`,
+                        okLabel: 'Excluir',
+                    });
+
+                    if (confirma) {
+
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            let ret = await fetchData.fetchPostJson('/lancamento/excluirTransferencia', this.lancamento.id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('lancamento-salvo', this.lancamento.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        });
+                    }
+                },
 
             }
         }

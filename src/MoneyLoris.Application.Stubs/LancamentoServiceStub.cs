@@ -159,17 +159,43 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return TaskSuccess(list);
     }
 
-    public async Task<Result<int>> InserirReceita(LancamentoInsertDto lancamento)
+    public async Task<Result<int>> InserirReceita(LancamentoCadastroDto lancamento)
     {
         return await TaskSuccess((123, "Receita lançada com sucesso."));
     }
 
-    public async Task<Result<int>> InserirDespesa(LancamentoInsertDto lancamento)
+    public async Task<Result<int>> InserirDespesa(LancamentoCadastroDto lancamento)
     {
         return await TaskSuccess((123, "Despesa lançada com sucesso."));
     }
 
-    public async Task<Result<int>> InserirTransferencia(TransferenciaInsertDto transferencia)
+    public async Task<Result<LancamentoCadastroDto>> ObterLancamento(int id)
+    {
+        var ret = new LancamentoCadastroDto { 
+            Id = 502,
+            Data = SystemTime.Today().AddDays(-1),
+            Tipo = TipoLancamento.Despesa,
+            IdMeioPagamento = 302,  //nubank
+            IdCategoria= 101,  //Alimentação
+            IdSubcategoria = 213,  //Lanche
+            Descricao = "Mc Donald's",
+            Valor = 49.50M  //Importante: tem que voltar sempre positivo
+        };
+        return await TaskSuccess(ret);
+    }
+
+    public async Task<Result<int>> AlterarLancamento(LancamentoCadastroDto lancamento)
+    {
+        return await TaskSuccess((123, "Lançamento alterado com sucesso."));
+    }
+
+    public async Task<Result<int>> ExcluirLancamento(int id)
+    {
+        return await TaskSuccess((123, "Lançamento excluído com sucesso."));
+    }
+
+
+    public async Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto transferencia)
     {
         return await TaskSuccess((123, "Transferência lançada com sucesso."));
     }
@@ -177,6 +203,16 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
     public async Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia)
     {
         return await TaskSuccess((123, "Pagamento de Fatura lançada com sucesso."));
+    }
+
+    public async Task<Result<int>> AlterarTransferencia(TransferenciaUpdateDto lancamento)
+    {
+        return await TaskSuccess((123, "Transferência alterada com sucesso."));
+    }
+
+    public async Task<Result<int>> ExcluirTransferencia(int idLancamentoOrigem)
+    {
+        return await TaskSuccess((123, "Transferência excluída com sucesso."));
     }
 
 

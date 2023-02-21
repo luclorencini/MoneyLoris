@@ -49,14 +49,14 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
-    public async Task<IActionResult> LancarReceita([FromBody] LancamentoInsertDto lancamento)
+    public async Task<IActionResult> LancarReceita([FromBody] LancamentoCadastroDto lancamento)
     {
         var ret = await _lancamentoService.InserirReceita(lancamento);
         return Ok(ret);
     }
 
     [HttpPost()]
-    public async Task<IActionResult> LancarDespesa([FromBody] LancamentoInsertDto lancamento)
+    public async Task<IActionResult> LancarDespesa([FromBody] LancamentoCadastroDto lancamento)
     {
         var ret = await _lancamentoService.InserirDespesa(lancamento);
         return Ok(ret);
@@ -65,7 +65,7 @@ public class LancamentoController : BaseController
     [HttpPost()]
     public async Task<IActionResult> LancarTransferencia([FromBody] TransferenciaInsertDto transferencia)
     {
-        var ret = await _lancamentoService.InserirTransferencia(transferencia);
+        var ret = await _lancamentoService.InserirTransferenciaEntreContas(transferencia);
         return Ok(ret);
     }
 
@@ -73,6 +73,41 @@ public class LancamentoController : BaseController
     public async Task<IActionResult> LancarPagamentoFatura([FromBody] TransferenciaInsertDto transferencia)
     {
         var ret = await _lancamentoService.InserirPagamentoFatura(transferencia);
+        return Ok(ret);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ObterLancamento(int id)
+    {
+        var ret = await _lancamentoService.ObterLancamento(id);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> AlterarLancamento([FromBody] LancamentoCadastroDto lancamento)
+    {
+        var ret = await _lancamentoService.AlterarLancamento(lancamento);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> ExcluirLancamento([FromBody] int id)
+    {
+        var ret = await _lancamentoService.ExcluirLancamento(id);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> AlterarTransferencia([FromBody] TransferenciaUpdateDto transferencia)
+    {
+        var ret = await _lancamentoService.AlterarTransferencia(transferencia);
+        return Ok(ret);
+    }
+
+    [HttpPost()]
+    public async Task<IActionResult> ExcluirTransferencia([FromBody] int idLancamentoOrigem)
+    {
+        var ret = await _lancamentoService.ExcluirTransferencia(idLancamentoOrigem);
         return Ok(ret);
     }
 }
