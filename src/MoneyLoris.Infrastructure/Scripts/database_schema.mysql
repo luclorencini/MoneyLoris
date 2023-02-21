@@ -1,0 +1,78 @@
+﻿CREATE SCHEMA `moneyloris` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE `moneyloris`;
+
+CREATE TABLE `Usuario` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `Nome` varchar(100) UNIQUE NOT NULL,
+  `Login` varchar(20) UNIQUE NOT NULL,
+  `Senha` varchar(64) NOT NULL,
+  `Ativo` boolean NOT NULL,
+  `IdPerfil` tinyint NOT NULL,
+  `AlterarSenha` boolean NOT NULL DEFAULT true,
+  `DataCriacao` timestamp NOT NULL,
+  `UltimoLogin` timestamp NULL,
+  `DataInativacao` timestamp NULL
+);
+
+CREATE TABLE `MeioPagamento` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `IdUsuario` int NOT NULL,
+  `Nome` varchar(20) NOT NULL,
+  `Tipo` tinyint NOT NULL,
+  `Cor` varchar(6) NOT NULL,
+  `Ordem` tinyint NULL,
+  `Ativo` boolean NOT NULL DEFAULT true,
+  `Saldo` decimal(8,2) NULL,
+  `UltimaAtualizacaoSaldo` timestamp NULL,
+  `Limite` decimal(8,2) NULL,
+  `DiaFechamento` tinyint NULL,
+  `DiaVencimento` tinyint NULL
+);
+
+ALTER TABLE `MeioPagamento` ADD FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+
+
+CREATE TABLE `Categoria` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `Tipo` tinyint NOT NULL,
+  `IdUsuario` int NOT NULL,
+  `Nome` varchar(20) NOT NULL,
+  `Ordem` tinyint NULL
+);
+
+ALTER TABLE `Categoria` ADD FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+
+
+CREATE TABLE `Subcategoria` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `IdCategoria` int NOT NULL,
+  `Nome` varchar(20) NOT NULL,
+  `Ordem` tinyint NULL
+);
+
+ALTER TABLE `Subcategoria` ADD FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+
+
+CREATE TABLE `Lancamento` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `IdMeioPagamento` int NOT NULL,
+  `Tipo` tinyint NOT NULL,
+  `Operacao` tinyint NOT NULL,
+  `TipoTransferencia` tinyint NULL,
+  `Data` datetime NOT NULL,
+  `Descricao` varchar(50) NOT NULL,
+  `Valor` decimal(8,2) NOT NULL,
+  `IdCategoria` int NULL,
+  `IdSubcategoria` int NULL,
+  `Realizado` boolean NULL DEFAULT true,
+  `IdLancamentoTransferencia` int NULL
+);
+
+ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdMeioPagamento`) REFERENCES `MeioPagamento` (`Id`);
+
+ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+
+ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdSubcategoria`) REFERENCES `Subcategoria` (`Id`);
+
+ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdLancamentoTransferencia`) REFERENCES `Lancamento` (`Id`);
