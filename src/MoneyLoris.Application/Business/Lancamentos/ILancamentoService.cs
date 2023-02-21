@@ -12,13 +12,7 @@ public interface ILancamentoService
 
     Task<Result<int>> InserirReceita(LancamentoCadastroDto lancamento);
     Task<Result<int>> InserirDespesa(LancamentoCadastroDto lancamento);
-    Task<Result<LancamentoCadastroDto>> ObterLancamento(int id);
-    Task<Result<int>> AlterarLancamento(LancamentoCadastroDto lancamento);
-    Task<Result<int>> ExcluirLancamento(int id);
-
-    Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto transferencia);
-    Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia);
-    Task<Result<TransferenciaUpdateDto>> ObterTransferencia(int id);
-    Task<Result<int>> AlterarTransferencia(TransferenciaUpdateDto lancamento);
-    Task<Result<int>> ExcluirTransferencia(int idLancamentoOrigem);
+    Task<Result<LancamentoCadastroDto>> Obter(int id);
+    Task<Result<int>> Alterar(LancamentoCadastroDto lancamento);
+    Task<Result<int>> Excluir(int id);
 }

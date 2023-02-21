@@ -8,11 +8,11 @@ namespace MoneyLoris.Web.Controllers;
 [Route("[controller]/{action=index}")]
 public class TransferenciaController : BaseController
 {
-    private readonly ILancamentoService _lancamentoService;
+    private readonly ITransferenciaService _transferenciaService;
 
-    public TransferenciaController(ILancamentoService lancamentoService)
+    public TransferenciaController(ITransferenciaService transferenciaService)
     {
-        _lancamentoService = lancamentoService;
+        _transferenciaService = transferenciaService;
     }
 
     #region Nova Transferência
@@ -21,7 +21,7 @@ public class TransferenciaController : BaseController
     [Route("/transferencia/lancar/entreContas")]
     public async Task<IActionResult> LancarTransferenciaEntreContas([FromBody] TransferenciaInsertDto transferencia)
     {
-        var ret = await _lancamentoService.InserirTransferenciaEntreContas(transferencia);
+        var ret = await _transferenciaService.InserirTransferenciaEntreContas(transferencia);
         return Ok(ret);
     }
 
@@ -29,7 +29,7 @@ public class TransferenciaController : BaseController
     [Route("/transferencia/lancar/pagamentoFatura")]
     public async Task<IActionResult> LancarPagamentoFatura([FromBody] TransferenciaInsertDto transferencia)
     {
-        var ret = await _lancamentoService.InserirPagamentoFatura(transferencia);
+        var ret = await _transferenciaService.InserirPagamentoFatura(transferencia);
         return Ok(ret);
     }
 
@@ -40,21 +40,21 @@ public class TransferenciaController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> Obter(int id)
     {
-        var ret = await _lancamentoService.ObterTransferencia(id);
+        var ret = await _transferenciaService.Obter(id);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Alterar([FromBody] TransferenciaUpdateDto transferencia)
     {
-        var ret = await _lancamentoService.AlterarTransferencia(transferencia);
+        var ret = await _transferenciaService.Alterar(transferencia);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Excluir([FromBody] int idLancamentoOrigem)
     {
-        var ret = await _lancamentoService.ExcluirTransferencia(idLancamentoOrigem);
+        var ret = await _transferenciaService.Excluir(idLancamentoOrigem);
         return Ok(ret);
     }
 

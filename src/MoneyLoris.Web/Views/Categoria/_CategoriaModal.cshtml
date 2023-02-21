@@ -104,7 +104,6 @@
 
                     if (isValido) {
                         let ret = null;
-                        let msg = '';
 
                         await this.setLoadingAndExecute(async () => {
                             try {
@@ -112,17 +111,12 @@
                                 //conversões
                                 fieldConverter.stringToInt(this.categoria, 'ordem');
 
-                                if (this.categoria.id) {
-                                    ret = await fetchData.fetchPostJson('/categoria/alterar', this.categoria);
-                                    msg = 'Categoria alterada com sucesso.';
-                                }
-                                else {
-                                    ret = await fetchData.fetchPostJson('/categoria/inserir', this.categoria);
-                                    msg = 'Categoria inserida com sucesso.';
-                                }
+                                let url = (this.categoria.id ? '/categoria/alterar' : '/categoria/inserir');
+
+                                ret = await fetchData.fetchPostJson(url, this.categoria);
 
                                 if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(msg);
+                                    mensagemSistema.showMensagemSucesso(ret.message);
                                     this.fechar();
                                     this.$emit('categoria-salva', ret.value.id);
                                 }
@@ -152,7 +146,7 @@
                             let ret = await fetchData.fetchPostJson('/categoria/excluir', this.categoria.id);
 
                             if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso('Categoria excluída com sucesso.');
+                                mensagemSistema.showMensagemSucesso(ret.message);
                                 this.fechar();
                                 this.$emit('categoria-salva', this.categoria.id);
                             }

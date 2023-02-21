@@ -75,21 +75,21 @@ public class LancamentoController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> Obter(int id)
     {
-        var ret = await _lancamentoService.ObterLancamento(id);
+        var ret = await _lancamentoService.Obter(id);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Alterar([FromBody] LancamentoCadastroDto lancamento)
     {
-        var ret = await _lancamentoService.AlterarLancamento(lancamento);
+        var ret = await _lancamentoService.Alterar(lancamento);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Excluir([FromBody] int id)
     {
-        var ret = await _lancamentoService.ExcluirLancamento(id);
+        var ret = await _lancamentoService.Excluir(id);
         return Ok(ret);
     }
 
