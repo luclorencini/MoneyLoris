@@ -508,26 +508,26 @@ main {
     }
 
         .splash-message .container img {
-            width: 17vw;
+            height: 30vh;
         }
 
         .splash-message .container .message {
-            font-size: 5.5rem;
-            line-height: 6.5rem;
+            font-size: 4.5rem;
+            line-height: 5.5rem;
             font-weight: bold;
             color: var(--sys-color-dark-3);
-            margin-top: 0.25rem;
+            margin-top: 1rem;
         }
 
 @media (max-width: 575px) { /*sm*/
     .splash-message .container img {
-        width: 45vw;
+        height: 25vh;
     }
 
     .splash-message .container .message {
-        font-size: 3.5rem;
-        line-height: 4.5rem;
-        margin-top: 2rem;
+        font-size: 3rem;
+        line-height: 3.75rem;
+        margin-top: 1rem;
     }
 }
 
