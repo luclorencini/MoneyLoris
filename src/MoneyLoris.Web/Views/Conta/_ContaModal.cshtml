@@ -6,6 +6,7 @@
             <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
                         <h5 class="modal-title">{{titulo}}</h5>
                         <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
                     </div>
@@ -54,7 +55,7 @@
                                     </div>
                                 </div>
 
-                                <template v-if="isNovo">
+                                @*<template v-if="isNovo">
 
                                     <hr class="my-1" />
 
@@ -79,7 +80,7 @@
                                         <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
                                     </div>
 
-                                </template>
+                                </template>*@
 
                                 <template v-if="utils.isCartaoCredito(conta.tipo)">
 
@@ -182,7 +183,6 @@
             },
 
             mounted() {
-
             },
 
             methods: {
@@ -221,8 +221,9 @@
                             try {
 
                                 //conversões
-                                fieldConverter.stringToMoney(this.conta, 'saldoInicial');
+                                //fieldConverter.stringToMoney(this.conta, 'saldoInicial');
                                 fieldConverter.stringToMoney(this.conta, 'limite');
+                                fieldConverter.stringToInt(this.conta, 'tipo');
 
                                 //submit
                                 if (this.conta.id) {

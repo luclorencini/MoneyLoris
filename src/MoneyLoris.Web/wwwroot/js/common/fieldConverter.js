@@ -22,12 +22,21 @@
     },
 
     /*
-     * Converte string formato dinheiro (D.DDD,DD) em number decimal
+     * Converte string no formato dinheiro (D.DDD,DD) em number decimal
      */
     stringToMoney(obj, att) {
         if (obj && obj[att]) {
             obj[att] = mascaras.unparseMoney(obj[att]);
         }
     },
+
+    /*
+     * Converte string no formato numérico em number inteiro
+     */
+    stringToInt(obj, att) {
+        if (obj && obj[att]) {
+            obj[att] = parseInt(obj[att]);
+        }
+    }
 
 }

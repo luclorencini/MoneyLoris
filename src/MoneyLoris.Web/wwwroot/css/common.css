@@ -471,14 +471,14 @@ main {
 
 @keyframes kf-splash {
     0% {
-        opacity: 0.5;
+        opacity: 0;
     }
 
-    10% {
+    25% {
         opacity: 1;
     }
 
-    70% {
+    75% {
         opacity: 1;
     }
 
