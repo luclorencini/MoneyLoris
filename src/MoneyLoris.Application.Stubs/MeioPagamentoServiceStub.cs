@@ -82,27 +82,27 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Inserir(MeioPagamentoCriacaoDto model)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Meio de Pagamento salvo com sucesso."));
     }
 
     public async Task<Result<int>> Alterar(MeioPagamentoCadastroDto model)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Meio de Pagamento alterado com sucesso."));
     }
 
     public async Task<Result<int>> Excluir(int id)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Meio de Pagamento excluído com sucesso."));
     }
 
     public async Task<Result> Inativar(int id)
     {
-        return await TaskSuccess();
+        return await TaskSuccess((123, "Meio de Pagamento inativado com sucesso."));
     }
 
     public async Task<Result> Reativar(int id)
     {
-        return await TaskSuccess();
+        return await TaskSuccess((123, "Meio de Pagamento reativado com sucesso."));
     }
 
 

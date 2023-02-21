@@ -205,6 +205,7 @@
                 },
 
                 fechar() {
+                    this.cleanValidationForm(this.$refs.form);
                     bootstrapHelper.closeModal(this.modal);
                 },
 

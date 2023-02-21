@@ -73,17 +73,17 @@ public class CategoriaServiceStub : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirCategoria(CategoriaCadastroDto model)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Categoria salva com sucesso."));
     }
 
     public async Task<Result<int>> AlterarCategoria(CategoriaCadastroDto model)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Categoria alterada com sucesso."));
     }
 
     public async Task<Result<int>> ExcluirCategoria(int id)
     {
-        return await TaskSuccess(123);
+        return await TaskSuccess((123, "Categoria excluída com sucesso."));
     }
 
 
@@ -95,17 +95,17 @@ public class CategoriaServiceStub : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirSubcategoria(SubcategoriaCadastroDto model)
     {
-        return await TaskSuccess(456);
+        return await TaskSuccess((456, "Subcategoria salva com sucesso."));
     }
 
     public async Task<Result<int>> AlterarSubcategoria(SubcategoriaCadastroDto model)
     {
-        return await TaskSuccess(456);
+        return await TaskSuccess((456, "Subcategoria alterada com sucesso."));
     }
 
     public async Task<Result<int>> ExcluirSubcategoria(int id)
     {
-        return await TaskSuccess(456);
+        return await TaskSuccess((456, "Subcategoria excluída com sucesso."));
     }
 
     public async Task<Result<ICollection<CategoriaListItemDto>>> ObterCategoriasUsuario(TipoLancamento tipo)
