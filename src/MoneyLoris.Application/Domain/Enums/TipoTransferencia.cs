@@ -3,7 +3,7 @@
 namespace MoneyLoris.Application.Domain.Enums;
 public enum TipoTransferencia : byte
 {
-    [Description("Transfêrencia Entre Contas")]
+    [Description("Transferência entre Contas")]
     TransferenciaEntreContas = 1,
 
     [Description("Pagamento de Fatura")]

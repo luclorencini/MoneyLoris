@@ -309,7 +309,7 @@
                             //conversoes
                             fieldConverter.stringToMoney(this.dados, 'valor');
 
-                            const url = (this.tipoTransferencia == 1 ? '/lancamento/lancarTransferencia' : '/lancamento/lancarPagamentoFatura');
+                            const url = (this.tipoTransferencia == 1 ? '/transferencia/lancar/entreContas' : '/transferencia/lancar/pagamentoFatura');
 
                             let ret = await fetchData.fetchPostJson(url, this.dados);
 

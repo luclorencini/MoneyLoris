@@ -34,7 +34,10 @@ public class LancamentoController : BaseController
         return Ok(ret);
     }
 
+    #region Novo Lançamento
+
     [HttpPost()]
+    [Route("/lancamento/sugestoes/receitas")]
     public async Task<IActionResult> SugestoesReceitas([FromBody] string termoBusca)
     {
         var ret = await _lancamentoService.ObterSugestoesReceitas(termoBusca);
@@ -42,6 +45,7 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
+    [Route("/lancamento/sugestoes/despesas")]
     public async Task<IActionResult> SugestoesDespesas([FromBody] string termoBusca)
     {
         var ret = await _lancamentoService.ObterSugestoesDespesas(termoBusca);
@@ -49,6 +53,7 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
+    [Route("/lancamento/lancar/receita")]
     public async Task<IActionResult> LancarReceita([FromBody] LancamentoCadastroDto lancamento)
     {
         var ret = await _lancamentoService.InserirReceita(lancamento);
@@ -56,65 +61,37 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
+    [Route("/lancamento/lancar/despesa")]
     public async Task<IActionResult> LancarDespesa([FromBody] LancamentoCadastroDto lancamento)
     {
         var ret = await _lancamentoService.InserirDespesa(lancamento);
         return Ok(ret);
     }
 
-    [HttpPost()]
-    public async Task<IActionResult> LancarTransferencia([FromBody] TransferenciaInsertDto transferencia)
-    {
-        var ret = await _lancamentoService.InserirTransferenciaEntreContas(transferencia);
-        return Ok(ret);
-    }
+    #endregion
 
-    [HttpPost()]
-    public async Task<IActionResult> LancarPagamentoFatura([FromBody] TransferenciaInsertDto transferencia)
-    {
-        var ret = await _lancamentoService.InserirPagamentoFatura(transferencia);
-        return Ok(ret);
-    }
+    #region Cadastro (alterar/excluir)
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> ObterLancamento(int id)
+    public async Task<IActionResult> Obter(int id)
     {
         var ret = await _lancamentoService.ObterLancamento(id);
         return Ok(ret);
     }
 
     [HttpPost()]
-    public async Task<IActionResult> AlterarLancamento([FromBody] LancamentoCadastroDto lancamento)
+    public async Task<IActionResult> Alterar([FromBody] LancamentoCadastroDto lancamento)
     {
         var ret = await _lancamentoService.AlterarLancamento(lancamento);
         return Ok(ret);
     }
 
     [HttpPost()]
-    public async Task<IActionResult> ExcluirLancamento([FromBody] int id)
+    public async Task<IActionResult> Excluir([FromBody] int id)
     {
         var ret = await _lancamentoService.ExcluirLancamento(id);
         return Ok(ret);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> ObterTransferencia(int id)
-    {
-        var ret = await _lancamentoService.ObterTransferencia(id);
-        return Ok(ret);
-    }
-
-    [HttpPost()]
-    public async Task<IActionResult> AlterarTransferencia([FromBody] TransferenciaUpdateDto transferencia)
-    {
-        var ret = await _lancamentoService.AlterarTransferencia(transferencia);
-        return Ok(ret);
-    }
-
-    [HttpPost()]
-    public async Task<IActionResult> ExcluirTransferencia([FromBody] int idLancamentoOrigem)
-    {
-        var ret = await _lancamentoService.ExcluirTransferencia(idLancamentoOrigem);
-        return Ok(ret);
-    }
+    #endregion
 }

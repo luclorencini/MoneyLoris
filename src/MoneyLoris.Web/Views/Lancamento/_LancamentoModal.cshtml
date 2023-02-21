@@ -52,7 +52,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                            <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
                             <div class="d-flex justify-content-end w-100">
                                 <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
                                 <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
@@ -105,10 +105,15 @@
 
                     try {
 
+                        //clean-up
+                        this.lancamento = {};
+                        this.meios = [];
+                        this.categorias = [];
+
                         await this.showLoadingSplashAndExecute(async () => {
 
                             //busca lançamento
-                            let ret = await fetchData.fetchGetJson(`/lancamento/obterLancamento/${id}`);
+                            let ret = await fetchData.fetchGetJson(`/lancamento/obter/${id}`);
                             this.lancamento = ret.value;
 
                             //conversoes e tratamentos
@@ -135,6 +140,7 @@
                 },
 
                 fechar() {
+                    this.cleanValidationForm(this.$refs.form);
                     bootstrapHelper.closeModal(this.modal);
                 },
 
@@ -155,7 +161,7 @@
                                 this.lancamento.idCategoria = catIds[0];
                                 this.lancamento.idSubcategoria = catIds[1];
 
-                                ret = await fetchData.fetchPostJson('/lancamento/alterarLancamento', this.lancamento);
+                                ret = await fetchData.fetchPostJson('/lancamento/alterar', this.lancamento);
 
                                 if (ret.ok) {
                                     mensagemSistema.showMensagemSucesso(ret.message);
@@ -185,7 +191,7 @@
 
                         await this.showLoadingSplashAndExecute(async () => {
 
-                            let ret = await fetchData.fetchPostJson('/lancamento/excluirLancamento', this.lancamento.id);
+                            let ret = await fetchData.fetchPostJson('/lancamento/excluir', this.lancamento.id);
 
                             if (ret.ok) {
                                 mensagemSistema.showMensagemSucesso(ret.message);

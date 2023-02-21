@@ -324,7 +324,7 @@
                 async buscarSugestoes(termo) {
 
                     await this.setLoadingAndExecute(async () => {
-                        const url = (this.tipo == 1 ? '/lancamento/sugestoesReceitas' : '/lancamento/sugestoesDespesas');
+                        const url = (this.tipo == 1 ? '/lancamento/sugestoes/receitas' : '/lancamento/sugestoes/despesas');
                         let ret = await fetchData.fetchPostJson(url, termo);
                         this.sugestoes = ret.value;
                     });
@@ -380,7 +380,7 @@
                             //conversoes
                             fieldConverter.stringToMoney(this.dados, 'valor');
 
-                            const url = (this.tipo == 1 ? '/lancamento/lancarReceita' : '/lancamento/lancarDespesa');
+                            const url = (this.tipo == 1 ? '/lancamento/lancar/receita' : '/lancamento/lancar/despesa');
 
                             let ret = await fetchData.fetchPostJson(url, this.dados);
 

@@ -15,30 +15,28 @@
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Conta Origem</label>
-                                    <select class="form-select">
-                                        <option value="2">Caixa</option>
-                                        <option value="3">PicPay</option>
+                                    <select class="form-select" v-model="transferencia.idMeioPagamentoOrigem">
+                                        <option v-for="m in meiosOrigem" :value="m.id">{{m.nome}}</option>
                                     </select>
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label required-asterisk">Conta Destino</label>
-                                    <select class="form-select">
-                                        <option value="3">PicPay</option>
-                                        <option value="2">Caixa</option>
+                                    <label class="form-label required-asterisk">{{labelContaCartao}} Destino</label>
+                                    <select class="form-select" v-model="transferencia.idMeioPagamentoDestino">
+                                        <option v-for="m in meiosDestino" :value="m.id">{{m.nome}}</option>
                                     </select>
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label required-asterisk">Data</label>
-                                    <input class="form-control" type="date">
+                                    <input class="form-control" type="date" v-model="transferencia.data">
                                 </div>
 
                                 <div class="col-6">
                                     <label class="form-label required-asterisk">Valor</label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">R$</span>
-                                        <input class="form-control" type="text" required maxlength="10">
+                                        <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="transferencia.valor" v-ext-mask="'dinheiro'">
                                     </div>
                                 </div>
 
@@ -47,16 +45,18 @@
                     </div>
                     <div class="modal-footer">
                         <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger">Excluir</button>
-                            <div>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2 px-4">Salvar</button>
+                            <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
+                            <div class="d-flex justify-content-end w-100">
+                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
     </script>
 }
@@ -71,41 +71,132 @@
             template: '#template-transferencia-modal',
             mixins: [BaseMixin],
             emits: ['transferencia-salva'],
+            components: { ConfirmationDialog },
 
             data: () => ({
+                transferencia: {},
+
+                meiosOrigem: [],
+                meiosDestino: [],
+
                 modal: null,
             }),
 
             computed: {
 
-                abcd() {
-                    return "";
+                labelTipo() {
+                    return (this.transferencia.tipo == 1 ? "Transferência entre Contas" : "Pagamento de Fatura");
                 },
+
+                labelContaCartao() {
+                    return (this.transferencia.tipo == 1 ? "Conta" : "Cartão");
+                }
             },
 
             mounted() {
-
             },
 
             methods: {
 
                 async carregar(id) {
 
+                    try {
 
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                        //clean-up
+                        this.transferencia = {};
+                        this.meiosOrigem = [];
+                        this.meiosDestino = [];
+
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            //busca transferencia
+                            let ret = await fetchData.fetchGetJson(`/transferencia/obter/${id}`);
+                            this.transferencia = ret.value;
+
+                            //conversoes e tratamentos
+                            fieldConverter.moneyToString(this.transferencia, 'valor');
+                            fieldConverter.dateStringIsoToInputString(this.transferencia, 'data');
+
+                            //busca conta origem
+                            let rc = await fetchData.fetchGetJson(`/common/contas`);
+                            this.meiosOrigem = rc.value;
+
+                            //busca meio destino
+                            let url = (this.transferencia.tipo == 1 ? '/common/contas' : '/common/cartoes');
+                            let rd = await fetchData.fetchGetJson(url);
+                            this.meiosDestino = rd.value;
+
+                        });
+
+                        this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+
+                    }
+                    catch (e) {
+                        mensagemSistema.showMensagemErro(e);
+                    }
                 },
 
                 fechar() {
+                    this.cleanValidationForm(this.$refs.form);
                     bootstrapHelper.closeModal(this.modal);
                 },
 
                 async salvar() {
 
+                    let isValido = this.validarForm(this.$refs.form);
+
+                    if (isValido) {
+                        let ret = null;
+
+                        await this.setLoadingAndExecute(async () => {
+                            try {
+
+                                //conversões
+                                fieldConverter.stringToMoney(this.transferencia, 'valor');
+
+                                ret = await fetchData.fetchPostJson('/transferencia/alterar', this.transferencia);
+
+                                if (ret.ok) {
+                                    mensagemSistema.showMensagemSucesso(ret.message);
+                                    this.fechar();
+                                    this.$emit('transferencia-salva', ret.value.id);
+                                }
+                                else {
+                                    mensagemSistema.showMensagemErro(ret.message);
+                                }
+                            }
+                            catch (e) {
+                                mensagemSistema.showMensagemErro(e);
+                            }
+                        });
+                    }
                 },
 
                 async excluir() {
 
-                }
+                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                        titulo: 'Exclusão de Transferência',
+                        mensagem: `Deseja realmente excluir esta Transferência?`,
+                        okLabel: 'Excluir',
+                    });
+
+                    if (confirma) {
+
+                        await this.showLoadingSplashAndExecute(async () => {
+
+                            let ret = await fetchData.fetchPostJson('/transferencia/excluir', this.transferencia.id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('transferencia-salva', this.transferencia.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        });
+                    }
+                },
 
             }
         }
