@@ -17,7 +17,6 @@ public partial class MeioPagamento
     public sbyte? Ordem { get; set; }
     public bool Ativo { get; set; }
     public decimal? Saldo { get; set; }
-    public DateTime? UltimaAtualizacaoSaldo { get; set; }
     public decimal? Limite { get; set; }
     public sbyte? DiaFechamento { get; set; }
     public sbyte? DiaVencimento { get; set; }

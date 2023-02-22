@@ -28,7 +28,6 @@ CREATE TABLE `MeioPagamento` (
   `Ordem` tinyint NULL,
   `Ativo` boolean NOT NULL,
   `Saldo` decimal(8,2) NULL,
-  `UltimaAtualizacaoSaldo` timestamp NULL,
   `Limite` decimal(8,2) NULL,
   `DiaFechamento` tinyint NULL,
   `DiaVencimento` tinyint NULL
@@ -90,3 +89,8 @@ ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_Subcategoria` (`IdSubcategoria
 
 ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_LancamentoTransferencia` FOREIGN KEY (`IdLancamentoTransferencia`) REFERENCES `Lancamento` (`Id`);
 ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_LancamentoTransferencia` (`IdLancamentoTransferencia`);
+
+--
+
+INSERT INTO `Usuario` (Nome, Ativo, IdPerfil, DataCriacao, AlterarSenha, Login, Senha)
+VALUES ('Admin', 1, 1, NOW(), true, 'admin', 'A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3');  /* senha: 123 */

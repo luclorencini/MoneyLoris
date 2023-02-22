@@ -1,0 +1,10 @@
+﻿<partial name="_UsuarioList.cshtml" />
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+        VueFactory.createAndMountApp(UsuarioList, '#app');
+    </script>
+}
+
+<UsuarioList></UsuarioList>

@@ -1,0 +1,161 @@
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-usuario-criacao-modal-form">
+
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+                <div class="modal-content" style="min-height: 90vh;">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Criar Novo Usuário</h5>
+                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form ref="form">
+                            <div class="row g-2">
+
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Qual é o perfil de usuário?</label>
+                                    <select class="form-select" required v-model="usuario.idPerfil" v-on:change="focusCampoNome()">
+                                        <option value="2">Usuário</option>
+                                        <option value="1">Administador</option>
+                                    </select>
+                                </div>
+
+                                <template v-if="usuario.idPerfil">
+
+                                    <div class="col-12">
+                                        <label class="form-label required-asterisk">Nome completo</label>
+                                        <input class="form-control" ref="fieldNome" v-ext-mask="'alfa'" v-model="usuario.nome" v-on:blur="sugerirLogin()" required maxlength="150">
+                                        <div class="w-100 text-end">
+                                            <button type="button" class="btn btn-sm bnt-link" v-on:click="sugerirLogin()">Avançar</button>
+                                        </div>
+                                    </div>
+
+                                    <template v-if="hasLogin">
+
+                                        <div class="col-12 mt-4">
+                                            <div class="fs-6 fw-bold">Credenciais</div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label required-asterisk">Login</label>
+                                            <input class="form-control text-center fw-bold fs-5" required v-model="usuario.login" maxlength="30">
+                                        </div>
+                                        <div class="col-12 sys-bg-light-2 text-center p-2">
+                                            <div>Senha temporária:</div>
+                                            <div class="fs-5 fw-bold">dinheiro</div>
+                                            <small>A senha será trocada no primeiro acesso do usuário.</small>
+                                        </div>
+
+                                    </template>
+
+                                </template>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer" v-if="hasLogin">
+                        <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                        <button type="button" class="btn btn-primary px-5" v-on:click="salvar()">Criar Usuário</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const UsuarioCriacaoModalForm = {
+
+            name: 'UsuarioCriacaoModalForm',
+            template: '#template-usuario-criacao-modal-form',
+            mixins: [BaseMixin],
+            emits: ['usuario-criado'],
+
+            data: () => ({
+                usuario: {},
+                modal: null,
+            }),
+
+            computed: {
+
+                hasLogin() {
+                    let login = this.usuario.login;
+                    return login && login.trim().length > 0;
+                },
+            },
+
+            methods: {
+
+                fechar() {
+                    this.cleanValidationForm(this.$refs.form);
+                    bootstrapHelper.closeModal(this.modal);
+                },
+
+                carregar() {
+                    this.usuario = {};
+                    this.modal = bootstrapHelper.openModalStatic(this.$refs.modalForm);
+                },
+
+                focusCampoNome() {
+                    this.setFocus('fieldNome');
+                },
+
+                sugerirLogin() {
+
+                    let nome = this.usuario.nome;
+
+                    if (nome) {
+
+                        nome = utils.removerAcentuacao(nome);
+
+                        let nomes = nome.trim().toLowerCase().split(' ');
+                        let first = nomes[0];
+                        let last = nomes.length == 1 ? '' : nomes[nomes.length - 1];
+
+                        this.usuario.login = `${first}.${last}`;
+                    }
+                },
+
+                async salvar() {
+
+                    let isValido = this.validarForm(this.$refs.form);
+
+                    if (isValido) {
+
+                        await this.setLoadingAndExecute(async () => {
+                            try {
+
+                                fieldConverter.stringToInt(this.usuario, 'idPerfil');
+
+                                let ret = await fetchData.fetchPostJson('/usuario/inserir', this.usuario);
+
+                                if (ret.ok) {
+                                    mensagemSistema.showMensagemSucesso(ret.message);
+                                    this.fechar();
+                                    this.$emit('usuario-criado', ret.value);
+                                }
+                                else {
+                                    mensagemSistema.showMensagemErro(ret.message);
+                                }
+                            }
+                            catch (e) {
+                                mensagemSistema.showMensagemErro(e);
+                            }
+                        });
+                    }
+                },
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}

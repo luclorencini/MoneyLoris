@@ -1,0 +1,345 @@
+﻿@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-usuario-info-form">
+
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informações do Usuário</h5>
+                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form ref="form">
+                            <div class="row g-2">
+
+                                <div class="col-12">
+                                    <label class="form-label">Perfil:</label>
+                                    <span class="fw-bold ms-2">{{usuario.perfil}}</span>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Último Acesso:</label>
+                                    <span class="ms-2">{{utils.dataCurta(usuario.ultimoLogin)}} às {{utils.horaHMS(usuario.ultimoLogin)}}</span>
+                                </div>
+                                <div class="col-md-4 text-danger" v-if="inativo">
+                                    <label class="form-label">Inativado em:</label>
+                                    <span class="fw-bold ms-2">{{utils.dataCurta(usuario.dataInativacao)}}</span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label class="form-label required-asterisk">Nome completo</label>
+                                    <input class="form-control" ref="fieldNome" v-ext-mask="'alfa'" v-model="usuario.nome" required maxlength="150">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required-asterisk">Login</label>
+                                    <input class="form-control text-center fw-bold" required v-model="usuario.login" maxlength="30">
+                                </div>
+                                <div class="col-12 mt-2 text-end">
+                                    <button type="button" class="btn btn-sm btn-primary px-3" v-on:click="alterar()">Alterar</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <hr/>
+
+                        <div class="row g-2">
+
+                            <template v-if="inativo">
+
+                                <div class="alert alert-secondary my-1">
+                                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                                        <div>
+                                            <div class="fs-6 fw-bold">Reativar Usuário</div>
+                                            <div>
+                                                <small>Ao reativar esta usuario, este usuário voltará a usar o sistema normalmente.</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-nowrap ms-2">
+                                            <button class="btn btn-secondary btn-sm mt-2" v-on:click="reativarUsuario()">Reativar Usuário</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </template>
+
+                            <template v-else>
+
+                                <div class="alert alert-secondary my-1">
+                                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                                        <div>
+                                            <div class="fs-6 fw-bold">Redefinir Senha</div>
+                                            <div>
+                                                <small>A senha deste usuário será redefinida para <span class="fw-bold">dinheiro</span> e deverá ser trocada no próximo acesso dele.</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-nowrap ms-2">
+                                            <button class="btn btn-secondary btn-sm mt-2" v-on:click="redefinirSenha()">Redefinir Senha</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning my-1">
+                                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                                        <div>
+                                            <div class="fs-6 fw-bold">Inativar Usuário</div>
+                                            <div>
+                                                <small>Ao inativar esta usuario, este usuário não poderá realizar login até que a usuario seja reativada.</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-nowrap ms-2">
+                                            <button class="btn btn-secondary btn-sm mt-2" v-on:click="inativarUsuario()">Inativar Usuário</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </template>
+
+                            <div class="alert alert-danger my-1">
+                                <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                                    <div>
+                                        <div class="fs-6 fw-bold">Excluir Usuário</div>
+                                        <div>
+                                            <small>Exclua esta usuario. Útil caso ela tenha sido criada equivocadamente.</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-nowrap ms-2">
+                                        <button class="btn btn-danger btn-sm mt-2" v-on:click="excluir()">Excluir Usuário</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" v-on:click="fechar()">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ConfirmationDialog ref="confirmDialog"></ConfirmationDialog>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const UsuarioInfoForm = {
+
+            name: 'UsuarioInfoForm',
+            template: '#template-usuario-info-form',
+            mixins: [BaseMixin],
+            emits: ['usuario-alterado', 'usuario-excluido'],
+            components: { ConfirmationDialog },
+
+            data: () => ({
+                usuario: {},
+                modal: null,
+            }),
+
+            computed: {
+
+                inativo() {
+                    return this.usuario.dataInativacao != null;
+                },
+            },
+
+            methods: {
+
+                fechar() {
+                    this.cleanValidationForm(this.$refs.form);
+                    bootstrapHelper.closeModal(this.modal);
+                },
+
+                async carregar(id) {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        let ret = await fetchData.fetchGetJson(`/usuario/info/${id}`);
+
+                        if (ret.ok) {
+                            this.usuario = ret.value;
+                            this.modal = bootstrapHelper.openModalStatic(this.$refs.modalForm);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                },
+
+                async alterar() {
+
+                    let isValido = this.validarForm(this.$refs.form);
+                    if (!isValido) return;
+
+                    const confirma = await this.$refs.confirmDialog.aguardarConfirmacao({
+                        titulo: 'Alteração de Usuário',
+                        mensagem: `Deseja alterar nome e/ou login deste usuário?`,
+                        okLabel: 'Alterar',
+                    });
+
+                    if (!confirma) return;
+
+                    await this.setLoadingAndExecute(async () => {
+                        try {
+
+                            let id = this.usuario.id;
+
+                            let ret = await fetchData.fetchPostJson('/usuario/alterar', this.usuario);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('usuario-alterado', id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                },
+
+                async redefinirSenha() {
+
+                    const confirma = await this.$refs.confirmDialog.aguardarConfirmacao({
+                        titulo: 'Redefinição de senha',
+                        mensagem: `Deseja redefinir a senha deste usuário para a senha padrão?`,
+                        okLabel: 'Redefinir',
+                    });
+
+                    if (!confirma) return;
+
+                    await this.setLoadingAndExecute(async () => {
+                        try {
+
+                            let id = this.usuario.id;
+
+                            let ret = await fetchData.fetchPostJson('/usuario/redefinirSenha', id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('usuario-alterado', id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                },
+
+                async inativarUsuario() {
+
+                    const confirma = await this.$refs.confirmDialog.aguardarConfirmacao({
+                        titulo: 'Inativação de Usuário',
+                        mensagem: `Deseja realmente inativar esta usuário?`,
+                        okLabel: 'Inativar',
+                    });
+
+                    if (!confirma) return;
+
+                    await this.setLoadingAndExecute(async () => {
+                        try {
+
+                            let id = this.usuario.id;
+
+                            let ret = await fetchData.fetchPostJson('/usuario/inativar', id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('usuario-alterado', id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                },
+
+                async reativarUsuario() {
+
+                    const confirma = await this.$refs.confirmDialog.aguardarConfirmacao({
+                        titulo: 'Reativação de Usuário',
+                        mensagem: `Deseja realmente reativar este usuário?`,
+                        okLabel: 'Reativar',
+                    });
+
+                    if (!confirma) return;
+
+                    await this.setLoadingAndExecute(async () => {
+                        try {
+
+                            let id = this.usuario.id;
+
+                            let ret = await fetchData.fetchPostJson('/usuario/reativar', id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('usuario-alterado', id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                },
+
+                async excluir() {
+
+                    const confirma = await this.$refs.confirmDialog.aguardarConfirmacao({
+                        titulo: 'Exclusão de Usuário',
+                        mensagem: `Deseja realmente excluir este usuário?`,
+                        okLabel: 'Excluir',
+                    });
+
+                    if (!confirma) return;
+
+                    await this.setLoadingAndExecute(async () => {
+                        try {
+
+                            let id = this.usuario.id;
+
+                            let ret = await fetchData.fetchPostJson('/usuario/excluir', id);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('usuario-excluido', id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
+
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+}

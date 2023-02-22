@@ -142,8 +142,6 @@ public class BaseApplicationDbContext : DbContext
 
             entity.Property(e => e.Tipo).HasColumnType("tinyint(4)");
 
-            entity.Property(e => e.UltimaAtualizacaoSaldo).HasColumnType("timestamp");
-
             entity.HasOne(d => d.Usuario)
                 .WithMany(p => p.MeiosPagamento)
                 .HasForeignKey(d => d.IdUsuario)

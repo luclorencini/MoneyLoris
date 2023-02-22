@@ -4,9 +4,9 @@ using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento;
+using MoneyLoris.Application.Business.Usuarios;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
-using MoneyLoris.Infrastructure.Persistence.Context;
 
 namespace MoneyLoris.Infrastructure.DI;
 public static class DependencyInjectionExtensions
@@ -39,6 +39,8 @@ public static class DependencyInjectionExtensions
 
         //services.AddScoped<ILoginService, LoginService>();
 
+        //services.AddScoped<IUsuarioService, UsuarioService>();
+
         //services.AddScoped<ICategoriaService, CategoriaService>();
 
         //services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
@@ -53,6 +55,7 @@ public static class DependencyInjectionExtensions
         //DI de serviços stub com dados fixos para demonstração e para facilitar a construção do front-end
 
         services.AddScoped<ILoginService, LoginServiceStub>();
+        services.AddScoped<IUsuarioService, UsuarioServiceStub>();
         services.AddScoped<ICategoriaService, CategoriaServiceStub>();
         services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
