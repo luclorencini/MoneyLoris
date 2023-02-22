@@ -35,15 +35,15 @@
 
                     if (this.retirarCor) return css;
 
-                    css = (this.valor >= 0 ? 'din-receita' : 'din-despesa');
+                    if (this.valor == 0) return 'sys-fg-dark-1';
 
-                    return css;
+                    return (this.valor > 0 ? 'din-receita' : 'din-despesa');
                 },
 
                 formatado() {
-                    if (this.valor == 0)
-                        return '-';
-                    else{
+                    //if (this.valor == 0)
+                    //    return '-';
+                    //else{
 
                         const sd = (this.retirarSinal ? 'never' : 'exceptZero');
 
@@ -51,7 +51,7 @@
                             .format(this.valor);
 
                             return ret;
-                    }
+                    //}
                 }
             }
         }
