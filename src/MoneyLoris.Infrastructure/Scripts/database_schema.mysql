@@ -4,16 +4,20 @@ USE `moneyloris`;
 
 CREATE TABLE `Usuario` (
   `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Nome` varchar(100) UNIQUE NOT NULL,
-  `Login` varchar(20) UNIQUE NOT NULL,
+  `Nome` varchar(100) NOT NULL,
+  `Login` varchar(20) NOT NULL,
   `Senha` varchar(64) NOT NULL,
   `Ativo` boolean NOT NULL,
   `IdPerfil` tinyint NOT NULL,
-  `AlterarSenha` boolean NOT NULL DEFAULT true,
+  `AlterarSenha` boolean NOT NULL,
   `DataCriacao` timestamp NOT NULL,
   `UltimoLogin` timestamp NULL,
   `DataInativacao` timestamp NULL
 );
+
+ALTER TABLE `Usuario` ADD CONSTRAINT `UI_Usuario_Nome` UNIQUE (`Nome`);
+ALTER TABLE `Usuario` ADD CONSTRAINT `UI_Usuario_Login` UNIQUE (`Login`);
+
 
 CREATE TABLE `MeioPagamento` (
   `Id` int PRIMARY KEY AUTO_INCREMENT,
@@ -22,7 +26,7 @@ CREATE TABLE `MeioPagamento` (
   `Tipo` tinyint NOT NULL,
   `Cor` varchar(6) NOT NULL,
   `Ordem` tinyint NULL,
-  `Ativo` boolean NOT NULL DEFAULT true,
+  `Ativo` boolean NOT NULL,
   `Saldo` decimal(8,2) NULL,
   `UltimaAtualizacaoSaldo` timestamp NULL,
   `Limite` decimal(8,2) NULL,
@@ -30,7 +34,9 @@ CREATE TABLE `MeioPagamento` (
   `DiaVencimento` tinyint NULL
 );
 
-ALTER TABLE `MeioPagamento` ADD FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+ALTER TABLE `MeioPagamento` ADD CONSTRAINT `FK_MeioPagamento_Usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+ALTER TABLE `MeioPagamento` ADD INDEX `IX_MeioPagamento_Usuario` (`IdUsuario`);
+ALTER TABLE `MeioPagamento` ADD CONSTRAINT `UI_MeioPagamento_Nome` UNIQUE (`IdUsuario`, `Nome`);
 
 
 CREATE TABLE `Categoria` (
@@ -41,7 +47,9 @@ CREATE TABLE `Categoria` (
   `Ordem` tinyint NULL
 );
 
-ALTER TABLE `Categoria` ADD FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+ALTER TABLE `Categoria` ADD CONSTRAINT `FK_Categoria_Usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+ALTER TABLE `Categoria` ADD INDEX `IX_Categoria_Usuario` (`IdUsuario`);
+ALTER TABLE `Categoria` ADD CONSTRAINT `UI_Categoria_Nome` UNIQUE (`IdUsuario`, `Nome`);
 
 
 CREATE TABLE `Subcategoria` (
@@ -51,7 +59,9 @@ CREATE TABLE `Subcategoria` (
   `Ordem` tinyint NULL
 );
 
-ALTER TABLE `Subcategoria` ADD FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+ALTER TABLE `Subcategoria` ADD CONSTRAINT `FK_Subcategoria_Categoria` FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+ALTER TABLE `Subcategoria` ADD INDEX `IX_Subcategoria_Categoria` (`IdCategoria`);
+ALTER TABLE `Subcategoria` ADD CONSTRAINT `UI_Subcategoria_Nome` UNIQUE (`IdCategoria`, `Nome`);
 
 
 CREATE TABLE `Lancamento` (
@@ -69,10 +79,14 @@ CREATE TABLE `Lancamento` (
   `IdLancamentoTransferencia` int NULL
 );
 
-ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdMeioPagamento`) REFERENCES `MeioPagamento` (`Id`);
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_MeioPagamento` FOREIGN KEY (`IdMeioPagamento`) REFERENCES `MeioPagamento` (`Id`);
+ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_MeioPagamento` (`IdMeioPagamento`);
 
-ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Categoria` FOREIGN KEY (`IdCategoria`) REFERENCES `Categoria` (`Id`);
+ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_Categoria` (`IdCategoria`);
 
-ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdSubcategoria`) REFERENCES `Subcategoria` (`Id`);
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Subcategoria` FOREIGN KEY (`IdSubcategoria`) REFERENCES `Subcategoria` (`Id`);
+ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_Subcategoria` (`IdSubcategoria`);
 
-ALTER TABLE `Lancamento` ADD FOREIGN KEY (`IdLancamentoTransferencia`) REFERENCES `Lancamento` (`Id`);
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_LancamentoTransferencia` FOREIGN KEY (`IdLancamentoTransferencia`) REFERENCES `Lancamento` (`Id`);
+ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_LancamentoTransferencia` (`IdLancamentoTransferencia`);

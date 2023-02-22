@@ -6,6 +6,7 @@ using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
+using MoneyLoris.Infrastructure.Persistence.Context;
 
 namespace MoneyLoris.Infrastructure.DI;
 public static class DependencyInjectionExtensions
@@ -43,6 +44,8 @@ public static class DependencyInjectionExtensions
         //services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
 
         //services.AddScoped<ILancamentoService, LancamentoService>();
+
+        //services.AddScoped<ITransferenciaService, TransferenciaService>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)
