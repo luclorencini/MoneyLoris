@@ -53,6 +53,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICategoriaService, CategoriaServiceStub>();
         services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
+        services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
+
         return;
     }
 }
