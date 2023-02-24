@@ -9,14 +9,19 @@ public static class ErrorCodes
     #endregion
 
     #region Usuario
-    public static readonly string Usuario_NaoEncontrado = "USUAEN";
+    public static readonly string Usuario_NaoEncontrado = "USNAEN";
     public static readonly string Usuario_CamposObrigatorios = "USUCOB";
-    public static readonly string Usuario_JaMarcadoParaAlterarSenha = "COJMAS";
+    public static readonly string Usuario_JaMarcadoParaAlterarSenha = "USJMAS";
     public static readonly string Usuario_JaEstaInativo = "USUJEI";
     public static readonly string Usuario_JaEstaAtivo = "USUJEA";
     public static readonly string Usuario_SenhaInvalida = "USUSIN";
     public static readonly string Usuario_SenhaIgualAnterior = "USUSIA";
     #endregion
 
-    
+    #region Categoria
+    public static readonly string Categoria_NaoEncontrada = "CANAEN";
+
+    #endregion
+
+
 }

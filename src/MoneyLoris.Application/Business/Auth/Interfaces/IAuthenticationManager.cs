@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Business.Auth.Interfaces;
 public interface IAuthenticationManager
@@ -8,4 +9,6 @@ public interface IAuthenticationManager
     Task LogOut();
 
     ICollection<Claim> GerarClaimsUsuario(Usuario usuario);
+
+    UserAuthInfo ObterInfoUsuarioLogado();
 }

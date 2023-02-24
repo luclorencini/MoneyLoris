@@ -45,6 +45,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
         services.AddScoped<ICategoriaService, CategoriaService>();
+        services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
         services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
 

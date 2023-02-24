@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Infrastructure.Auth;
 public class AuthenticationManager : IAuthenticationManager
@@ -65,5 +66,23 @@ public class AuthenticationManager : IAuthenticationManager
         }
 
         return claims;
+    }
+
+    public UserAuthInfo ObterInfoUsuarioLogado()
+    {
+        var claims = _httpContextAccessor.HttpContext.User.Claims;
+
+        var id = claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
+        var nome = claims.Where(c => c.Type == ClaimTypes.Name).Select(c => c.Value).SingleOrDefault();
+        var role = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault();
+
+        var info = new UserAuthInfo
+        {
+            Id = Convert.ToInt32(id),
+            UserName = nome!,
+            IsAdmin = role == "Administrador"
+        };
+
+        return info;
     }
 }

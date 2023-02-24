@@ -1,15 +1,15 @@
-﻿using MoneyLoris.Application.Domain.Enums;
+﻿using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Domain.Entities;
 
-public partial class Lancamento
+public partial class Lancamento : EntityBase
 {
     public Lancamento()
     {
         LancamentoTransferenciaRelacionado = new HashSet<Lancamento>();
     }
 
-    public int Id { get; set; }
     public int IdMeioPagamento { get; set; }
     public TipoLancamento Tipo { get; set; }
     public OperacaoLancamento Operacao { get; set; }

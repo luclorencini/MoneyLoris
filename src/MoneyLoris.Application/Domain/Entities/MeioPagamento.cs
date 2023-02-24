@@ -1,15 +1,15 @@
-﻿using MoneyLoris.Application.Domain.Enums;
+﻿using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Domain.Entities;
 
-public partial class MeioPagamento
+public partial class MeioPagamento : EntityBase
 {
     public MeioPagamento()
     {
         Lancamentos = new HashSet<Lancamento>();
     }
 
-    public int Id { get; set; }
     public int IdUsuario { get; set; }
     public string Nome { get; set; } = null!;
     public TipoMeioPagamento Tipo { get; set; }

@@ -78,16 +78,16 @@
 
             methods: {
 
+                initCategoria(t) {
+                    this.categoria = { tipo: t };
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                },
+
                 async carregar(id) {
 
                     await this.showLoadingSplashAndExecute(async () => {
-                        if (id) {
-                            let ret = await fetchData.fetchGetJson(`/categoria/obter/${id}`);
-                            this.categoria = ret.value;
-                        }
-                        else {
-                            this.categoria = {};
-                        }
+                        let ret = await fetchData.fetchGetJson(`/categoria/obter/${id}`);
+                        this.categoria = ret.value;
                     });
 
                     this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
