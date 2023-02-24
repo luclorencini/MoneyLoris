@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MoneyLoris.Application.Business.Usuarios;
 using MoneyLoris.Application.Business.Usuarios.Dtos;
+using MoneyLoris.Application.Business.Usuarios.Interfaces;
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;

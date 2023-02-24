@@ -9,15 +9,13 @@ public static class ErrorCodes
     #endregion
 
     #region Usuario
-    //TODO - renomear
-    public static readonly string Conta_NaoEncontrado = "CONAEN";
-    public static readonly string Conta_CamposObrigatorios = "CONCOB";
-    public static readonly string Conta_JaMarcadaParaAlterarSenha = "COJMAS";
-    public static readonly string Conta_JaEstaInativa = "CONJEI";
-    public static readonly string Conta_JaEstaAtiva = "CONJEA";
-    public static readonly string Conta_PsicologoPossuiPaciente = "CEXPPP";
-    public static readonly string Conta_SenhaInvalida = "CONSIN";
-    public static readonly string Conta_SenhaIgualAnterior = "CONSIA";
+    public static readonly string Usuario_NaoEncontrado = "USUAEN";
+    public static readonly string Usuario_CamposObrigatorios = "USUCOB";
+    public static readonly string Usuario_JaMarcadoParaAlterarSenha = "COJMAS";
+    public static readonly string Usuario_JaEstaInativo = "USUJEI";
+    public static readonly string Usuario_JaEstaAtivo = "USUJEA";
+    public static readonly string Usuario_SenhaInvalida = "USUSIN";
+    public static readonly string Usuario_SenhaIgualAnterior = "USUSIA";
     #endregion
 
     

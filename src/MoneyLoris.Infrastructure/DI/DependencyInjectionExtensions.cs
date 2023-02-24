@@ -1,12 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MoneyLoris.Application.Business.Auth;
 using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Categorias;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.Usuarios;
+using MoneyLoris.Application.Business.Usuarios.Interfaces;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
+using MoneyLoris.Infrastructure.Persistence.Context;
+using MoneyLoris.Infrastructure.Persistence.Repositories;
 
 namespace MoneyLoris.Infrastructure.DI;
 public static class DependencyInjectionExtensions
@@ -33,21 +38,21 @@ public static class DependencyInjectionExtensions
     {
         //DI da aplicação
 
-        //services.AddScoped<BaseApplicationDbContext, ApplicationDbContext>();
+        services.AddScoped<BaseApplicationDbContext, ApplicationDbContext>();
 
-        //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<ILoginService, LoginService>();
+        services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
-        //services.AddScoped<ILoginService, LoginService>();
+        services.AddScoped<ICategoriaService, CategoriaService>();
 
-        //services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
 
-        //services.AddScoped<ICategoriaService, CategoriaService>();
 
-        //services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
+        //ainda ta com stub
+        services.AddScoped<ILancamentoService, LancamentoServiceStub>();
 
-        //services.AddScoped<ILancamentoService, LancamentoService>();
-
-        //services.AddScoped<ITransferenciaService, TransferenciaService>();
+        services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)

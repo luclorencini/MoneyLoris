@@ -1,5 +1,5 @@
-﻿using MoneyLoris.Application.Business.Usuarios;
-using MoneyLoris.Application.Business.Usuarios.Dtos;
+﻿using MoneyLoris.Application.Business.Usuarios.Dtos;
+using MoneyLoris.Application.Business.Usuarios.Interfaces;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;

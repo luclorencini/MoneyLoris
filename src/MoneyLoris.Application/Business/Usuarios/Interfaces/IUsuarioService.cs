@@ -1,7 +1,7 @@
 ﻿using MoneyLoris.Application.Business.Usuarios.Dtos;
 using MoneyLoris.Application.Shared;
 
-namespace MoneyLoris.Application.Business.Usuarios;
+namespace MoneyLoris.Application.Business.Usuarios.Interfaces;
 public interface IUsuarioService
 {
     Task<Result<Pagination<ICollection<UsuarioListItemDto>>>> Pesquisar(UsuarioPesquisaDto filtro);

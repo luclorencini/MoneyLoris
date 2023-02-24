@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace MoneyLoris.Infrastructure.Persistence.Context;
 
@@ -18,8 +19,9 @@ public partial class ApplicationDbContext : BaseApplicationDbContext
             optionsBuilder.UseMySql(connString, ServerVersion.AutoDetect(connString));
 
             //descomente abaixo para ver as queries realizadas no cmd do kestrel
-            //optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
-            //optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+            optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.EnableDetailedErrors();
         }
     }
 

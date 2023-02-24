@@ -31,7 +31,7 @@
                             <select class="form-select form-select-sm" v-model="filtro.idPerfil">
                                 <option v-bind:value="null"></option>
                                 <option value="1">Administrador</option>
-                                <option value="2">Psicólogo</option>
+                                <option value="2">Usuário</option>
                             </select>
                         </div>
                         <div class="col-4 col-md-2 ps-3">
@@ -160,9 +160,11 @@
 
                     await this.setLoadingAndExecute(async () => {
 
-                        //ajustes
+                        //conversões
                         if (this.filtro.ativo == false)
                             this.filtro.ativo = null;
+
+                        fieldConverter.stringToInt(this.filtro, 'idPerfil');
 
                         let ret = await fetchData.fetchPostJson(`usuario/pesquisar`, this.filtro);
 
