@@ -27,5 +27,10 @@ public static class ErrorCodes
 
     #endregion
 
-
+    #region Categoria
+    public static readonly string MeioPagamento_NaoEncontrado = "MPNAEN";
+    public static readonly string MeioPagamento_NaoPertenceAoUsuario = "MPNPUS";
+    public static readonly string MeioPagamento_CartaoNaoPodeVirarConta = "MPCANC";
+    public static readonly string MeioPagamento_ContaNaoPodeVirarCartao = "MPCONC";
+    #endregion
 }

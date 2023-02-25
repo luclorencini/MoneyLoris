@@ -7,8 +7,8 @@ public interface IMeioPagamentoService
     Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar();
 
     Task<Result<MeioPagamentoCadastroDto>> Obter(int id);
-    Task<Result<int>> Inserir(MeioPagamentoCriacaoDto model);
-    Task<Result<int>> Alterar(MeioPagamentoCadastroDto model);
+    Task<Result<int>> Inserir(MeioPagamentoCriacaoDto dto);
+    Task<Result<int>> Alterar(MeioPagamentoCadastroDto dto);
     Task<Result<int>> Excluir(int id);
 
     Task<Result> Inativar(int id);

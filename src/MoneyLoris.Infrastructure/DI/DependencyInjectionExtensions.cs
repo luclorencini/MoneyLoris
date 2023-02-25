@@ -49,6 +49,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISubcategoriaRepository, SubcategoriaRepository>();
 
         services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
+        services.AddScoped<IMeioPagamentoRepository, MeioPagamentoRepository>();
 
 
         //ainda ta com stub

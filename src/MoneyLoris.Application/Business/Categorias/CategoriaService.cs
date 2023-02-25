@@ -112,14 +112,14 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     private async Task<Categoria> obterCategoria(int id)
     {
-        var usuario = await _categoriaRepository.GetById(id);
+        var categoria = await _categoriaRepository.GetById(id);
 
-        if (usuario == null)
+        if (categoria == null)
             throw new BusinessException(
                 code: ErrorCodes.Categoria_NaoEncontrada,
                 message: "Categoria não encontrada");
 
-        return usuario;
+        return categoria;
     }
 
 

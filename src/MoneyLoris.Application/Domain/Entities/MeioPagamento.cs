@@ -14,12 +14,12 @@ public partial class MeioPagamento : EntityBase
     public string Nome { get; set; } = null!;
     public TipoMeioPagamento Tipo { get; set; }
     public string Cor { get; set; } = null!;
-    public sbyte? Ordem { get; set; }
+    public byte? Ordem { get; set; }
     public bool Ativo { get; set; }
     public decimal? Saldo { get; set; }
     public decimal? Limite { get; set; }
-    public sbyte? DiaFechamento { get; set; }
-    public sbyte? DiaVencimento { get; set; }
+    public byte? DiaFechamento { get; set; }
+    public byte? DiaVencimento { get; set; }
 
     public virtual Usuario Usuario { get; set; } = null!;
     public virtual ICollection<Lancamento> Lancamentos { get; set; }

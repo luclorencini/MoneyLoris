@@ -1,4 +1,6 @@
-﻿using MoneyLoris.Application.Domain.Enums;
+﻿using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Utils;
 
 namespace MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 public class MeioPagamentoListItemDto
@@ -8,4 +10,17 @@ public class MeioPagamentoListItemDto
     public TipoMeioPagamento Tipo { get; set; }
     public string TipoDescricao { get; set; } = default!;
     public string Cor { get; set; } = default!;
+
+    public MeioPagamentoListItemDto()
+    {
+    }
+
+    public MeioPagamentoListItemDto(MeioPagamento meio)
+    {
+        Id = meio.Id;
+        Nome = meio.Nome;
+        Tipo = meio.Tipo;
+        TipoDescricao = meio.Tipo.ObterDescricao();
+        Cor = meio.Cor;
+    }
 }
