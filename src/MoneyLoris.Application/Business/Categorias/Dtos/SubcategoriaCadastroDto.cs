@@ -1,8 +1,22 @@
-﻿namespace MoneyLoris.Application.Business.Categorias.Dtos;
+﻿using MoneyLoris.Application.Domain.Entities;
+
+namespace MoneyLoris.Application.Business.Categorias.Dtos;
 public class SubcategoriaCadastroDto
 {
     public int Id { get; set; }
     public int IdCategoria { get; set; }
     public string Nome { get; set; } = default!;
-    public int? Ordem { get; set; }
+    public byte? Ordem { get; set; }
+
+    public SubcategoriaCadastroDto()
+    {
+    }
+
+    public SubcategoriaCadastroDto(Subcategoria subcategoria)
+    {
+        Id = subcategoria.Id;
+        IdCategoria = subcategoria.IdCategoria;
+        Nome = subcategoria.Nome;
+        Ordem = subcategoria.Ordem;
+    }
 }

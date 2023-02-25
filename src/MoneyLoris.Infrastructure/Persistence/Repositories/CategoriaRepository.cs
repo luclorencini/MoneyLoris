@@ -13,9 +13,12 @@ public class CategoriaRepository : RepositoryBase<Categoria>, ICategoriaReposito
     public async Task<ICollection<Categoria>> ListarCategoriasUsuario(TipoLancamento tipo, int idUsuario)
     {
         var list = await _dbset
+            .Include(c => c.Subcategorias)
             .Where(c =>
                 c.Tipo == tipo && c.IdUsuario == idUsuario)
-            .OrderBy(c => c.Ordem).ThenBy(c => c.Nome)
+            .OrderBy(c => c.Ordem == null)
+            .ThenBy(c => c.Ordem)
+            .ThenBy(c => c.Nome)
             .AsNoTracking()
             .ToListAsync();
 

@@ -20,6 +20,10 @@ public static class ErrorCodes
 
     #region Categoria
     public static readonly string Categoria_NaoEncontrada = "CANAEN";
+    public static readonly string Categoria_NaoPertenceAoUsuario = "CANPUS";
+    public static readonly string Categoria_NaoPodeAlterarTipo = "CANPAT";
+
+    public static readonly string Subcategoria_NaoEncontrada = "SCNAEN";
 
     #endregion
 

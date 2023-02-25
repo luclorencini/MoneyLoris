@@ -17,6 +17,9 @@ public class CategoriaCadastroListItemDto
         Id = categoria.Id;
         Nome = categoria.Nome;
         Ordem = categoria.Ordem;
-        Subcategorias = new List<SubcategoriaCadastroListItemDto>(); //TODO - carregar as subs
+
+        Subcategorias = categoria.Subcategorias
+            .Select(s => new SubcategoriaCadastroListItemDto(s))
+            .ToList();
     }
 }
