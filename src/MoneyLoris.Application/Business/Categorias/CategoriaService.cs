@@ -9,17 +9,17 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Categorias;
 public class CategoriaService : ServiceBase, ICategoriaService
 {
-    private readonly ICategoriaRepository _categoriaRepository;
-    private readonly ISubcategoriaRepository _subcategoriaRepository;
+    private readonly ICategoriaRepository _categoriaRepo;
+    private readonly ISubcategoriaRepository _subcategoriaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public CategoriaService(
-        ICategoriaRepository categoriaRepository,
-        ISubcategoriaRepository subcategoriaRepository,
+        ICategoriaRepository categoriaRepo,
+        ISubcategoriaRepository subcategoriaRepo,
         IAuthenticationManager authenticationManager)
     {
-        _categoriaRepository = categoriaRepository;
-        _subcategoriaRepository = subcategoriaRepository;
+        _categoriaRepo = categoriaRepo;
+        _subcategoriaRepo = subcategoriaRepo;
         _authenticationManager = authenticationManager;
     }
 
@@ -27,7 +27,7 @@ public class CategoriaService : ServiceBase, ICategoriaService
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var categorias = await _categoriaRepository.ListarCategoriasUsuario(tipo, userInfo.Id);
+        var categorias = await _categoriaRepo.ListarCategoriasUsuario(tipo, userInfo.Id);
 
         ICollection<CategoriaCadastroListItemDto> ret =
             categorias.Select(c => new CategoriaCadastroListItemDto(c))
@@ -60,7 +60,7 @@ public class CategoriaService : ServiceBase, ICategoriaService
             IdUsuario = userInfo.Id
         };
 
-        categoria = await _categoriaRepository.Insert(categoria);
+        categoria = await _categoriaRepo.Insert(categoria);
 
         return (categoria.Id, "Categoria criada com sucesso.");
 
@@ -86,7 +86,7 @@ public class CategoriaService : ServiceBase, ICategoriaService
         categoria.Nome = dto.Nome;
         categoria.Ordem = dto.Ordem;
 
-        await _categoriaRepository.Update(categoria);
+        await _categoriaRepo.Update(categoria);
 
         return (categoria.Id, "Categoria alterada com sucesso.");
 
@@ -105,14 +105,14 @@ public class CategoriaService : ServiceBase, ICategoriaService
                 code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
                 message: "Categoria não pertence ao usuário.");
 
-        await _categoriaRepository.Delete(id);
+        await _categoriaRepo.Delete(id);
 
         return (id, "Categoria excluída com sucesso.");
     }
 
     private async Task<Categoria> obterCategoria(int id)
     {
-        var categoria = await _categoriaRepository.GetById(id);
+        var categoria = await _categoriaRepo.GetById(id);
 
         if (categoria == null)
             throw new BusinessException(
@@ -146,7 +146,7 @@ public class CategoriaService : ServiceBase, ICategoriaService
             Ordem = dto.Ordem
         };
 
-        subcat = await _subcategoriaRepository.Insert(subcat);
+        subcat = await _subcategoriaRepo.Insert(subcat);
 
         return (subcat.Id, "Subcategoria criada com sucesso.");
     }
@@ -160,7 +160,7 @@ public class CategoriaService : ServiceBase, ICategoriaService
         subcat.Nome = dto.Nome;
         subcat.Ordem = dto.Ordem;
 
-        await _subcategoriaRepository.Update(subcat);
+        await _subcategoriaRepo.Update(subcat);
 
         return (subcat.Id, "Subcategoria alterada com sucesso.");
     }
@@ -169,14 +169,14 @@ public class CategoriaService : ServiceBase, ICategoriaService
     {
         //TODO - regras de validação
 
-        await _subcategoriaRepository.Delete(id);
+        await _subcategoriaRepo.Delete(id);
 
         return (id, "Subcategoria excluída com sucesso.");
     }
 
     private async Task<Subcategoria> obterSubcategoria(int id)
     {
-        var subcat = await _subcategoriaRepository.GetById(id);
+        var subcat = await _subcategoriaRepo.GetById(id);
 
         if (subcat == null)
             throw new BusinessException(
@@ -186,9 +186,25 @@ public class CategoriaService : ServiceBase, ICategoriaService
         return subcat;
     }
 
-    public Task<Result<ICollection<CategoriaListItemDto>>> ObterCategoriasUsuario(TipoLancamento tipo)
+    public async Task<Result<ICollection<CategoriaListItemDto>>> ObterCategoriasUsuario(TipoLancamento tipo)
     {
-        //TODO
-        throw new NotImplementedException();
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        var categorias = await _categoriaRepo.ListarCategoriasUsuario(tipo, userInfo.Id);
+
+        ICollection<CategoriaListItemDto> ret = new List<CategoriaListItemDto>();
+
+        foreach (var c in categorias)
+        {
+            ret.Add(new CategoriaListItemDto { CategoriaId = c.Id, CategoriaNome = c.Nome });
+
+            foreach (var s in c.Subcategorias)
+            {
+                ret.Add(new CategoriaListItemDto { CategoriaId = c.Id, CategoriaNome = c.Nome, SubcategoriaId = s.Id, SubcategoriaNome = s.Nome });
+            }
+
+        }
+
+        return new Result<ICollection<CategoriaListItemDto>>(ret);
     }
 }

@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Domain.Enums;
+﻿using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
 public class LancamentoListItemDto
@@ -17,4 +18,26 @@ public class LancamentoListItemDto
 
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
+
+    public LancamentoListItemDto()
+    {
+    }
+
+    public LancamentoListItemDto(Lancamento lancamento)
+    {
+        Id = lancamento.Id;
+        Data = lancamento.Data;
+        Tipo = lancamento.Tipo;
+        Operacao = lancamento.Operacao;
+
+        MeioPagamentoNome = lancamento.MeioPagamento.Nome;
+        MeioPagamentoTipo = lancamento.MeioPagamento.Tipo;
+        MeioPagamentoCor = lancamento.MeioPagamento.Cor;
+
+        Categoria = lancamento.Categoria?.Nome;
+        Subcategoria = lancamento.Subcategoria?.Nome;
+
+        Descricao = lancamento.Descricao;
+        Valor = lancamento.Valor;
+    }
 }

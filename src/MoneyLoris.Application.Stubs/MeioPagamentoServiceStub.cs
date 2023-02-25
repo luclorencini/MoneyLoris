@@ -122,4 +122,9 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
         ICollection<MeioPagamentoListItemDto> lc = ToListItem().Where(m => m.Tipo == TipoMeioPagamento.CartaoCredito).ToList();
         return await TaskSuccess(lc);
     }
+
+    public Task<decimal> AtualizarSaldo(int id, decimal valor)
+    {
+        throw new NotImplementedException();
+    }
 }

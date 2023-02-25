@@ -167,7 +167,6 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         throw new NotImplementedException();
     }
 
-
     public async Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento()
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
@@ -205,5 +204,5 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
             .ToList();
 
         return new Result<ICollection<MeioPagamentoListItemDto>>(ret);
-    }
+    }    
 }

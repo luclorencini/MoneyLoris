@@ -32,5 +32,10 @@ public static class ErrorCodes
     public static readonly string MeioPagamento_NaoPertenceAoUsuario = "MPNPUS";
     public static readonly string MeioPagamento_CartaoNaoPodeVirarConta = "MPCANC";
     public static readonly string MeioPagamento_ContaNaoPodeVirarCartao = "MPCONC";
+    public static readonly string MeioPagamento_CartaoNaoPermiteOperacoesSaldo = "MPCNOS";
+    #endregion
+
+    #region Lançamento
+    public static readonly string Lancamento_NaoEncontrado = "LANAEN";
     #endregion
 }

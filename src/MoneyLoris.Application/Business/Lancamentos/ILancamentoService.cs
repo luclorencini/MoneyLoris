@@ -10,9 +10,9 @@ public interface ILancamentoService
     Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesDespesas(string termoBusca);
     Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesReceitas(string termoBusca);
 
-    Task<Result<int>> InserirReceita(LancamentoCadastroDto lancamento);
-    Task<Result<int>> InserirDespesa(LancamentoCadastroDto lancamento);
+    Task<Result<int>> InserirReceita(LancamentoCadastroDto dto);
+    Task<Result<int>> InserirDespesa(LancamentoCadastroDto dto);
     Task<Result<LancamentoCadastroDto>> Obter(int id);
-    Task<Result<int>> Alterar(LancamentoCadastroDto lancamento);
+    Task<Result<int>> Alterar(LancamentoCadastroDto dto);
     Task<Result<int>> Excluir(int id);
 }

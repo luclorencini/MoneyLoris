@@ -51,9 +51,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
         services.AddScoped<IMeioPagamentoRepository, MeioPagamentoRepository>();
 
+        services.AddScoped<ILancamentoService, LancamentoService>();
+        services.AddScoped<ILancamentoRepository, LancamentoRepository>();
 
         //ainda ta com stub
-        services.AddScoped<ILancamentoService, LancamentoServiceStub>();
 
         services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
     }
