@@ -32,19 +32,21 @@ public class AuthenticationManager : IAuthenticationManager
         var userPrincipal = new ClaimsPrincipal(identity);
 
         //manter conectado: cookie persistente, login dura 2 semanas; senão, login padrão de 1 hora de duração
-        await _httpContextAccessor.HttpContext.SignInAsync(userPrincipal,
-            new AuthenticationProperties
-            {
-                IsPersistent = isPersistent,
-                ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60)
-            });
+        var authProperties = new AuthenticationProperties
+        {
+            AllowRefresh = true,
+            IsPersistent = isPersistent,
+            ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60)
+        };
+
+        await _httpContextAccessor.HttpContext.SignInAsync(_authConfig.Scheme, userPrincipal, authProperties);
     }
 
     public async Task LogOut()
     {
         if (_httpContextAccessor.HttpContext.User.Identity!.IsAuthenticated)
         {
-            await _httpContextAccessor.HttpContext.SignOutAsync();
+            await _httpContextAccessor.HttpContext.SignOutAsync(_authConfig.Scheme);
         }
     }
 

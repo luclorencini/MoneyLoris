@@ -1,5 +1,7 @@
 
+using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.DataProtection;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.DI;
 using MoneyLoris.Web.Middleware;
@@ -11,6 +13,19 @@ var services = builder.Services;
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
+#region Data Protection
+
+var keysDirectoryName = "dataProtectionKeys";
+var keysDirectoryPath = Path.Combine(builder.Environment.ContentRootPath, keysDirectoryName);
+if (!Directory.Exists(keysDirectoryPath))
+{
+    Directory.CreateDirectory(keysDirectoryPath);
+}
+services.AddDataProtection()
+      .SetApplicationName("MoneyLoris")
+      .PersistKeysToFileSystem(new DirectoryInfo(keysDirectoryPath));
+
+#endregion
 
 #region Autenticação e Autorização
 

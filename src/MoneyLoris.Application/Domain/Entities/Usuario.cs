@@ -77,13 +77,15 @@ public partial class Usuario : EntityBase
 
     public void MarcarParaRedefinirSenha()
     {
-        // marca flag para forçar usuário a trocar a senha no próximo acesso
+        // marca flag para forçar usuário a trocar a senha no próximo acesso.
+        // A senha do usuário será trocada pela senha padrão.
 
         if (AlterarSenha == true)
             throw new BusinessException(
                 code: ErrorCodes.Usuario_JaMarcadoParaAlterarSenha,
                 message: "Este usuário já foi marcado para redefinição de senha no próximo login");
 
+        Senha = HashHelper.ComputeHash("dinheiro"); //senha padrão
         AlterarSenha = true;
     }
 

@@ -348,3 +348,13 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+
+
+##
+## Ignora arquivos especificos deste projeto
+##
+
+# Data Protection Keys
+dataProtectionKeys/
+dataProtectionKeys/*
