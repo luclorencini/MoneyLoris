@@ -13,19 +13,19 @@ var services = builder.Services;
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
-#region Data Protection
+//#region Data Protection
 
-var keysDirectoryName = "dataProtectionKeys";
-var keysDirectoryPath = Path.Combine(builder.Environment.ContentRootPath, keysDirectoryName);
-if (!Directory.Exists(keysDirectoryPath))
-{
-    Directory.CreateDirectory(keysDirectoryPath);
-}
-services.AddDataProtection()
-      .SetApplicationName("MoneyLoris")
-      .PersistKeysToFileSystem(new DirectoryInfo(keysDirectoryPath));
+//var keysDirectoryName = "dataProtectionKeys";
+//var keysDirectoryPath = Path.Combine(builder.Environment.ContentRootPath, keysDirectoryName);
+//if (!Directory.Exists(keysDirectoryPath))
+//{
+//    Directory.CreateDirectory(keysDirectoryPath);
+//}
+//services.AddDataProtection()
+//      .SetApplicationName("MoneyLoris")
+//      .PersistKeysToFileSystem(new DirectoryInfo(keysDirectoryPath));
 
-#endregion
+//#endregion
 
 #region Autenticação e Autorização
 
