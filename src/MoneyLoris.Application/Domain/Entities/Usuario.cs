@@ -25,6 +25,7 @@ public partial class Usuario : EntityBase
 
     public virtual ICollection<Categoria> Categorias { get; set; } = default!;
     public virtual ICollection<MeioPagamento> MeiosPagamento { get; set; } = default!;
+    public virtual ICollection<Lancamento> Lancamentos { get; set; }
 
 
 

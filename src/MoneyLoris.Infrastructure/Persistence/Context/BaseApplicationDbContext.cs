@@ -67,6 +67,8 @@ public class BaseApplicationDbContext : DbContext
 
             entity.HasIndex(e => e.IdSubcategoria, "IX_Lancamento_Subcategoria");
 
+            entity.HasIndex(e => e.IdUsuario, "IX_Lancamento_Usuario");
+
             entity.Property(e => e.Id).HasColumnType("int(11)");
 
             entity.Property(e => e.Data).HasColumnType("datetime");
@@ -80,6 +82,8 @@ public class BaseApplicationDbContext : DbContext
             entity.Property(e => e.IdMeioPagamento).HasColumnType("int(11)");
 
             entity.Property(e => e.IdSubcategoria).HasColumnType("int(11)");
+
+            entity.Property(e => e.IdUsuario).HasColumnType("int(11)");
 
             entity.Property(e => e.Operacao).HasColumnType("tinyint(4)");
 
@@ -111,6 +115,12 @@ public class BaseApplicationDbContext : DbContext
                 .WithMany(p => p.Lancamentos)
                 .HasForeignKey(d => d.IdSubcategoria)
                 .HasConstraintName("FK_Lancamento_Subcategoria");
+
+            entity.HasOne(d => d.Usuario)
+                .WithMany(p => p.Lancamentos)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Lancamento_Usuario");
         });
 
         modelBuilder.Entity<MeioPagamento>(entity =>

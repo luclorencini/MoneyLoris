@@ -63,7 +63,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
         //TODO - aplicar o resto dos filtros
 
         Expression<Func<Lancamento, bool>> query =
-            l => l.MeioPagamento.IdUsuario == idUsuario
+            l => l.IdUsuario == idUsuario
             && (filtro.Descricao == null || l.Descricao.ToUpper().Contains(filtro.Descricao.ToUpper()))
             && (filtro.DataInicio == null || l.Data >= filtro.DataInicio)
             && (filtro.DataFim == null || l.Data <= filtro.DataFim)

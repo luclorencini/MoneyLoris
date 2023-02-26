@@ -65,6 +65,7 @@ ALTER TABLE `Subcategoria` ADD CONSTRAINT `UI_Subcategoria_Nome` UNIQUE (`IdCate
 
 CREATE TABLE `Lancamento` (
   `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `IdUsuario` int NOT NULL,
   `IdMeioPagamento` int NOT NULL,
   `Tipo` tinyint NOT NULL,
   `Operacao` tinyint NOT NULL,
@@ -77,6 +78,9 @@ CREATE TABLE `Lancamento` (
   `Realizado` boolean NULL DEFAULT true,
   `IdLancamentoTransferencia` int NULL
 );
+
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
+ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_Usuario` (`IdUsuario`);
 
 ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_MeioPagamento` FOREIGN KEY (`IdMeioPagamento`) REFERENCES `MeioPagamento` (`Id`);
 ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_MeioPagamento` (`IdMeioPagamento`);

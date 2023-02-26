@@ -6,6 +6,8 @@ public class LancamentoCadastroDto
 {
     public int Id { get; set; }
     public DateTime Data { get; set; }
+
+    //TODO - rever este campo (o dto parece não precisar disso, pois os services tem condição de saber)
     public TipoLancamento Tipo { get; set; }
     public int IdMeioPagamento { get; set; }
     public int IdCategoria { get; set; }
@@ -23,8 +25,8 @@ public class LancamentoCadastroDto
         Data = lancamento.Data;
         Tipo = lancamento.Tipo;
         IdMeioPagamento = lancamento.IdMeioPagamento;
-        IdCategoria = lancamento.Categoria!.Id;
-        IdSubcategoria = lancamento.Subcategoria?.Id;
+        IdCategoria = lancamento.IdCategoria.Value;
+        IdSubcategoria = lancamento.IdSubcategoria;
         Descricao = lancamento.Descricao;
         Valor = lancamento.Valor;
     }

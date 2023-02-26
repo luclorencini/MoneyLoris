@@ -10,6 +10,7 @@ public partial class Lancamento : EntityBase
         LancamentoTransferenciaRelacionado = new HashSet<Lancamento>();
     }
 
+    public int IdUsuario { get; set; }
     public int IdMeioPagamento { get; set; }
     public TipoLancamento Tipo { get; set; }
     public OperacaoLancamento Operacao { get; set; }
@@ -22,6 +23,7 @@ public partial class Lancamento : EntityBase
     public bool? Realizado { get; set; }
     public int? IdLancamentoTransferencia { get; set; }
 
+    public virtual Usuario Usuario { get; set; } = null!;
     public virtual MeioPagamento MeioPagamento { get; set; } = null!;
     public virtual Categoria? Categoria { get; set; }
     public virtual Subcategoria? Subcategoria { get; set; }
