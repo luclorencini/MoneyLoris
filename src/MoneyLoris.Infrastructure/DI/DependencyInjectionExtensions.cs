@@ -23,15 +23,9 @@ public static class DependencyInjectionExtensions
         var ativarStubs = Convert.ToBoolean(config["AtivarStubs"]);
 
         if (ativarStubs)
-        {
             InjetarDependenciasStubs(services);
-        }
         else
-        {
             InjetarDependenciasAplicacao(services);
-        }
-
-        return;
     }
 
     private static void InjetarDependenciasAplicacao(IServiceCollection services)
@@ -52,11 +46,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMeioPagamentoRepository, MeioPagamentoRepository>();
 
         services.AddScoped<ILancamentoService, LancamentoService>();
+        services.AddScoped<ITransferenciaService, TransferenciaService>();
         services.AddScoped<ILancamentoRepository, LancamentoRepository>();
-
-        //ainda ta com stub
-
-        services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)
@@ -69,7 +60,5 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
         services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
-
-        return;
     }
 }

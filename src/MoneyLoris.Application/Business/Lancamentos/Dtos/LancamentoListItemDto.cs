@@ -12,12 +12,14 @@ public class LancamentoListItemDto
     public string MeioPagamentoNome { get; set; } = default!;
     public TipoMeioPagamento MeioPagamentoTipo { get; set; } = default!;
     public string MeioPagamentoCor { get; set; } = default!;
-    
+
     public string Categoria { get; set; } = default!;
     public string Subcategoria { get; set; } = default!;
 
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
+
+    public int? IdLancamentoOrigemTransferencia { get; set; }
 
     public LancamentoListItemDto()
     {
@@ -34,10 +36,26 @@ public class LancamentoListItemDto
         MeioPagamentoTipo = lancamento.MeioPagamento.Tipo;
         MeioPagamentoCor = lancamento.MeioPagamento.Cor;
 
-        Categoria = lancamento.Categoria?.Nome;
-        Subcategoria = lancamento.Subcategoria?.Nome;
-
         Descricao = lancamento.Descricao;
         Valor = lancamento.Valor;
+
+        if (Operacao == OperacaoLancamento.LancamentoSimples)
+        {
+            Categoria = lancamento!.Categoria!.Nome;
+            Subcategoria = lancamento!.Subcategoria?.Nome;
+        }
+        else
+        {
+            Categoria = (lancamento.TipoTransferencia == TipoTransferencia.TransferenciaEntreContas ? "Transferência" : "Pagamento de Fatura");
+
+            //sempre traz o id do lançamento origem da transferência (a despesa)
+            IdLancamentoOrigemTransferencia =
+                (lancamento.Tipo == TipoLancamento.Despesa ?
+                    lancamento.Id :
+                    lancamento.IdLancamentoTransferencia);
+        }
+
+
+
     }
 }

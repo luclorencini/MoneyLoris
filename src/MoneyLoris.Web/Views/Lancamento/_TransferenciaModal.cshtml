@@ -184,7 +184,7 @@
 
                         await this.showLoadingSplashAndExecute(async () => {
 
-                            let ret = await fetchData.fetchPostJson('/transferencia/excluir', this.transferencia.id);
+                            let ret = await fetchData.fetchPostJson('/transferencia/excluir', this.transferencia.idLancamentoOrigem);
 
                             if (ret.ok) {
                                 mensagemSistema.showMensagemSucesso(ret.message);

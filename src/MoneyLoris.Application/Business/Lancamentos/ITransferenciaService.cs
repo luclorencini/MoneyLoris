@@ -4,9 +4,9 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Lancamentos;
 public interface ITransferenciaService
 {
-    Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto transferencia);
-    Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto transferencia);
+    Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto dto);
+    Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto dto);
     Task<Result<TransferenciaUpdateDto>> Obter(int id);
-    Task<Result<int>> Alterar(TransferenciaUpdateDto lancamento);
+    Task<Result<int>> Alterar(TransferenciaUpdateDto dto);
     Task<Result<int>> Excluir(int idLancamentoOrigem);
 }

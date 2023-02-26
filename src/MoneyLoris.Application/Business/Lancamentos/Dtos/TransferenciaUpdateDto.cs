@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Domain.Enums;
+﻿using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
 public class TransferenciaUpdateDto
@@ -11,4 +12,22 @@ public class TransferenciaUpdateDto
     public int IdMeioPagamentoOrigem { get; set; }
     public int IdMeioPagamentoDestino { get; set; }
     public decimal Valor { get; set; }
+
+    public TransferenciaUpdateDto()
+    {
+    }
+
+    public TransferenciaUpdateDto(Lancamento lancamentoOrigem, Lancamento lancamentoDestino)
+    {
+        IdLancamentoOrigem = lancamentoOrigem.Id;
+        IdLancamentoDestino = lancamentoDestino.Id;
+
+        Data = lancamentoOrigem.Data;
+        Tipo = lancamentoOrigem.TipoTransferencia!.Value;
+
+        IdMeioPagamentoOrigem = lancamentoOrigem.IdMeioPagamento;
+        IdMeioPagamentoDestino = lancamentoDestino.IdMeioPagamento;
+
+        Valor = Math.Abs(lancamentoOrigem.Valor); //garante que o valor vai sempre positivo pra interface
+    }
 }

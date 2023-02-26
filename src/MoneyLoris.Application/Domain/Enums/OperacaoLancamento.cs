@@ -8,7 +8,4 @@ public enum OperacaoLancamento : byte
 
     [Description("Transferência")]
     Transferencia = 2,
-
-    [Description("Acerto de Saldo")]
-    AcertoSaldo = 3,
 }

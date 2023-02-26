@@ -43,6 +43,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
         var val = await _dbset
             .Where(whereQueryListagem(filtro, idUsuario))
             .Where(l => l.Tipo == TipoLancamento.Receita)
+            .Where(l => l.Operacao == OperacaoLancamento.LancamentoSimples)
             .SumAsync(l => l.Valor);
 
             return val;
@@ -53,6 +54,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
         var val = await _dbset
             .Where(whereQueryListagem(filtro, idUsuario))
             .Where(l => l.Tipo == TipoLancamento.Despesa)
+            .Where(l => l.Operacao == OperacaoLancamento.LancamentoSimples)
             .SumAsync(l => l.Valor);
 
         return val;

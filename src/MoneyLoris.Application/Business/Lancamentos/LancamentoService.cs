@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using MoneyLoris.Application.Business.Auth.Interfaces;
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Common.Base;
@@ -102,11 +101,10 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         var lancamento = PreparaLancamentoSimples(dto, tipo, userInfo.Id);
 
-
-        await _lancamentoRepo.BeginTransaction();
-
         try
         {
+            await _lancamentoRepo.BeginTransaction();
+
             await _lancamentoRepo.Insert(lancamento);
 
             //só atualiza saldo se não for cartao
@@ -178,7 +176,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         return valor;
     }
 
-  
+
 
 
     public async Task<Result<LancamentoCadastroDto>> Obter(int id)
@@ -192,65 +190,69 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<int>> Alterar(LancamentoCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        throw new BusinessException(ErrorCodes.SystemError, "Alteração de Lançamento ainda não implementada.");
 
-        var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
-
-        //validação meio pagamento
-
-        if (meio == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão não encontrado");
-
-        if (meio.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
-
-        if (meio.Id != dto.IdMeioPagamento)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
-                message: "Não é possível trocar o meio de pagamento na alteração.");
-
-        // validação lançamento
-
-        var lancamento = await _lancamentoRepo.GetById(dto.Id);
-
-        if (lancamento == null)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoEncontrado,
-                message: "Lançamento não encontrado");
-
-        if (lancamento.IdUsuario == userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
-                message: "Lançamento não pertence ao usuário");
-
-
-        //TODO - validação categoria e subcategoria
-
-        //prepara alteração
-
-        lancamento.Descricao = dto.Descricao;
-        lancamento.Data = dto.Data;
-        lancamento.IdCategoria = dto.IdCategoria;
-        lancamento.IdSubcategoria = dto.IdSubcategoria;
-
-        //TODO - futuro: permitir alterar conta, e recalcular o saldo de ambas as contas
-
-        //TODO - ajusta o novo valor do lançamento, e recalcula o saldo baseado na diferença
-
-        await _lancamentoRepo.Update(lancamento);
-
-
-        return (lancamento.Id,
-            $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
+        // var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        // 
+        // var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
+        // 
+        // //validação meio pagamento
+        // 
+        // if (meio == null)
+        //     throw new BusinessException(
+        //         code: ErrorCodes.MeioPagamento_NaoEncontrado,
+        //         message: "Conta ou Cartão não encontrado");
+        // 
+        // if (meio.IdUsuario != userInfo.Id)
+        //     throw new BusinessException(
+        //         code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
+        //         message: "Conta/Cartão não pertence ao usuário.");
+        // 
+        // if (meio.Id != dto.IdMeioPagamento)
+        //     throw new BusinessException(
+        //         code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
+        //         message: "Não é possível trocar o meio de pagamento na alteração.");
+        // 
+        // // validação lançamento
+        // 
+        // var lancamento = await _lancamentoRepo.GetById(dto.Id);
+        // 
+        // if (lancamento == null)
+        //     throw new BusinessException(
+        //         code: ErrorCodes.Lancamento_NaoEncontrado,
+        //         message: "Lançamento não encontrado");
+        // 
+        // if (lancamento.IdUsuario == userInfo.Id)
+        //     throw new BusinessException(
+        //         code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
+        //         message: "Lançamento não pertence ao usuário");
+        // 
+        // 
+        // //TODO - validação categoria e subcategoria
+        // 
+        // //prepara alteração
+        // 
+        // lancamento.Descricao = dto.Descricao;
+        // lancamento.Data = dto.Data;
+        // lancamento.IdCategoria = dto.IdCategoria;
+        // lancamento.IdSubcategoria = dto.IdSubcategoria;
+        // 
+        // //TODO - futuro: permitir alterar conta, e recalcular o saldo de ambas as contas
+        // 
+        // //TODO - ajusta o novo valor do lançamento, e recalcula o saldo baseado na diferença
+        // 
+        // await _lancamentoRepo.Update(lancamento);
+        // 
+        // 
+        // return (lancamento.Id,
+        //     $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
     }
 
     public async Task<Result<int>> Excluir(int idLancamento)
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        //lançamento
 
         var lancamento = await _lancamentoRepo.GetById(idLancamento);
 
@@ -278,10 +280,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário.");
 
-        await _lancamentoRepo.BeginTransaction();
 
         try
         {
+            await _lancamentoRepo.BeginTransaction();
+
             await _lancamentoRepo.Delete(idLancamento);
 
             //só atualiza saldo se não for cartao
@@ -293,7 +296,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
             if (novoSaldo.HasValue)
                 msg += $" Novo saldo: {novoSaldo}";
 
-            return idLancamento;
+            return (idLancamento, msg);
         }
         catch (Exception)
         {

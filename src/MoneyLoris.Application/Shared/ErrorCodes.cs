@@ -39,5 +39,9 @@ public static class ErrorCodes
     #region Lançamento
     public static readonly string Lancamento_NaoEncontrado = "LANAEN";
     public static readonly string Lancamento_NaoPertenceAoUsuario = "LANPUS";
+    public static readonly string Lancamento_OperacaoNaoEhTransferencia = "LAONTR";
+    public static readonly string Lancamento_TransferenciaOrigemNaoPodeSerCartao = "LTONCA";
+    public static readonly string Lancamento_TransferenciaEntreContasDestinoNaoPodeSerCartao = "LTCDCA";
+    public static readonly string Lancamento_PagamentoFaturaDestinoNaoPodeSerConta = "LPFDCO";
     #endregion
 }
