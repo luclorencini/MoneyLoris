@@ -47,7 +47,7 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 //    });
 
 services.Configure<SecurityStampValidatorOptions>(options =>
-    options.ValidationInterval = TimeSpan.FromSeconds(10)
+    options.ValidationInterval = TimeSpan.FromDays(28)
 );
 
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
