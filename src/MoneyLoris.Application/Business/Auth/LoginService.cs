@@ -17,7 +17,7 @@ public class LoginService : ILoginService
         _authManager = authManager;
     }
 
-    public async Task<Result<bool>> Login(LoginInputDto dto)
+    public async Task<Result<LoginRetornoDto>> Login(LoginInputDto dto)
     {
         Usuario usuario = await buscaUsuario(dto.Login, dto.Senha);
 
@@ -26,7 +26,7 @@ public class LoginService : ILoginService
         if (usuario.AlterarSenha)
         {
             //se precisa alterar senha, nao faz login, e sinaliza que a troca de senha deve ser feita
-            return true;
+            return new LoginRetornoDto { AlterarSenha = true };
         }
 
         //realiza o login
@@ -35,8 +35,23 @@ public class LoginService : ILoginService
         //persiste a data de login
         await _usuarioRepository.Update(usuario);
 
-        //retorna false: não precisa alterar senha
-        return false;
+        //define url de retorno baseado no perfil
+        var urlRedir = (usuario.IdPerfil == Domain.Enums.PerfilUsuario.Administrador ? "usuario" : "lancamento");
+
+        var retorno = new LoginRetornoDto
+        {
+            UrlRedir = urlRedir
+        };
+
+        //se for pwa, retorna tambem o id do usuario e data de expiração
+        //TODO - elaborar melhor no futuro, e talvez levar para authmanager
+        if (dto.Pwa)
+        {
+            retorno.UserId = usuario.Id;
+            retorno.DataExpiracao = DateTimeOffset.UtcNow.AddDays(28);
+        }
+
+        return retorno;
     }
 
     public async Task<Result> AlterarSenha(AlteracaoSenhaDto dto)

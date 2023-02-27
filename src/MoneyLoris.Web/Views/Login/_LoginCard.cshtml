@@ -68,10 +68,27 @@
             },
 
             mounted() {
+
+                let source = utils.obterRequestParameter('source');
+
+                if (source && source == 'pwa'){
+                    this.handlePwaLogin();
+                }
+
                 this.ajustaFoco();
             },
 
             methods: {
+
+                handlePwaLogin(){
+
+                    let pwaKey = localStorageUtils.obterObjeto('pwa-key');
+
+                    if (pwaKey){
+
+                    }
+
+                },
 
                 ajustaFoco() {
                     //bota foca no campo de login
@@ -94,13 +111,14 @@
                         let ret = await fetchData.fetchPostJson('/Login', dados);
                         if (ret.ok) {
 
-                            if (ret.value) {
+                            if (ret.value.alterarSenha && ret.value.alterarSenha == true) {
                                 //alterar senha
                                 this.$emit('alterar-senha', this.login);
                             }
                             else {
                                 //redireciona direto
-                                utils.redirecionar('/Lancamento');
+                                //utils.redirecionar('/Lancamento');
+                                utils.redirecionar(`/${ret.value.urlRedir}`);
                             }
                         }
                         else {

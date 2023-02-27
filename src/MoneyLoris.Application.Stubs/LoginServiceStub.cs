@@ -16,12 +16,15 @@ public class LoginServiceStub : ServiceBase, ILoginService
         _authManager = authManager;
     }
 
-    public async Task<Result<bool>> Login(LoginInputDto login)
+    public async Task<Result<LoginRetornoDto>> Login(LoginInputDto login)
     {
         await realizarLogin(login.Login);
 
-        return false; // Alterar senha: false -> te manda direto pra tela inicial
-        //return true; //Alterar senha: true -> te mostra a tela de alterar senha
+        //te manda direto pra tela inicial
+        return new LoginRetornoDto { UrlRedir = "lancamento" };
+
+        ////te mostra a tela de alterar senha
+        //return new LoginRetornoDto { AlterarSenha = true };
     }
 
     public async Task<Result> AlterarSenha(AlteracaoSenhaDto dto)
