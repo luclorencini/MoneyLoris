@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.DI;
 using MoneyLoris.Web.Middleware;
@@ -31,35 +32,37 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 #region Autenticação e Autorização
 
-//var authSection = builder.Configuration.GetSection("Auth");
-//
-//builder.Services.AddOptions<AuthConfig>().Bind(authSection);
-//
-//var authConfig = new AuthConfig();
-//authSection.Bind(authConfig);
-//
-//services.AddAuthentication(authConfig.Scheme)
-//    .AddCookie(authConfig.Scheme, config =>
-//    {
-//        config.Cookie.Name = authConfig.Cookie;
-//        config.LoginPath = "/Login";
-//        config.SlidingExpiration = true;
-//    });
+var authSection = builder.Configuration.GetSection("Auth");
 
-services.Configure<SecurityStampValidatorOptions>(options =>
-    options.ValidationInterval = TimeSpan.FromDays(28)
-);
+builder.Services.AddOptions<AuthConfig>().Bind(authSection);
 
-services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+var authConfig = new AuthConfig();
+authSection.Bind(authConfig);
+
+services.AddAuthentication(authConfig.Scheme)
+    .AddCookie(authConfig.Scheme, config =>
     {
-        options.Cookie.Name = ".AspNetCore.Cookies";
-        options.Cookie.Domain = "moneyloris.com.br";
-
-        options.ExpireTimeSpan = TimeSpan.FromDays(14);
-        //options.SlidingExpiration = true;
-        options.LoginPath = "/Login";
+        config.Cookie.Name = authConfig.Cookie;
+        config.Cookie.Domain = "moneyloris.com.br";
+        config.LoginPath = "/Login";
+        //config.SlidingExpiration = true;
+        config.ExpireTimeSpan = TimeSpan.FromDays(14); //forçando aqui para testes
     });
+
+//services.Configure<SecurityStampValidatorOptions>(options =>
+//    options.ValidationInterval = TimeSpan.FromDays(28)
+//);
+
+//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie(options =>
+//    {
+//        options.Cookie.Name = ".AspNetCore.Cookies";
+//        options.Cookie.Domain = "moneyloris.com.br";
+
+//        options.ExpireTimeSpan = TimeSpan.FromDays(14);
+//        //options.SlidingExpiration = true;
+//        options.LoginPath = "/Login";
+//    });
 
 services.AddAuthorization(options =>
 {
