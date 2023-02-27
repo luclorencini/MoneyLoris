@@ -21,10 +21,17 @@ public class LoginController : BaseController
         return View("LoginIndex");
     }
 
-    [HttpPost("/Login")]
+    [HttpPost("/Login/SignIn")]
     public async Task<IActionResult> Login([FromBody] LoginInputDto login)
     {
         var ret = await _loginService.Login(login);
+        return Ok(ret);
+    }
+
+    [HttpPost("/Login/Pwa")]
+    public async Task<IActionResult> LoginPwa([FromBody] string pwaKey)
+    {
+        var ret = await _loginService.LoginPwa(pwaKey);
         return Ok(ret);
     }
 

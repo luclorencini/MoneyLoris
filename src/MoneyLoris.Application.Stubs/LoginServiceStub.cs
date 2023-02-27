@@ -27,6 +27,11 @@ public class LoginServiceStub : ServiceBase, ILoginService
         //return new LoginRetornoDto { AlterarSenha = true };
     }
 
+    public Task<Result<LoginRetornoDto>> LoginPwa(string pwaKey)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Result> AlterarSenha(AlteracaoSenhaDto dto)
     {
         await realizarLogin(dto.Login);

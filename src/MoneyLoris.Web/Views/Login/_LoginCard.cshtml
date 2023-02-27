@@ -15,7 +15,7 @@
                     <label>Senha</label>
                 </div>
 
-                <div class="d-flex justify-content-start">
+                <div class="d-flex justify-content-start" v-bind:class="{'d-none' : isPwa}">
                     <div class="form-check form-switch form-control-lg mb-3">
                         <label class="form-check-label"><small>Manter conectado</small></label>
                         <input class="form-check-input" type="checkbox" v-model="manterConectado">
@@ -28,6 +28,8 @@
             </button>
 
         </template>
+
+        <div class="sticky-bottom">{{testToken}}</div>
 
     </script>
 }
@@ -50,8 +52,16 @@
             data: () => ({
                 login: '',
                 senha: '',
-                manterConectado: false
+                manterConectado: false,
+                isPwa: false
             }),
+
+            computed: {
+
+                testToken() {
+                    return localStorageUtils.obterObjeto('pwa-key');
+                },
+            },
 
             watch: {
                 async exibir(newValue, oldValue) {
@@ -67,28 +77,19 @@
                 }
             },
 
-            mounted() {
+            async mounted() {
 
                 let source = utils.obterRequestParameter('source');
 
-                if (source && source == 'pwa'){
-                    this.handlePwaLogin();
+                if (source && source == 'pwa') {
+                    this.isPwa = true;
+                    await this.pwaSignIn();
                 }
 
                 this.ajustaFoco();
             },
 
             methods: {
-
-                handlePwaLogin(){
-
-                    let pwaKey = localStorageUtils.obterObjeto('pwa-key');
-
-                    if (pwaKey){
-
-                    }
-
-                },
 
                 ajustaFoco() {
                     //bota foca no campo de login
@@ -105,10 +106,11 @@
                         let dados = {
                             login: this.login,
                             senha: this.senha,
-                            manterConectado: this.manterConectado
+                            manterConectado: this.manterConectado,
+                            pwa: this.isPwa
                         };
 
-                        let ret = await fetchData.fetchPostJson('/Login', dados);
+                        let ret = await fetchData.fetchPostJson('/Login/SignIn', dados);
                         if (ret.ok) {
 
                             if (ret.value.alterarSenha && ret.value.alterarSenha == true) {
@@ -116,8 +118,13 @@
                                 this.$emit('alterar-senha', this.login);
                             }
                             else {
+
+                                if (this.isPwa) {
+                                    //se pwa, salva dados retorno no browser
+                                    localStorageUtils.salvarObjeto('pwa-key', { key: ret.value.pwaToken });
+                                }
+
                                 //redireciona direto
-                                //utils.redirecionar('/Lancamento');
                                 utils.redirecionar(`/${ret.value.urlRedir}`);
                             }
                         }
@@ -125,7 +132,28 @@
                             mensagemSistema.showMensagemErro(ret.message);
                         }
                     });
-                }
+                },
+
+                async pwaSignIn() {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let pwaData = localStorageUtils.obterObjeto('pwa-key');
+
+                        if (pwaData) {
+
+                            let ret = await fetchData.fetchPostJson('/login/pwa', pwaData.key);
+                            if (ret.ok) {
+
+                                //salva novo token
+                                localStorageUtils.salvarObjeto('pwa-key', { key: ret.value.pwaToken });
+
+                                //redireciona direto
+                                utils.redirecionar(`/${ret.value.urlRedir}`);
+                            }
+                        }
+                    });
+                },
             }
         }
 
