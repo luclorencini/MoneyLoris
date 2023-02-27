@@ -43,7 +43,7 @@ public class AuthenticationManager : IAuthenticationManager
 
         var authProperties = new AuthenticationProperties
         {
-            AllowRefresh = true,
+            //AllowRefresh = true,
             IsPersistent = true,
             ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14),
             IssuedUtc = DateTimeOffset.UtcNow

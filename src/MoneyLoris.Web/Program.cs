@@ -3,6 +3,7 @@ using System;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.DI;
 using MoneyLoris.Web.Middleware;
@@ -45,10 +46,14 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 //        config.SlidingExpiration = true;
 //    });
 
+services.Configure<SecurityStampValidatorOptions>(options =>
+    options.ValidationInterval = TimeSpan.FromSeconds(10)
+);
+
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        //options.ExpireTimeSpan = TimeSpan.FromDays(14);
+        options.ExpireTimeSpan = TimeSpan.FromDays(14);
         options.SlidingExpiration = true;
         options.LoginPath = "/Login";
     });
