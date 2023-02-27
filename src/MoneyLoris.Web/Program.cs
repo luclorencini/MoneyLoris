@@ -43,7 +43,8 @@ services.AddAuthentication(authConfig.Scheme)
     .AddCookie(authConfig.Scheme, config =>
     {
         config.Cookie.Name = authConfig.Cookie;
-        config.Cookie.Domain = "moneyloris.com.br";
+        //config.Cookie.Domain = "moneyloris.com.br";
+        config.Cookie.Domain = authConfig.Domain;
         config.LoginPath = "/Login";
         //config.SlidingExpiration = true;
         config.ExpireTimeSpan = TimeSpan.FromDays(14); //forçando aqui para testes

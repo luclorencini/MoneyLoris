@@ -43,6 +43,10 @@
             return 'standalone';
         }
         return 'browser';
+    },
+
+    isPwaInstalled() {
+        return this.getPWADisplayMode() == 'standalone';
     }
 }
 

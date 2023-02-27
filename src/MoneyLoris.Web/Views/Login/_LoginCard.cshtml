@@ -79,10 +79,9 @@
 
             async mounted() {
 
-                let source = utils.obterRequestParameter('source');
+                this.isPwa = appInstall.isPwaInstalled();
 
-                if (source && source == 'pwa') {
-                    this.isPwa = true;
+                if (this.isPwa){
                     await this.pwaSignIn();
                 }
 
