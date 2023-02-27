@@ -38,8 +38,7 @@ public class AuthenticationManager : IAuthenticationManager
         {
             //AllowRefresh = true,
             IsPersistent = isPersistent,
-            //ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60)
-            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14),
+            ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60),
             IssuedUtc = DateTimeOffset.UtcNow
         };
 
