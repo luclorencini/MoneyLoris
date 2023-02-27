@@ -57,9 +57,9 @@ public class LoginService : ILoginService
     private async Task<Usuario> buscaUsuario(string login, string senha)
     {
         //faz o hash da senha para poder procurar na base
-        var hashPw = HashHelper.ComputeHash(senha);
+        var hashPw = HashHelper.ComputeHash(senha.Trim());
 
-        var usuario = await _usuarioRepository.GetByLoginSenha(login, hashPw);
+        var usuario = await _usuarioRepository.GetByLoginSenha(login.Trim(), hashPw);
 
         return usuario;
     }

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MoneyLoris.Application.Business.Auth.Interfaces;
@@ -11,7 +12,7 @@ namespace MoneyLoris.Infrastructure.Auth;
 public class AuthenticationManager : IAuthenticationManager
 {
     private readonly IHttpContextAccessor _httpContextAccessor = null!;
-    private readonly AuthConfig _authConfig = null!;
+    //private readonly AuthConfig _authConfig = null!;
 
     public AuthenticationManager()
     {
@@ -21,32 +22,47 @@ public class AuthenticationManager : IAuthenticationManager
     public AuthenticationManager(IHttpContextAccessor httpContextAccessor, IOptions<AuthConfig> authConfigOptions)
     {
         _httpContextAccessor = httpContextAccessor;
-        _authConfig = authConfigOptions.Value;
+        //_authConfig = authConfigOptions.Value;
     }
 
     public async Task Login(Usuario usuario, bool isPersistent)
     {
         //cria o usuario com suas Claims
         var claims = GerarClaimsUsuario(usuario);
-        var identity = new ClaimsIdentity(claims, _authConfig.Scheme);
+        //var identity = new ClaimsIdentity(claims, _authConfig.Scheme);
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var userPrincipal = new ClaimsPrincipal(identity);
 
         //manter conectado: cookie persistente, login dura 2 semanas; senão, login padrão de 1 hora de duração
+        //var authProperties = new AuthenticationProperties
+        //{
+        //    AllowRefresh = true,
+        //    IsPersistent = isPersistent,
+        //    ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60)
+        //};
+
         var authProperties = new AuthenticationProperties
         {
             AllowRefresh = true,
-            IsPersistent = isPersistent,
-            ExpiresUtc = isPersistent ? DateTime.Now.AddDays(14) : DateTime.Now.AddMinutes(60)
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14),
+            IssuedUtc = DateTimeOffset.UtcNow
         };
 
-        await _httpContextAccessor.HttpContext.SignInAsync(_authConfig.Scheme, userPrincipal, authProperties);
+        //await _httpContextAccessor.HttpContext.SignInAsync(_authConfig.Scheme, userPrincipal, authProperties);
+
+        await _httpContextAccessor.HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            userPrincipal,
+            authProperties);
     }
 
     public async Task LogOut()
     {
         if (_httpContextAccessor.HttpContext.User.Identity!.IsAuthenticated)
         {
-            await _httpContextAccessor.HttpContext.SignOutAsync(_authConfig.Scheme);
+            //await _httpContextAccessor.HttpContext.SignOutAsync(_authConfig.Scheme);
+            await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 

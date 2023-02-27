@@ -1,6 +1,7 @@
 
 using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.DI;
@@ -29,19 +30,27 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 #region Autenticação e Autorização
 
-var authSection = builder.Configuration.GetSection("Auth");
+//var authSection = builder.Configuration.GetSection("Auth");
+//
+//builder.Services.AddOptions<AuthConfig>().Bind(authSection);
+//
+//var authConfig = new AuthConfig();
+//authSection.Bind(authConfig);
+//
+//services.AddAuthentication(authConfig.Scheme)
+//    .AddCookie(authConfig.Scheme, config =>
+//    {
+//        config.Cookie.Name = authConfig.Cookie;
+//        config.LoginPath = "/Login";
+//        config.SlidingExpiration = true;
+//    });
 
-builder.Services.AddOptions<AuthConfig>().Bind(authSection);
-
-var authConfig = new AuthConfig();
-authSection.Bind(authConfig);
-
-services.AddAuthentication(authConfig.Scheme)
-    .AddCookie(authConfig.Scheme, config =>
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        config.Cookie.Name = authConfig.Cookie;
-        config.LoginPath = "/Login";
-        config.SlidingExpiration = true;
+        //options.ExpireTimeSpan = TimeSpan.FromDays(14);
+        options.SlidingExpiration = true;
+        options.LoginPath = "/Login";
     });
 
 services.AddAuthorization(options =>
