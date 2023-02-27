@@ -53,8 +53,11 @@ services.Configure<SecurityStampValidatorOptions>(options =>
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.Cookie.Name = ".AspNetCore.Cookies";
+        options.Cookie.Domain = "moneyloris.com.br";
+
         options.ExpireTimeSpan = TimeSpan.FromDays(14);
-        options.SlidingExpiration = true;
+        //options.SlidingExpiration = true;
         options.LoginPath = "/Login";
     });
 
