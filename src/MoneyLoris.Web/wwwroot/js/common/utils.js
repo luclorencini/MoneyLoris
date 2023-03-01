@@ -290,8 +290,10 @@
     // arr[0]: idCategoria, arr[1]: idSubcategoria (essa pode ser null)
     parseCatSub(str) {
         let arr = str.split('-');
-        let idCat = parseInt(arr[0]);
-        let idSub = parseInt((arr[1] == '0' ? null : arr[1]));
+
+        let idCat = (arr[0] == '0' ? null : parseInt(arr[0]));
+        let idSub = (arr[1] == '0' ? null : parseInt(arr[1]));
+
         return [idCat, idSub];
     },
 

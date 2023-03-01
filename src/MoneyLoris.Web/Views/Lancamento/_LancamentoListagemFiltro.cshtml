@@ -48,18 +48,17 @@
                         </div>
                         <div class="col col-12 col-lg-3">
                             <label class="form-label lh-1">Categoria / Subcategoria</label>
-                            <select class="form-select form-select-sm">
-                                <option>Todas</option>
-                                <optgroup label="Receitas">
-                                    <option value="1">Salário</option>
-                                    <option value="2">Empréstimo</option>
-                                    <option value="3">Investimentos</option>
+                            <select class="form-select form-select-sm" v-model="idCatSub">
+                                <option value="0-0">Todas</option>
+                                <optgroup label="Receitas" v-if="catReceitas.length > 0">
+                                    <option v-for="c in catReceitas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                    </option>
                                 </optgroup>
-                                <optgroup label="Despesas">
-                                    <option value="1">Alimentação</option>
-                                    <option value="11">Alimentação / Supermercado</option>
-                                    <option value="2">Moradia</option>
-                                    <option value="3">Poupança</option>
+                                <optgroup label="Despesas" v-if="catDespesas.length > 0">
+                                    <option v-for="c in catDespesas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                    </option>
                                 </optgroup>
                             </select>
                         </div>
@@ -128,12 +127,19 @@
             emits: ['lancamento-filtrar'],
 
             data: () => ({
+
                 filtro: {
-                    idMeioPagamento: ''
+                    idMeioPagamento: '',
+                    idCategoria: null,
+                    idSubcategoria: null
                 },
 
                 contas: [],
-                cartoes: []
+                cartoes: [],
+
+                catReceitas: [],
+                catDespesas: [],
+                idCatSub: '0-0'
             }),
 
             computed: {
@@ -156,6 +162,16 @@
                 }
             },
 
+            watch: {
+                idCatSub(newValue, oldValue) {
+
+                    let catIds = utils.parseCatSub(newValue);
+
+                    this.filtro.idCategoria = catIds[0];
+                    this.filtro.idSubcategoria = catIds[1];
+                }
+            },
+
             async mounted() {
 
                 await this.initCamposFiltro();
@@ -169,13 +185,17 @@
                 },
 
                 limpar() {
-                    this.filtro = {
-                        idMeioPagamento: ''
-                    };
+                    this.filtro.descricao = null;
+                    this.filtro.idMeioPagamento = '';
+                    this.filtro.idCategoria = null;
+                    this.filtro.idSubcategoria = null;
+
+                    idCatSub: '0-0';
+
                     this.filtrarMesAtual();
                 },
 
-                async initCamposFiltro(){
+                async initCamposFiltro() {
 
                     try {
 
@@ -193,6 +213,14 @@
                             //busca cartoes
                             let rca = await fetchData.fetchGetJson(`/common/cartoes`);
                             this.cartoes = rca.value;
+
+                            //busca categorias - receita
+                            let rcr = await fetchData.fetchGetJson(`/common/categorias/1`); // 1 - receita
+                            this.catReceitas = rcr.value;
+
+                            //busca categorias - receita
+                            let rcd = await fetchData.fetchGetJson(`/common/categorias/2`); // 2 - despesa
+                            this.catDespesas = rcd.value;
 
                         });
 
