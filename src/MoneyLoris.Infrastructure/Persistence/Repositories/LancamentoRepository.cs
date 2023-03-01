@@ -69,6 +69,9 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
             && (filtro.Descricao == null || l.Descricao.ToUpper().Contains(filtro.Descricao.ToUpper()))
             && (filtro.DataInicio == null || l.Data >= filtro.DataInicio)
             && (filtro.DataFim == null || l.Data <= filtro.DataFim)
+            && (filtro.IdMeioPagamento == null || l.IdMeioPagamento == filtro.IdMeioPagamento)
+            && (filtro.IdCategoria == null || l.IdCategoria == filtro.IdCategoria)
+            && (filtro.IdSubcategoria == null || l.IdSubcategoria == filtro.IdSubcategoria)
             ;
 
         return query;

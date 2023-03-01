@@ -36,14 +36,13 @@
 
                         <div class="col col-12 col-lg-2">
                             <label class="form-label lh-1">Conta / Cartão</label>
-                            <select class="form-select form-select-sm">
-                                <option>Todos</option>
-                                <optgroup label="Contas">
-                                    <option value="2">Caixa</option>
-                                    <option value="3">PicPay</option>
+                            <select class="form-select form-select-sm" v-model="filtro.idMeioPagamento">
+                                <option value="null">Todos</option>
+                                <optgroup label="Contas" v-if="contas.length > 0">
+                                    <option v-for="c in contas" :value="c.id">{{c.nome}}</option>
                                 </optgroup>
-                                <optgroup label="Cartões">
-                                    <option value="1">Nubank</option>
+                                <optgroup label="Cartões" v-if="cartoes.length > 0">
+                                    <option v-for="c in cartoes" :value="c.id">{{c.nome}}</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -129,7 +128,12 @@
             emits: ['lancamento-filtrar'],
 
             data: () => ({
-                filtro: {}
+                filtro: {
+                    idMeioPagamento: ''
+                },
+
+                contas: [],
+                cartoes: []
             }),
 
             computed: {
@@ -152,7 +156,9 @@
                 }
             },
 
-            mounted() {
+            async mounted() {
+
+                await this.initCamposFiltro();
                 this.filtrarMesAtual();
             },
 
@@ -163,8 +169,38 @@
                 },
 
                 limpar() {
-                    this.filtro = {};
+                    this.filtro = {
+                        idMeioPagamento: ''
+                    };
                     this.filtrarMesAtual();
+                },
+
+                async initCamposFiltro(){
+
+                    try {
+
+                        //clean-up
+                        this.transferencia = {};
+                        this.meiosOrigem = [];
+                        this.meiosDestino = [];
+
+                        await this.setLoadingAndExecute(async () => {
+
+                            //busca contas
+                            let rco = await fetchData.fetchGetJson(`/common/contas`);
+                            this.contas = rco.value;
+
+                            //busca cartoes
+                            let rca = await fetchData.fetchGetJson(`/common/cartoes`);
+                            this.cartoes = rca.value;
+
+                        });
+
+                    }
+                    catch (e) {
+                        mensagemSistema.showMensagemErro(e);
+                    }
+
                 },
 
                 avancarMes() {

@@ -187,9 +187,9 @@
 
                     await this.showLoadingSplashAndExecute(async () => {
 
-                        ////ajustes
-                        //if (this.filtro.ativo == false)
-                        //    this.filtro.ativo = null;
+                        //ajustes
+                        if (this.filtro.idMeioPagamento == '' || this.filtro.idMeioPagamento == 'null')
+                            this.filtro.idMeioPagamento = null;
 
                         let ret = await fetchData.fetchPostJson(`/lancamento/pesquisar`, this.filtro);
 
