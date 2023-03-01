@@ -24,6 +24,7 @@ public static class ErrorCodes
     public static readonly string Categoria_NaoPodeAlterarTipo = "CANPAT";
 
     public static readonly string Subcategoria_NaoEncontrada = "SCNAEN";
+    public static readonly string Subcategoria_NaoPertenceACategoria = "SCNPCA";
 
     #endregion
 

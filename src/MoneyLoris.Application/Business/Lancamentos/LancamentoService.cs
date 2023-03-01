@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Common.Base;
@@ -12,15 +13,21 @@ public class LancamentoService : ServiceBase, ILancamentoService
 {
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
+    private readonly ICategoriaRepository _categoriaRepository;
+    private readonly ISubcategoriaRepository _subcategoriaRepository;
     private readonly IAuthenticationManager _authenticationManager;
 
     public LancamentoService(
         ILancamentoRepository lancamentoRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
+        ICategoriaRepository categoriaRepository,
+        ISubcategoriaRepository subcategoriaRepository,
         IAuthenticationManager authenticationManager)
     {
         _lancamentoRepo = lancamentoRepo;
         _meioPagamentoRepo = meioPagamentoRepo;
+        _categoriaRepository = categoriaRepository;
+        _subcategoriaRepository = subcategoriaRepository;
         _authenticationManager = authenticationManager;
     }
 
@@ -190,62 +197,87 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<int>> Alterar(LancamentoCadastroDto dto)
     {
-        //throw new BusinessException(ErrorCodes.SystemError, "Alteração de Lançamento ainda não implementada.");
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        // var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-        // 
-        // var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
-        // 
-        // //validação meio pagamento
-        // 
-        // if (meio == null)
-        //     throw new BusinessException(
-        //         code: ErrorCodes.MeioPagamento_NaoEncontrado,
-        //         message: "Conta ou Cartão não encontrado");
-        // 
-        // if (meio.IdUsuario != userInfo.Id)
-        //     throw new BusinessException(
-        //         code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-        //         message: "Conta/Cartão não pertence ao usuário.");
-        // 
-        // if (meio.Id != dto.IdMeioPagamento)
-        //     throw new BusinessException(
-        //         code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
-        //         message: "Não é possível trocar o meio de pagamento na alteração.");
-        // 
-        // // validação lançamento
-        // 
-        // var lancamento = await _lancamentoRepo.GetById(dto.Id);
-        // 
-        // if (lancamento == null)
-        //     throw new BusinessException(
-        //         code: ErrorCodes.Lancamento_NaoEncontrado,
-        //         message: "Lançamento não encontrado");
-        // 
-        // if (lancamento.IdUsuario == userInfo.Id)
-        //     throw new BusinessException(
-        //         code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
-        //         message: "Lançamento não pertence ao usuário");
-        // 
-        // 
-        // //TODO - validação categoria e subcategoria
-        // 
-        // //prepara alteração
-        // 
-        // lancamento.Descricao = dto.Descricao;
-        // lancamento.Data = dto.Data;
-        // lancamento.IdCategoria = dto.IdCategoria;
-        // lancamento.IdSubcategoria = dto.IdSubcategoria;
-        // 
-        // //TODO - futuro: permitir alterar conta, e recalcular o saldo de ambas as contas
-        // 
-        // //TODO - ajusta o novo valor do lançamento, e recalcula o saldo baseado na diferença
-        // 
-        // await _lancamentoRepo.Update(lancamento);
-        // 
-        // 
-        // return (lancamento.Id,
-        //     $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
+        var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
+
+        //validação meio pagamento
+
+        if (meio == null)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_NaoEncontrado,
+                message: "Conta ou Cartão não encontrado");
+
+        if (meio.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
+                message: "Conta/Cartão não pertence ao usuário.");
+
+        if (meio.Id != dto.IdMeioPagamento)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
+                message: "Não é possível trocar o meio de pagamento na alteração.");
+
+        // validação lançamento
+
+        var lancamento = await _lancamentoRepo.GetById(dto.Id);
+
+        if (lancamento == null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_NaoEncontrado,
+                message: "Lançamento não encontrado");
+
+        if (lancamento.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
+                message: "Lançamento não pertence ao usuário");
+
+
+        // validação categoria e subcategoria
+
+        var categoria = await _categoriaRepository.GetById(dto.IdCategoria);
+
+        if (categoria == null)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoEncontrada,
+                message: "Categoria não encontrada");
+
+        if (categoria.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
+                message: "Categoria não pertence ao usuário.");
+
+        if (dto.IdSubcategoria != null)
+        {
+            var subcat = await _subcategoriaRepository.GetById(dto.IdSubcategoria.Value);
+
+            if (subcat == null)
+                throw new BusinessException(
+                    code: ErrorCodes.Subcategoria_NaoEncontrada,
+                    message: "Subcategoria não encontrada");
+
+            if (subcat.IdCategoria != categoria.Id)
+                throw new BusinessException(
+                    code: ErrorCodes.Subcategoria_NaoPertenceACategoria,
+                    message: "Subcategoria não pertence à categoria informada");
+
+        }
+
+        //prepara alteração
+
+        lancamento.Descricao = dto.Descricao;
+        lancamento.Data = dto.Data;
+        lancamento.IdCategoria = dto.IdCategoria;
+        lancamento.IdSubcategoria = dto.IdSubcategoria;
+
+        //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
+
+        //TODO - futuro: permitir ajustar o novo valor do lançamento, e recalcula o saldo baseado na diferença
+
+        await _lancamentoRepo.Update(lancamento);
+
+        return (lancamento.Id,
+            $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
     }
 
     public async Task<Result<int>> Excluir(int idLancamento)
