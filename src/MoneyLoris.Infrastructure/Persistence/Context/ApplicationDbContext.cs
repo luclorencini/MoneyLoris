@@ -19,9 +19,9 @@ public partial class ApplicationDbContext : BaseApplicationDbContext
             optionsBuilder.UseMySql(connString, ServerVersion.AutoDetect(connString));
 
             //descomente abaixo para ver as queries realizadas no cmd do kestrel
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-            optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.EnableDetailedErrors();
+            //optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+            //optionsBuilder.EnableSensitiveDataLogging();
+            //optionsBuilder.EnableDetailedErrors();
         }
     }
 
