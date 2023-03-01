@@ -74,7 +74,7 @@
                                 <div class="col col-12">
                                     <h5 class="my-2">Informe uma curta descrição:</h5>
                                     <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
-                                        v-model="dados.descricao" v-on:input="filtrarSugestoesInput()" v-on:keyup.enter="avancarPasso4()">
+                                        v-model="dados.descricao" v-on:input="buscarDigitacao()" v-on:keyup.enter="avancarPasso4()">
                                 </div>
 
                                 <div class="col col-12 mt-3 text-end">
@@ -313,6 +313,18 @@
                         this.setFocus('campoDescricao');
                         await this.buscarSugestoes();
                     }
+                },
+
+                async buscarDigitacao() {
+
+                    if (this.timer) {
+                        clearTimeout(this.timer);
+                        this.timer = null;
+                    }
+                    this.timer = setTimeout(async () => {
+                        this.filtrarSugestoesInput();
+                    }, 0.3 * 1000);
+
                 },
 
                 async filtrarSugestoesInput() {

@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Categorias.Dtos;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento;
@@ -351,19 +352,41 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesDespesas(string termoBusca)
     {
-        //TODO - implementar
-
-        ICollection<LancamentoSugestaoDto> list = new List<LancamentoSugestaoDto>();
-
-        return await TaskSuccess(list);
+        var list = await ObterSugestoes(TipoLancamento.Despesa, termoBusca);
+        return new Result<ICollection<LancamentoSugestaoDto>>(list);
     }
 
     public async Task<Result<ICollection<LancamentoSugestaoDto>>> ObterSugestoesReceitas(string termoBusca)
     {
-        //TODO - implementar
+        var list = await ObterSugestoes(TipoLancamento.Receita, termoBusca);
+        return new Result<ICollection<LancamentoSugestaoDto>>(list);
+    }
+
+    private async Task<ICollection<LancamentoSugestaoDto>> ObterSugestoes(TipoLancamento tipo, string termoBusca)
+    {
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        var lancs = await _lancamentoRepo.ObterLancamentosRecentes(userInfo.Id, tipo, termoBusca);
 
         ICollection<LancamentoSugestaoDto> list = new List<LancamentoSugestaoDto>();
 
-        return await TaskSuccess(list);
-    }
+        foreach (var l in lancs)
+        {
+            var sug = new LancamentoSugestaoDto
+            {
+                Descricao = l.Descricao,
+                Categoria = new CategoriaListItemDto
+                {
+                    CategoriaId = l.Categoria != null ? l.Categoria.Id : null,
+                    CategoriaNome = l.Categoria != null ? l.Categoria.Nome : null,
+                    SubcategoriaId = l.Subcategoria != null ? l.Subcategoria.Id : null,
+                    SubcategoriaNome = l.Subcategoria != null ? l.Subcategoria.Nome : null
+                }
+            };
+
+            list.Add(sug);
+        }
+
+        return list;
+    }    
 }
