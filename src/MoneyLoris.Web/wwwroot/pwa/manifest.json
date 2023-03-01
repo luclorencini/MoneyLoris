@@ -2,7 +2,7 @@
   "name": "Money Loris",
   "short_name": "Money Loris",
   "description": "Finanças Pessoas de Boas",
-  "start_url": "/?source=pwa",
+  "start_url": "/Lancamento",
   "id": "money-loris-pwa",
   "display": "standalone",
   "orientation": "portrait",
