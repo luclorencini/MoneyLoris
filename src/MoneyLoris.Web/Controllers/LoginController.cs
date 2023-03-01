@@ -28,13 +28,6 @@ public class LoginController : BaseController
         return Ok(ret);
     }
 
-    [HttpPost("/Login/Pwa")]
-    public async Task<IActionResult> LoginPwa([FromBody] string pwaKey)
-    {
-        var ret = await _loginService.LoginPwa(pwaKey);
-        return Ok(ret);
-    }
-
     [HttpPost("/Login/AlterarSenha")]
     public async Task<IActionResult> AlterarSenha([FromBody] AlteracaoSenhaDto dto)
     {

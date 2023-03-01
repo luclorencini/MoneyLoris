@@ -1,10 +1,5 @@
-
-using System;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.DI;
 using MoneyLoris.Web.Middleware;
@@ -17,6 +12,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 #region Data Protection
+
+//IMPORTANTE: no deploy, é preciso que a aplicação .net tenha permissão de escrita no diretório, para poder criar a pasta e arquivo do DataProtection
 
 var keysDirectoryName = "dataProtectionKeys";
 var keysDirectoryPath = Path.Combine(builder.Environment.ContentRootPath, keysDirectoryName);
@@ -48,21 +45,6 @@ services.AddAuthentication(authConfig.Scheme)
         //config.SlidingExpiration = true;
         config.ExpireTimeSpan = TimeSpan.FromDays(14); //forçando aqui para testes
     });
-
-//services.Configure<SecurityStampValidatorOptions>(options =>
-//    options.ValidationInterval = TimeSpan.FromDays(28)
-//);
-
-//services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//    .AddCookie(options =>
-//    {
-//        options.Cookie.Name = ".AspNetCore.Cookies";
-//        options.Cookie.Domain = "moneyloris.com.br";
-
-//        options.ExpireTimeSpan = TimeSpan.FromDays(14);
-//        //options.SlidingExpiration = true;
-//        options.LoginPath = "/Login";
-//    });
 
 services.AddAuthorization(options =>
 {

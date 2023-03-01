@@ -21,28 +21,6 @@ public class LoginService : ILoginService
     {
         var usuario = await buscaUsuario(dto.Login, dto.Senha);
 
-        var ret = await FazerLogin(usuario, dto.ManterConectado, dto.Pwa);
-        
-        return ret;
-    }
-
-    public async Task<Result<LoginRetornoDto>> LoginPwa(string pwaKey)
-    {
-        //TODO - por agora tá pegando o id do usuário, seguido de um guid, só pra disfarçar
-        //no futuro fazer com guid e data de expiração no banco de dados
-
-        string[] chunks = pwaKey.Split("-");
-        var id = chunks[0];
-
-        var usuario = await _usuarioRepository.GetById(Convert.ToInt32(id));
-
-        var ret = await FazerLogin(usuario, manterConectado: true, isPwa: true);
-
-        return ret;
-    }
-
-    private async Task<LoginRetornoDto> FazerLogin(Usuario usuario, bool manterConectado, bool isPwa)
-    {
         Usuario.FazerLogin(usuario);
 
         if (usuario.AlterarSenha)
@@ -52,7 +30,7 @@ public class LoginService : ILoginService
         }
 
         //realiza o login
-        await _authManager.Login(usuario, manterConectado);
+        await _authManager.Login(usuario, dto.ManterConectado);
 
         //persiste a data de login
         await _usuarioRepository.Update(usuario);
@@ -61,14 +39,6 @@ public class LoginService : ILoginService
         var urlRedir = (usuario.IdPerfil == Domain.Enums.PerfilUsuario.Administrador ? "usuario" : "lancamento");
 
         var retorno = new LoginRetornoDto { UrlRedir = urlRedir };
-
-        //se for pwa, retorna tambem o token de autenticação pwa
-        //pra agora, retorna o id do usuario, seguido de um guid, só pra disfarçar
-        //TODO - elaborar melhor no futuro, e talvez levar para authmanager
-        if (isPwa)
-        {
-            retorno.PwaToken = $"{usuario.Id.ToString()}-{Guid.NewGuid()}" ;
-        }
 
         return retorno;
     }
