@@ -190,7 +190,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<int>> Alterar(LancamentoCadastroDto dto)
     {
-        throw new BusinessException(ErrorCodes.SystemError, "Alteração de Lançamento ainda não implementada.");
+        //throw new BusinessException(ErrorCodes.SystemError, "Alteração de Lançamento ainda não implementada.");
 
         // var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
         // 
