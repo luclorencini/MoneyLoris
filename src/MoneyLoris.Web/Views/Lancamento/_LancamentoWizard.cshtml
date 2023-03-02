@@ -363,7 +363,9 @@
 
                     await this.setLoadingAndExecute(async () => {
                         let ret = await fetchData.fetchGetJson(`/common/categorias/${this.tipo}`);
-                        this.categorias = ret.value;
+                        if (ret.ok) {
+                            this.categorias = ret.value;
+                        }
                     });
                 },
 
