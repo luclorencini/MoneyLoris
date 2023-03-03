@@ -66,18 +66,18 @@
                         <div class="col col-12 col-lg-4 d-flex align-items-center mt-3 mt-lg-0">
                             <label class="form-label me-2">Filtrar por:</label>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
-                                <label class="form-check-label" for="inlineCheckbox1"><small>Despesas</small></label>
+                                <input class="form-check-input" type="checkbox" v-model="filtro.trazerDespesas">
+                                <label class="form-check-label"><small>Despesas</small></label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2" checked>
-                                <label class="form-check-label" for="inlineCheckbox2"><small>Receitas</small></label>
+                                <input class="form-check-input" type="checkbox" v-model="filtro.trazerReceitas">
+                                <label class="form-check-label"><small>Receitas</small></label>
                             </div>
                         </div>
                         <div class="col col-12 col-lg-4 d-flex align-items-center mt-3 mt-lg-0">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                <label class="form-check-label" for="flexSwitchCheckDefault"><small>Somar Transferências e Pag. Faturas</small></label>
+                                <input class="form-check-input" type="checkbox" v-model="filtro.somarTransferencias">
+                                <label class="form-check-label"><small>Somar Transferências e Pag. Faturas</small></label>
                             </div>
                         </div>
                         <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
@@ -141,7 +141,10 @@
                 filtro: {
                     idMeioPagamento: '',
                     idCategoria: null,
-                    idSubcategoria: null
+                    idSubcategoria: null,
+                    trazerReceitas: true,
+                    trazerDespesas: true,
+                    somarTransferencias: false
                 },
 
                 contas: [],
@@ -173,12 +176,18 @@
             },
 
             watch: {
+
                 idCatSub(newValue, oldValue) {
 
                     let catIds = utils.parseCatSub(newValue);
 
                     this.filtro.idCategoria = catIds[0];
                     this.filtro.idSubcategoria = catIds[1];
+                },
+
+                'filtro.idMeioPagamento'(newValue, oldValue) {
+
+                    this.filtro.somarTransferencias = (newValue == null || newValue == 'null' ? false : true);
                 }
             },
 
@@ -199,6 +208,9 @@
                     this.filtro.idMeioPagamento = '';
                     this.filtro.idCategoria = null;
                     this.filtro.idSubcategoria = null;
+                    this.filtro.trazerReceitas = true;
+                    this.filtro.trazerDespesas = true;
+                    this.filtro.somarTransferencias = false;
 
                     idCatSub: '0-0';
 

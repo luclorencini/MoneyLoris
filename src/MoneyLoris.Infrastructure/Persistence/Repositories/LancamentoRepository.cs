@@ -40,30 +40,30 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
 
     public async Task<decimal> SomatorioReceitasFiltro(LancamentoFiltroDto filtro, int idUsuario)
     {
-        var val = await _dbset
-            .Where(whereQueryListagem(filtro, idUsuario))
-            .Where(l => l.Tipo == TipoLancamento.Receita)
-            .Where(l => l.Operacao == OperacaoLancamento.LancamentoSimples)
-            .SumAsync(l => l.Valor);
-
-            return val;
+        var val = await SomatorioFiltro(filtro, idUsuario, TipoLancamento.Receita);
+        return val;
     }
 
     public async Task<decimal> SomatorioDespesasFiltro(LancamentoFiltroDto filtro, int idUsuario)
     {
+        var val = await SomatorioFiltro(filtro, idUsuario, TipoLancamento.Despesa);
+        return val;
+    }
+
+    private async Task<decimal> SomatorioFiltro(LancamentoFiltroDto filtro, int idUsuario, TipoLancamento tipo)
+    {
         var val = await _dbset
             .Where(whereQueryListagem(filtro, idUsuario))
-            .Where(l => l.Tipo == TipoLancamento.Despesa)
-            .Where(l => l.Operacao == OperacaoLancamento.LancamentoSimples)
+            .Where(l => l.Tipo == tipo)
+            .Where(l => filtro.SomarTransferencias || l.Operacao == OperacaoLancamento.LancamentoSimples)
             .SumAsync(l => l.Valor);
 
         return val;
     }
 
+
     private Expression<Func<Lancamento, bool>> whereQueryListagem(LancamentoFiltroDto filtro, int idUsuario)
     {
-        //TODO - aplicar o resto dos filtros
-
         Expression<Func<Lancamento, bool>> query =
             l => l.IdUsuario == idUsuario
             && (filtro.Descricao == null || l.Descricao.ToUpper().Contains(filtro.Descricao.ToUpper()))
@@ -72,6 +72,12 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
             && (filtro.IdMeioPagamento == null || l.IdMeioPagamento == filtro.IdMeioPagamento)
             && (filtro.IdCategoria == null || l.IdCategoria == filtro.IdCategoria)
             && (filtro.IdSubcategoria == null || l.IdSubcategoria == filtro.IdSubcategoria)
+
+            && (
+                (filtro.TrazerReceitas && filtro.TrazerDespesas) ||
+                (filtro.TrazerReceitas && l.Tipo == TipoLancamento.Receita) ||
+                (filtro.TrazerDespesas && l.Tipo == TipoLancamento.Despesa)
+            )
             ;
 
         return query;
@@ -83,7 +89,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
             .Include(l => l.Subcategoria)
-            .Where(l => 
+            .Where(l =>
                 l.IdUsuario == idUsuario &&
                 l.Tipo == tipo &&
                 l.Operacao == OperacaoLancamento.LancamentoSimples &&
