@@ -10,7 +10,7 @@
 
         window.addEventListener('unhandledrejection',
             event => {
-                mensagemSistema.showMensagemErro(`ERRO: Algo inesperado ocorreu: ${event.reason}`);
+                //mensagemSistema.showMensagemErro(`ERRO: Algo inesperado ocorreu: ${event.reason}`);
                 console.error(event.promise);
             });
     },

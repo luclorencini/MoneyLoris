@@ -284,7 +284,12 @@
 
                     await this.setLoadingAndExecute(async () => {
                         let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
-                        this.meios = ret.value;
+                        if (ret.ok){
+                            this.meios = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
                     });
                 },
 
@@ -322,7 +327,7 @@
                         this.timer = null;
                     }
                     this.timer = setTimeout(async () => {
-                        this.filtrarSugestoesInput();
+                        await this.filtrarSugestoesInput();
                     }, 0.3 * 1000);
 
                 },
@@ -338,7 +343,12 @@
                     await this.setLoadingAndExecute(async () => {
                         const url = (this.tipo == 1 ? '/lancamento/sugestoes/receitas' : '/lancamento/sugestoes/despesas');
                         let ret = await fetchData.fetchPostJson(url, termo);
-                        this.sugestoes = ret.value;
+                        if (ret.ok){
+                            this.sugestoes = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
                     });
                 },
 
@@ -365,6 +375,9 @@
                         let ret = await fetchData.fetchGetJson(`/common/categorias/${this.tipo}`);
                         if (ret.ok) {
                             this.categorias = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
                         }
                     });
                 },
