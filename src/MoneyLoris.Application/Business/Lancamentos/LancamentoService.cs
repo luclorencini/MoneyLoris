@@ -368,25 +368,25 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         var lancs = await _lancamentoRepo.ObterLancamentosRecentes(userInfo.Id, tipo, termoBusca);
 
-        ICollection<LancamentoSugestaoDto> list = new List<LancamentoSugestaoDto>();
+        //distinct - fazendo group by e pegando o primeiro de cada grupo
+        lancs = lancs
+          .GroupBy(p => new { p.Descricao, p.IdCategoria, p.IdSubcategoria })
+          .Select(g => g.First())
+          .ToList();
 
-        foreach (var l in lancs)
+
+        var list = lancs.Select(l => new LancamentoSugestaoDto
         {
-            var sug = new LancamentoSugestaoDto
+            Descricao = l.Descricao,
+            Categoria = new CategoriaListItemDto
             {
-                Descricao = l.Descricao,
-                Categoria = new CategoriaListItemDto
-                {
-                    CategoriaId = l.Categoria != null ? l.Categoria.Id : null,
-                    CategoriaNome = l.Categoria != null ? l.Categoria.Nome : null,
-                    SubcategoriaId = l.Subcategoria != null ? l.Subcategoria.Id : null,
-                    SubcategoriaNome = l.Subcategoria != null ? l.Subcategoria.Nome : null
-                }
-            };
-
-            list.Add(sug);
-        }
+                CategoriaId = l.Categoria != null ? l.Categoria.Id : null,
+                CategoriaNome = l.Categoria != null ? l.Categoria.Nome : null,
+                SubcategoriaId = l.Subcategoria != null ? l.Subcategoria.Id : null,
+                SubcategoriaNome = l.Subcategoria != null ? l.Subcategoria.Nome : null
+            }
+        }).ToList();
 
         return list;
-    }    
+    }
 }

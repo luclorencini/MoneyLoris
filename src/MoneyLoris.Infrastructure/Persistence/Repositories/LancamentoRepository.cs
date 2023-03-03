@@ -88,7 +88,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
                 l.Tipo == tipo &&
                 l.Operacao == OperacaoLancamento.LancamentoSimples &&
                 (termoBusca == null || l.Descricao.ToUpper().Contains(termoBusca.ToUpper())))
-            .Take(20)
+            .Take(35)
             .OrderByDescending(l => l.Data)
             .ThenByDescending(l => l.Id)
             .AsNoTracking()
