@@ -74,7 +74,7 @@ const mensagemSistema = {
         let html = `
 <div id="splashSucesso" class="splash-message">
     <div class="container">
-        <img src="./img/moneyloris-mascot-transparent.svg">
+        <img src="./img/moneyloris-mascot-piscando-transparent.svg">
         <div class="message">${mensagem}</div>
     </div>
 </div>

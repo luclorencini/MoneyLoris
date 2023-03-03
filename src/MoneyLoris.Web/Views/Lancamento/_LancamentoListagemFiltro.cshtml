@@ -100,10 +100,20 @@
         <section class="container-xxl">
             <div class="row g-1">
                 <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
-                    <label class="me-2 fw-bold">Filtros rápidos:</label>
+                    <label class="me-3 fw-bold">Filtros rápidos:</label>
+
+                    <div class="filtro-rapido-opcao" v-on:click="retrocederMes()">
+                        <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
+                    </div>
+
                     <div class="filtro-rapido-opcao" v-on:click="filtrarMesAnterior()">{{labelMesAnterior}}</div>
                     <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">{{labelMesAtual}}</div>
                     <div class="filtro-rapido-opcao" v-on:click="filtrarMesProximo()">{{labelMesProximo}}</div>
+
+                    <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
+                        <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
+                    </div>
+
                     <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos30Dias()">30 dias</div>
                     <div class="filtro-rapido-opcao" v-on:click="filtrarSemana()">Semana</div>
                     <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos7Dias()">7 dias</div>
@@ -404,8 +414,8 @@
 
         .filtro-rapido-opcao {
             margin: 0 0.25rem;
-            padding: 0.25rem;
-            min-width: 6rem;
+            padding: 0.25rem 0.75rem;
+            /*min-width: 6rem;*/
             border: 1px solid var(--sys-color-dark-4);
             border-radius: 5px;
             color: var(--sys-color-dark-4);
@@ -417,6 +427,11 @@
             .filtro-rapido-opcao:hover {
                 filter: brightness(90%);
                 cursor: pointer;
+            }
+
+            .filtro-rapido-opcao:active {
+                transition-duration: 0.1s;
+                transform: scale(0.9);
             }
 
     </style>

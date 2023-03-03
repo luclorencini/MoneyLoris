@@ -8,7 +8,7 @@
                 <h5 class="offcanvas-title">Lançar {{labelTipo}}</h5>
                 <button type="button" class="btn-close" v-on:click="fechar()"></button>
             </div>
-            <div class="offcanvas-body pt-0">
+            <div class="offcanvas-body pt-0" v-ext-loading="loading">
 
                 <template v-if="passo == 1">
 
@@ -260,9 +260,9 @@
                     this.sugestoes = [];
                     this.categorias = [];
 
-                    await this.iniciarPasso1();
-
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
+
+                    await this.iniciarPasso1();
                 },
 
                 retornarPasso() {
