@@ -8,6 +8,8 @@ using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.Usuarios;
 using MoneyLoris.Application.Business.Usuarios.Interfaces;
+using MoneyLoris.Application.Reports.LancamentosCategoria;
+using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.Persistence.Context;
@@ -48,6 +50,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ILancamentoService, LancamentoService>();
         services.AddScoped<ITransferenciaService, TransferenciaService>();
         services.AddScoped<ILancamentoRepository, LancamentoRepository>();
+
+        services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();
+        services.AddScoped<IReportLancamentosCategoriaRepository, ReportLancamentosCategoriaRepository>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)
