@@ -10,8 +10,10 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
         _reportRepo = reportRepo;
     }
 
-    public CategoriaGroupItemtoDto RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+    public ICollection<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
     {
+        var ret = new List<CategoriaGroupItemtoDto>();
+
         var list = _reportRepo.RelatorioLancamentosPorCategoria(mes, ano, quantidade);
 
         //agrupamento de categorias
@@ -39,6 +41,8 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
             Items = catGroup.ToList()
         };
 
-        return upper;
+        ret.Add(upper);
+
+        return ret;
     }
 }

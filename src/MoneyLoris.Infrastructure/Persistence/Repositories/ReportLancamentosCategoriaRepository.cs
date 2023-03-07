@@ -36,7 +36,7 @@ order by catOrdem is null, catOrdem, catNome, subNome is not null, subOrdem is n
 ";
 
 
-            var conn = _context.Database.GetDbConnection();
+        var conn = _context.Database.GetDbConnection();
 
         using (var command = _context.Database.GetDbConnection().CreateCommand())
         {

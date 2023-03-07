@@ -7,7 +7,7 @@ namespace MoneyLoris.Web.Controllers;
 [Route("[controller]/{action=index}")]
 public class RelatorioController : BaseController
 {
-    private IReportLancamentosCategoriaService _reportService;
+    private readonly IReportLancamentosCategoriaService _reportService;
 
     public RelatorioController(IReportLancamentosCategoriaService repo)
     {

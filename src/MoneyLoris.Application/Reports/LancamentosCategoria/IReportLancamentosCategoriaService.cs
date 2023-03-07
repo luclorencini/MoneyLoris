@@ -3,5 +3,5 @@
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
 public interface IReportLancamentosCategoriaService
 {
-    CategoriaGroupItemtoDto RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade);
+    ICollection<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade);
 }
