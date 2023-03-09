@@ -1,230 +1,217 @@
-﻿<section class="sys-container-fullhd container-titulo">
-    <div class="area-titulo">
-        @await Html.PartialAsync("_BotaoVoltar")
-        <div class="titulo">Relatório: Lançamentos por Categoria</div>
-    </div>
-</section>
+﻿<partial name="_Moeda" />
 
-<section class="sys-container-fullhd">
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-report-lanc-cat">
 
-    <div class="list-group list-group-flush">
-        <div class="list-group-item p-0">
-
-            <div class="rep-linha">
-
-                <div class="item">
-                </div>
-
-                <div class="mes mes-titulo">
-                    <div class="m">JAN</div>
-                    <div class="y">2023</div>
-                </div>
-
-                <div class="mes mes-titulo">
-                    <div class="m">FEV</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">MAR</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">ABR</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">MAI</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">JUN</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">JUL</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">AGO</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">SET</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">OUT</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">NOV</div>
-                    <div class="y">2023</div>
-                </div>
-                <div class="mes mes-titulo">
-                    <div class="m">DEZ</div>
-                    <div class="y">2023</div>
-                </div>
-
+        <section class="sys-container-fullhd container-titulo">
+            <div class="area-titulo">
+                @await Html.PartialAsync("_BotaoVoltar")
+                <div class="titulo">Relatório: Lançamentos por Categoria</div>
             </div>
+        </section>
 
-        </div>
-
-    </div>
-
-    <div class="list-group list-group-flush">
-        <div class="list-group-item p-0">
-
-            <div class="rep-linha">
-
-                <div class="item item-g1">
-                    DESPESAS
-                </div>
-
-                <div class="mes valor-g1">
-                    <span>7.367,98</span>
-                </div>
-                <div class="mes valor-g1">
-                    <span>7.367,98</span>
-                </div>
-                <div class="mes valor-g1">
-                    <span>7.367,98</span>
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-                <div class="mes valor-g1">
-                    -
-                </div>
-
-            </div>
+        <section class="sys-container-fullhd">
 
             <div class="list-group list-group-flush">
                 <div class="list-group-item p-0">
 
-                    <div class="rep-linha">
+                    <div class="rep-linha rep-linha-titulo">
 
                         <div class="item">
-                            Moradia
+                            <i class="sys-fg-dark-2 mx-2" v-bind:class="{'fa-solid fa-square-minus': !allClosed, 'fa-solid fa-square-plus': allClosed}" v-on:click="collapseAll()"></i>
                         </div>
 
-                        <div class="mes valor-g2">
-                            <span>1.761,17</span>
+                        <div class="mes mes-titulo">
+                            <div class="m">JAN</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            <span>1.761,17</span>
+
+                        <div class="mes mes-titulo">
+                            <div class="m">FEV</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            <span>1.761,17</span>
+                        <div class="mes mes-titulo">
+                            <div class="m">MAR</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">ABR</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">MAI</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">JUN</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">JUL</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">AGO</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">SET</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">OUT</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">NOV</div>
+                            <div class="y">2023</div>
                         </div>
-                        <div class="mes valor-g2">
-                            -
+                        <div class="mes mes-titulo">
+                            <div class="m">DEZ</div>
+                            <div class="y">2023</div>
                         </div>
 
                     </div>
 
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item p-0">
+                </div>
 
-                            <div class="rep-linha">
+            </div>
 
-                                <div class="item">
-                                    Condomínio
+
+            <div class="list-group list-group-flush" v-for="n1 in dados">
+                <div class="list-group-item p-0">
+                    <div class="rep-linha" v-bind:class="[n1.valor01 > 0 ? 'rep-linha-receita' : 'rep-linha-despesa']">
+
+                        <div class="item item-g1">
+                            <i class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n1.closed, 'fa-solid fa-square-plus': n1.closed}" v-on:click="collapse(n1)"></i>
+                            <span>{{n1.descricao}}</span>
+                        </div>
+
+                        <div class="mes valor-g1" v-for="n in numMeses">
+                            <Moeda :valor="n1[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                        </div>
+
+                    </div>
+
+                    <template v-if="!n1.closed && n1.items">
+                        <div class="list-group list-group-flush" v-for="n2 in n1.items">
+                            <div class="list-group-item p-0">
+                                <div class="rep-linha">
+
+                                    <div class="item item-g2">
+                                        <i v-if="!n2.items" class="sys-fg-dark-4 fa-regular fa-square-minus me-2"></i>
+                                        <i v-else class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n2.closed, 'fa-solid fa-square-plus': n2.closed}" v-on:click="collapse(n2)"></i>
+                                        <span>{{n2.descricao}}</span>
+                                    </div>
+
+                                    <div class="mes valor-g2" v-for="n in numMeses">
+                                        <Moeda :valor="n2[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                    </div>
+
                                 </div>
 
-                                <div class="mes valor-g3">
-                                    <span>569,86</span>
-                                </div>
-                                <div class="mes valor-g3">
-                                    <span>569,86</span>
-                                </div>
-                                <div class="mes valor-g3">
-                                    <span>569,86</span>
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
-                                <div class="mes valor-g3">
-                                    -
-                                </div>
+                                <template v-if="!n2.closed && n2.items">
+                                    <div class="list-group list-group-flush" v-for="n3 in n2.items">
+                                        <div class="list-group-item p-0">
+                                            <div class="rep-linha">
+
+                                                <div class="item item-g3" v-bind:class="{ 'fst-italic' : !  n3.descricao}">
+                                                    <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
+                                                </div>
+
+                                                <div class="mes valor-g3" v-for="n in numMeses">
+                                                    <Moeda :valor="n3[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
 
                             </div>
-
                         </div>
-                    </div>
+                    </template>
 
                 </div>
             </div>
 
-        </div>
-    </div>
+        </section>
 
-</section>
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const LancamentoCategoriaReport = {
+
+            name: 'LancamentoCategoriaReport',
+            template: '#template-report-lanc-cat',
+            mixins: [BaseMixin],
+            components: { Moeda },
+
+            data: () => ({
+                filtro: {},
+                dados: [],
+
+                numMeses: 12,
+                allClosed: false
+            }),
+
+            async mounted() {
+                await this.obterRelatorio();
+            },
+
+            methods: {
+
+                async obterRelatorio() {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        //let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
+                        let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`);
+
+                        if (ret.ok) {
+                            this.dados = ret.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                },
+
+                collapseAll() {
+
+                    for (n1 of this.dados) {
+                        for (n2 of n1.items) {
+                            n2.closed = this.allClosed;
+                            this.collapse(n2);
+                        }
+                    }
+
+                    this.allClosed = !this.allClosed;
+
+                },
+
+                collapse(d) {
+                    if (!d.closed) {
+                        d.closed = true;
+                    }
+                    else {
+                        d.closed = !d.closed;
+                    }
+                },
+
+                valorField(n) {
+                    return 'valor' + (n + '').padStart(2, '0');
+                }
+            }
+        }
+
+    </script>
+}
 
 @using (Html.VueStyle())
 {
@@ -238,6 +225,8 @@
         }
 
             .rep-linha .item {
+                display: flex;
+                align-items: center;
                 border: 1px solid var(--sys-color-light-2);
                 padding: 0 0.25rem;
             }
@@ -245,6 +234,19 @@
             .rep-linha .mes {
                 border: 1px solid var(--sys-color-light-2);
             }
+
+            .rep-linha:not(.rep-linha-titulo):hover {
+                background-color: #fffde7;
+            }
+
+        .rep-linha-receita {
+            background-color: #e1f5fe;
+        }
+
+        .rep-linha-despesa {
+            background-color: #ffebee;
+        }
+
 
         .mes-titulo {
             display: flex;
@@ -265,7 +267,19 @@
                 font-weight: bold;
             }
 
-        .rep-linha .item .item-g1 {
+        .rep-linha .item.item-g1 {
+            text-transform: uppercase;
+            font-weight: bold;
+            padding-left: 0.5rem;
+        }
+
+        .rep-linha .item.item-g2 {
+            font-weight: bold;
+            padding-left: 1.25rem;
+        }
+
+        .rep-linha .item.item-g3 {
+            padding-left: 2rem;
         }
 
         .valor-g1 {
@@ -295,6 +309,7 @@
             justify-content: end;
             padding: 0 0.25rem;
             font-size: 1rem;
+            font-weight: 500;
         }
 
     </style>

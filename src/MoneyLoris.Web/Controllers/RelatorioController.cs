@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
 using MoneyLoris.Web.Controllers.Base;
 
@@ -16,8 +17,13 @@ public class RelatorioController : BaseController
 
     public IActionResult Index()
     {
-        var lista = _reportService.RelatorioLancamentosPorCategoria(1, 2023, 12);
-
         return View("~/Views/Relatorio/LancamentoCategoria/LancamentoCategoriaIndex.cshtml");
+    }
+
+    [HttpPost()]
+    public IActionResult Pesquisar()
+    {
+        var ret = _reportService.RelatorioLancamentosPorCategoria(1, 2023, 12);
+        return Ok(ret);
     }
 }

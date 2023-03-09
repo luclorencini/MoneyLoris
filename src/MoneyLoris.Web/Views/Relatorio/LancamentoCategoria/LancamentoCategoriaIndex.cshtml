@@ -1,1 +1,10 @@
 ﻿<partial name="_LancamentoCategoriaReport.cshtml" />
+
+@using (Html.VueScript())
+{
+    <script>
+        VueFactory.createAndMountApp(LancamentoCategoriaReport, '#app');
+    </script>
+}
+
+<LancamentoCategoriaReport></LancamentoCategoriaReport>

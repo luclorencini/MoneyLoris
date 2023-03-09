@@ -3,7 +3,7 @@
     <script type="text/html" id="template-moeda">
 
         <span v-if="mostrarValor" v-bind:class="cssClass">{{formatado}}</span>
-        <span v-else class="placeholder-glow"><span class="placeholder w-100"></span></span>
+        <span v-else>-</span>
 
     </script>
 }
@@ -21,7 +21,8 @@
             props: {
                 valor: Number,
                 retirarCor: Boolean,
-                retirarSinal: Boolean
+                retirarSinal: Boolean,
+                retirarCifrao: Boolean,
             },
 
             computed: {
@@ -31,9 +32,8 @@
                 },
 
                 cssClass() {
-                    let css = '';
 
-                    if (this.retirarCor) return css;
+                    if (this.retirarCor) return '';
 
                     if (this.valor == 0) return 'sys-fg-dark-1';
 
@@ -41,17 +41,21 @@
                 },
 
                 formatado() {
-                    //if (this.valor == 0)
-                    //    return '-';
-                    //else{
 
-                        const sd = (this.retirarSinal ? 'never' : 'exceptZero');
+                    let params = {};
 
-                        let ret = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', signDisplay: sd })
-                            .format(this.valor);
+                    params.minimumFractionDigits = 2;
 
-                            return ret;
-                    //}
+                    params.signDisplay = (this.retirarSinal ? 'never' : 'exceptZero');
+
+                    if (!this.retirarCifrao){
+                        params.style = 'currency';
+                        params.currency = 'BRL';
+                    }
+
+                    let ret = Intl.NumberFormat('pt-BR', params).format(this.valor);
+
+                    return ret;
                 }
             }
         }
