@@ -9,7 +9,6 @@ using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.Usuarios;
 using MoneyLoris.Application.Business.Usuarios.Interfaces;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
-using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.Persistence.Context;
@@ -65,5 +64,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
         services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
+
+        services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaServiceStub>();
     }
 }

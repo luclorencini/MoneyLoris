@@ -1,5 +1,5 @@
 ﻿namespace MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
-public class CategoriaGroupItemtoDto
+public class CategoriaQueryResultItemtoDto
 {
     public int? catId { get; set; }
     public string? catNome { get; set; } = default!;
@@ -13,5 +13,5 @@ public class CategoriaGroupItemtoDto
     public decimal? mar { get; set; }
 
 
-    public ICollection<CategoriaGroupItemtoDto>? Items { get; set; }
+    public ICollection<CategoriaQueryResultItemtoDto>? Items { get; set; }
 }

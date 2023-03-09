@@ -4,109 +4,105 @@ using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 namespace MoneyLoris.Application.Stubs;
 public class ReportLancamentosCategoriaServiceStub : IReportLancamentosCategoriaService
 {
-    public ICollection<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+
+    public ICollection<CategoriaReportItemDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
     {
-        var ret = new List<CategoriaGroupItemtoDto>
+        var ret = new List<CategoriaReportItemDto>
         {
-            new CategoriaGroupItemtoDto
+            new CategoriaReportItemDto
             {
-                catNome = "Receitas",
-                jan = 7367.98M,
-                fev = 6598.88M,
-                Items = new List<CategoriaGroupItemtoDto> {
-                    new CategoriaGroupItemtoDto
+                Descricao = "Receitas",
+                Valor01 = 7367.98M,
+                Valor02 = 6598.88M,
+                Items = new List<CategoriaReportItemDto> {
+                    new CategoriaReportItemDto
                     {
-                        catId = 5,
-                        catNome = "Salário",
-                        jan = 5367.98M,
-                        fev = 4598.88M
+                        IdCategoria = 5,
+                        Descricao = "Salário",
+                        Valor01 = 5367.98M,
+                        Valor02 = 4598.88M
                     },
-                    new CategoriaGroupItemtoDto
+                    new CategoriaReportItemDto
                     {
-                        catId = 6,
-                        catNome = "Reembolso",
-                        jan = 1000.00M,
-                        fev = 1000
+                        IdCategoria = 6,
+                        Descricao = "Reembolso",
+                        Valor01 = 1000.00M,
+                        Valor02 = 1000
                     }
                 }
             },
-            new CategoriaGroupItemtoDto
+            new CategoriaReportItemDto
             {
-                catNome = "Despesas",
-                jan = -5000M,
-                fev = -6269.89M,
-                Items = new List<CategoriaGroupItemtoDto> {
-                    new CategoriaGroupItemtoDto
+                Descricao = "Despesas",
+                Valor01 = -5000M,
+                Valor02 = -6269.89M,
+                Items = new List<CategoriaReportItemDto> {
+                    new CategoriaReportItemDto
                     {
-                        catId = 1,
-                        catNome = "Moradia",
-                        jan = -2000M,
-                        fev = -2488.99M,
-                        Items = new List<CategoriaGroupItemtoDto>
+                        IdCategoria = 1,
+                        Descricao = "Moradia",
+                        Valor01 = -2000M,
+                        Valor02 = -2488.99M,
+                        Items = new List<CategoriaReportItemDto>
                         {
-                            new CategoriaGroupItemtoDto
+                            new CategoriaReportItemDto
                             {
-                                catId = 1,
-                                catNome = "Moradia",
-                                subId = 11,
-                                subNome = null,
-                                jan = -109.90M,
-                                fev = -836.22M,
+                                IdCategoria = 1,
+                                IdSubcategoria = 11,
+                                Descricao = null!,
+                                Valor01 = -109.90M,
+                                Valor02 = -836.22M,
                             },
-                            new CategoriaGroupItemtoDto
+                            new CategoriaReportItemDto
                             {
-                                catId = 1,
-                                catNome = "Moradia",
-                                subId = 12,
-                                subNome = "Condomínio",
-                                jan = -655.39M,
-                                fev = -575.12M,
+                                IdCategoria = 1,
+                                IdSubcategoria = 12,
+                                Descricao = "Condomínio",
+                                Valor01 = -655.39M,
+                                Valor02 = -575.12M,
                             },
-                            new CategoriaGroupItemtoDto
+                            new CategoriaReportItemDto
                             {
-                                catId = 1,
-                                catNome = "Moradia",
-                                subId = 13,
-                                subNome = "Luz",
-                                jan = -150.44M,
-                                fev = -238.33M,
+                                IdCategoria = 1,
+                                IdSubcategoria = 13,
+                                Descricao = "Luz",
+                                Valor01 = -150.44M,
+                                Valor02 = -238.33M,
                             }
                         }
                     },
-                    new CategoriaGroupItemtoDto
+                    new CategoriaReportItemDto
                     {
-                        catId = 2,
-                        catNome = "Transporte",
-                        jan = 372.44M,
-                        fev = 238.66M,
-                        Items = new List<CategoriaGroupItemtoDto>
+                        IdCategoria = 2,
+                        Descricao = "Transporte",
+                        Valor01 = 372.44M,
+                        Valor02 = 238.66M,
+                        Items = new List<CategoriaReportItemDto>
                         {
-                            new CategoriaGroupItemtoDto
+                            new CategoriaReportItemDto
                             {
-                                catId = 2,
-                                catNome = "Transporte",
-                                subId = 21,
-                                subNome = null,
-                                jan = -40.00M,
-                                fev = -45.00M,
+                                IdCategoria = 2,
+                                IdSubcategoria = 21,
+                                Descricao = null!,
+                                Valor01 = -40.00M,
+                                Valor02 = -45.00M,
                             },
-                            new CategoriaGroupItemtoDto
+                            new CategoriaReportItemDto
                             {
-                                catId = 2,
-                                catNome = "Transporte",
-                                subId = 22,
-                                subNome = "Aplicativo",
-                                jan = -89.95M,
-                                fev = -78.44M,
+                                IdCategoria = 2,
+                                IdSubcategoria = 22,
+                                Descricao = "Aplicativo",
+                                Valor01 = -89.95M,
+                                Valor02 = -78.44M,
                             },
                         }
                     },
-                    new CategoriaGroupItemtoDto
+                    new CategoriaReportItemDto
                     {
-                        catId = 9,
-                        catNome = "Outras Despesas",
-                        jan = 25.99M,
-                        fev = 147.87M
+                        IdCategoria = 9,
+                        Descricao = "Outras Despesas",
+                        Valor01 = 25.99M,
+                        Valor02 = 147.87M
                     }
                 }
             }

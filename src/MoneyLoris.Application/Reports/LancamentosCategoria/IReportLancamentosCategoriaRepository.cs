@@ -1,7 +1,8 @@
-﻿using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
+﻿using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
 public interface IReportLancamentosCategoriaRepository
 {
-    List<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade);
+    List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade);
 }

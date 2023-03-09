@@ -1,48 +1,79 @@
-﻿using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Utils;
 
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
 public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaService
 {
     private readonly IReportLancamentosCategoriaRepository _reportRepo;
+    private readonly IAuthenticationManager _authenticationManager;
 
-    public ReportLancamentosCategoriaService(IReportLancamentosCategoriaRepository reportRepo)
+    public ReportLancamentosCategoriaService(IReportLancamentosCategoriaRepository reportRepo, IAuthenticationManager authenticationManager)
     {
         _reportRepo = reportRepo;
+        _authenticationManager = authenticationManager;
     }
 
-    public ICollection<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+    public ICollection<CategoriaReportItemDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
     {
-        var ret = new List<CategoriaGroupItemtoDto>();
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var list = _reportRepo.RelatorioLancamentosPorCategoria(mes, ano, quantidade);
+        var despesas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Despesa, mes, ano, quantidade);
+        var receitas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Receita, mes, ano, quantidade);
+
+        var ret = new List<CategoriaReportItemDto>
+        {
+            receitas,
+            despesas
+        };
+
+        return ret;
+    }
+
+    private CategoriaReportItemDto GetDadosRelatorioTipoLancamento(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade)
+    {
+
+        var ret = new List<CategoriaReportItemDto>();
+
+        var list = _reportRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, mes, ano, quantidade);
 
         //agrupamento de categorias
         var catGroup = list
             .GroupBy(r => r.catNome)
-            .Select(g => new CategoriaGroupItemtoDto { 
-                catId = g.First().catId,
-                catNome = g.First().catNome,
-                catOrdem = g.First().catOrdem,
-                jan = g.Sum(r => r.jan),
-                fev = g.Sum(r => r.fev),
-                mar = g.Sum(r => r.mar),
-                Items = g.ToList()
-            } )
+            .Select(g => new CategoriaReportItemDto
+            {
+                IdCategoria = g.First().catId,
+                IdSubcategoria = g.First().subId,
+                Descricao = g.First().catNome!,
+                Valor01 = g.Sum(r => r.jan),
+                Valor02 = g.Sum(r => r.fev),
+                Valor03 = g.Sum(r => r.mar),
 
+                //agrupamento das subcategorias
+                Items = g.ToList().Select(
+                    c => new CategoriaReportItemDto
+                    {
+                        IdCategoria = c.catId,
+                        IdSubcategoria = c.subId,
+                        Descricao = c.subNome!,
+                        Valor01 = c.jan,
+                        Valor02 = c.fev,
+                        Valor03 = c.mar,
+                    }
+                    ).ToList()
+            })
             .ToList();
 
         //agrupamento superior do valor total
-        var upper = new CategoriaGroupItemtoDto
+        var upper = new CategoriaReportItemDto
         {
-            catNome = "Despesas",
-            jan = catGroup.Sum(c => c.jan),
-            fev = catGroup.Sum(c => c.fev),
-            mar = catGroup.Sum(c => c.mar),
+            Descricao = $"{tipo.ObterDescricao()}s",
+            Valor01 = catGroup.Sum(c => c.Valor01),
+            Valor02 = catGroup.Sum(c => c.Valor02),
+            Valor03 = catGroup.Sum(c => c.Valor03),
             Items = catGroup.ToList()
         };
 
-        ret.Add(upper);
-
-        return ret;
+        return upper;
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
+using MoneyLoris.Application.Utils;
 using MoneyLoris.Infrastructure.Persistence.Context;
 
 namespace MoneyLoris.Infrastructure.Persistence.Repositories;
@@ -15,23 +17,25 @@ public class ReportLancamentosCategoriaRepository : IReportLancamentosCategoriaR
     }
 
 
-    public List<CategoriaGroupItemtoDto> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+    public List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade)
     {
-        var query = @"
+        var t = Convert.ToInt32(tipo);
+
+        var query = @$"
 select c.Id as catId, c.Nome as catNome, c.Ordem as catOrdem, s.Id as subId, s.Nome as subNome, s.Ordem as subOrdem,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria = s.Id and l.Data >= '2023-01-01' and l.Data <= '2023-01-31')) as jan,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria = s.Id and l.Data >= '2023-02-01' and l.Data <= '2023-02-28')) as fev,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria = s.Id and l.Data >= '2023-03-01' and l.Data <= '2023-03-31')) as mar
 from categoria c
 inner join subcategoria s on s.IdCategoria = c.Id
-where c.Tipo = 2 and c.IdUsuario = 3
+where c.Tipo = {t} and c.IdUsuario = {idUsuario}
 UNION
 select c.Id as catId, c.Nome as catNome, c.Ordem as catOrdem, NULL as subId, NULL as subNome, NULL as subOrdem,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria is null and l.Data >= '2023-01-01' and l.Data <= '2023-01-31')) as jan,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria is null and l.Data >= '2023-02-01' and l.Data <= '2023-02-28')) as fev,
  (select sum(l.Valor) from lancamento l where (l.IdCategoria = c.Id and l.IdSubcategoria is null and l.Data >= '2023-03-01' and l.Data <= '2023-03-31')) as mar
 from categoria c
-where c.Tipo = 2 and c.IdUsuario = 3
+where c.Tipo = {t} and c.IdUsuario = {idUsuario}
 order by catOrdem is null, catOrdem, catNome, subNome is not null, subOrdem is null, subOrdem
 ";
 
@@ -44,12 +48,12 @@ order by catOrdem is null, catOrdem, catNome, subNome is not null, subOrdem is n
             command.CommandType = CommandType.Text;
             _context.Database.OpenConnection();
 
-            var list = new List<CategoriaGroupItemtoDto>();
+            var list = new List<CategoriaQueryResultItemtoDto>();
             using (var result = command.ExecuteReader())
             {
                 while (result.Read())
                 {
-                    var obj = new CategoriaGroupItemtoDto();
+                    var obj = new CategoriaQueryResultItemtoDto();
 
                     obj.catId = Convert.IsDBNull(result["catId"]) ? null : (int?)result["catId"];
                     obj.catNome = Convert.IsDBNull(result["catNome"]) ? null : (string?)result["catNome"];
