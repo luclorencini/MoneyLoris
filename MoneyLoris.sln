@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyLoris.Application", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyLoris.Infrastructure", "src\MoneyLoris.Infrastructure\MoneyLoris.Infrastructure.csproj", "{35012F81-2703-46AC-A002-D1907AE9F7B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyLoris.Application.Stubs", "src\MoneyLoris.Application.Stubs\MoneyLoris.Application.Stubs.csproj", "{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyLoris.Application.Stubs", "src\MoneyLoris.Application.Stubs\MoneyLoris.Application.Stubs.csproj", "{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D51312F2-DE03-42DF-8756-3ED9A81BDFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyLoris.Tests.Integration", "tests\MoneyLoris.Tests.Integration\MoneyLoris.Tests.Integration.csproj", "{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,10 @@ Global
 		{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +52,7 @@ Global
 		{FA85F1F4-4DF4-4101-8D43-2C5BC54D6218} = {76A8CA25-E122-438B-AB76-B4C94C071E14}
 		{35012F81-2703-46AC-A002-D1907AE9F7B7} = {76A8CA25-E122-438B-AB76-B4C94C071E14}
 		{8D8DFEC8-A562-40AE-BC9D-8E6CC4D49149} = {76A8CA25-E122-438B-AB76-B4C94C071E14}
+		{F5CFE5CB-E304-4B08-ABC7-319EACD87C9E} = {D51312F2-DE03-42DF-8756-3ED9A81BDFA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CBE44321-0823-402C-B657-2A555B4764F2}

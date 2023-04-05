@@ -8,9 +8,11 @@ Visual Studio Community 2022 - https://visualstudio.microsoft.com/downloads
 .Net 6.0
 
 ### SGDB: 
-- Server: MariaDB 10.6.5 - https://mariadb.org/download/?t=mariadb&o=true&p=mariadb&r=10.6.5&os=windows&cpu=x86_64&pkg=zip
+- Server: MariaDB 10.6.5 - https://mariadb.org/download/?t=mariadb&o=true&p=mariadb&r=10.6.5&os=windows&cpu=x86_64&pkg=msi
 
-_ Client: HeidiSQL 12.3 https://www.heidisql.com/download.php?download=portable
+- Client: DBeaver  Community 23.0.1 (zip) -  https://dbeaver.io/download/
+
+- alternativo: HeidiSQL 12.3 https://www.heidisql.com/download.php?download=portable
 
 ### UI
 
