@@ -196,9 +196,7 @@ public class BaseApplicationDbContext : DbContext
             entity.Property(e => e.Id).HasColumnType("int(11)");
 
             entity.Property(e => e.DataCriacao)
-                .HasColumnType("timestamp")
-                .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValueSql("current_timestamp()");
+                .HasColumnType("timestamp");
 
             entity.Property(e => e.DataInativacao).HasColumnType("timestamp");
 

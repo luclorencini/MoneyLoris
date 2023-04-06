@@ -25,8 +25,10 @@ public partial class Usuario : EntityBase
 
     public virtual ICollection<Categoria> Categorias { get; set; } = default!;
     public virtual ICollection<MeioPagamento> MeiosPagamento { get; set; } = default!;
-    public virtual ICollection<Lancamento> Lancamentos { get; set; }
+    public virtual ICollection<Lancamento> Lancamentos { get; set; } = default!;
 
+
+    private readonly string SENHA_PADRAO = "dinheiro";
 
 
     /// <summary>
@@ -51,7 +53,7 @@ public partial class Usuario : EntityBase
         Nome = nomeCompleto;
         Login = login;
 
-        Senha = HashHelper.ComputeHash("dinheiro"); //senha padrão
+        Senha = HashHelper.ComputeHash(SENHA_PADRAO);
         AlterarSenha = true; //para forçar usuário a trocar a senha no primeiro acesso
 
         DataCriacao = SystemTime.Now();
@@ -85,7 +87,7 @@ public partial class Usuario : EntityBase
                 code: ErrorCodes.Usuario_JaMarcadoParaAlterarSenha,
                 message: "Este usuário já foi marcado para redefinição de senha no próximo login");
 
-        Senha = HashHelper.ComputeHash("dinheiro"); //senha padrão
+        Senha = HashHelper.ComputeHash(SENHA_PADRAO);
         AlterarSenha = true;
     }
 

@@ -15,18 +15,29 @@ public class LoginControllerTests : IntegrationTestsBase
         SystemTime.Now = () => new DateTime(2023, 1, 6, 22, 21, 30);
     }
 
-    private async Task ArrangeUsuario(bool ativo = true, bool alterarSenha = false)
+    private async Task ArrangeUsuario(bool admin = true, bool ativo = true, bool alterarSenha = false)
     {
-        await Context.Usuarios.AddAsync(new Usuario
+        var usuario = new Usuario();
+
+        if (admin)
         {
-            Nome = "Admin",
-            IdPerfil = PerfilUsuario.Administrador,
-            Login = "admin",
-            Senha = "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3", //senha: 123
-            DataCriacao = SystemTime.Now().AddDays(-1),
-            Ativo = ativo,
-            AlterarSenha = alterarSenha
-        });
+            usuario.Nome = "Admin";
+            usuario.IdPerfil = PerfilUsuario.Administrador;
+            usuario.Login = "admin";
+        }
+        else
+        {
+            usuario.Nome = "Usuario";
+            usuario.IdPerfil = PerfilUsuario.Usuario;
+            usuario.Login = "usuario";
+        }
+
+        usuario.Senha = "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3"; //senha: 123
+        usuario.DataCriacao = SystemTime.Now().AddDays(-1);
+        usuario.Ativo = ativo;
+        usuario.AlterarSenha = alterarSenha;
+
+        await Context.Usuarios.AddAsync(usuario);
 
         await Context.SaveChangesAsync();
     }
@@ -55,6 +66,34 @@ public class LoginControllerTests : IntegrationTestsBase
         Assert.Null(retorno.AlterarSenha);
 
         var usuario = Context.Usuarios.FirstOrDefault(c => c.Login == "admin");
+        Assert.NotNull(usuario);
+        Assert.Equal(usuario!.UltimoLogin, SystemTime.Now());
+    }
+
+    [Fact]
+    public async Task SignIn_Sucesso_UsuarioComum_RetornaUrlTelaLancamento()
+    {
+        //Arrange
+        CriarClient(logado: false);
+
+        await ArrangeUsuario(admin: false);
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/Login/SignIn",
+            new LoginInputDto
+            {
+                Login = "usuario",
+                Senha = "123",
+                ManterConectado = true
+            });
+
+        //Assert
+        var retorno = await response.AssertResultOk<LoginRetornoDto>();
+
+        Assert.Equal("lancamento", retorno.UrlRedir); // admin: redireciona pra tela de lançamento
+        Assert.Null(retorno.AlterarSenha);
+
+        var usuario = Context.Usuarios.FirstOrDefault(c => c.Login == "usuario");
         Assert.NotNull(usuario);
         Assert.Equal(usuario!.UltimoLogin, SystemTime.Now());
     }
@@ -99,7 +138,7 @@ public class LoginControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/Login/SignIn",
             new LoginInputDto
             {
-                Login = "admino",
+                Login = "ronaldo",
                 Senha = "123",
                 ManterConectado = true
             });
@@ -137,13 +176,13 @@ public class LoginControllerTests : IntegrationTestsBase
         //Arrange
         CriarClient(logado: false);
 
-        await ArrangeUsuario(ativo: false);
+        await ArrangeUsuario(admin: false, ativo: false);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/Login/SignIn",
             new LoginInputDto
             {
-                Login = "admin",
+                Login = "usuario",
                 Senha = "123",
                 ManterConectado = true
             });
@@ -159,19 +198,23 @@ public class LoginControllerTests : IntegrationTestsBase
         //Arrange
         CriarClient(logado: false);
 
-        await ArrangeUsuario();
+        await ArrangeUsuario(admin: false);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/Login/AlterarSenha",
             new AlteracaoSenhaDto
             {
-                Login = "admin",
+                Login = "usuario",
                 SenhaAtual = "123",
                 NovaSenha = "123456"
             });
 
         //Assert
         response.EnsureSuccessStatusCode();
+
+        var usuario = Context.Usuarios.FirstOrDefault(c => c.Login == "usuario");
+        Assert.NotNull(usuario);
+        Assert.Equal("8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92", usuario!.Senha);  //123456
     }
 
 
