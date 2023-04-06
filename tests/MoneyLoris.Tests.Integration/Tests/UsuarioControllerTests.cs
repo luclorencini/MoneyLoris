@@ -22,7 +22,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
 
     #region helpers para testes
 
-    private Usuario mockUsuario(PerfilUsuario perfil)
+    private Usuario mockUsuario(PerfilUsuario perfil, bool ativo = true, bool alterarSenha = false)
     {
         var conta = new Usuario
         {
@@ -30,12 +30,21 @@ public class UsuarioControllerTests : IntegrationTestsBase
             IdPerfil = perfil,
             Login = "mari.rangel",
             Senha = "123",
-            Ativo = true,
-            AlterarSenha = false,
+            AlterarSenha = alterarSenha,
             DataCriacao = SystemTime.Today().AddDays(-8),
             UltimoLogin = SystemTime.Today().AddDays(-5),
-            DataInativacao = SystemTime.Today().AddDays(-2)
         };
+
+        if (ativo)
+        {
+            conta.Ativo = true;
+            conta.DataInativacao = null;
+        }
+        else
+        {
+            conta.Ativo = false;
+            conta.DataInativacao = SystemTime.Today().AddDays(-2);
+        }
 
         return conta;
     }
@@ -334,6 +343,25 @@ public class UsuarioControllerTests : IntegrationTestsBase
     }
 
     [Fact]
+    public async Task MarcarAlterarSenha_UsuarioJaMarcado_RetornaErro()
+    {
+        //Arrange
+        CriarClient(perfil: PerfilUsuario.Administrador);
+
+        var mc = mockUsuario(PerfilUsuario.Administrador, alterarSenha: true);
+
+        var contaDb = await salvaEntidadeDb(mc);
+        var contaId = contaDb.Id;
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/usuario/redefinirSenha", contaId);
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Usuario_JaMarcadoParaAlterarSenha);
+    }
+
+    [Fact]
     public async Task MarcarAlterarSenha_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
@@ -347,7 +375,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
             ErrorCodes.Usuario_NaoEncontrado);
     }
 
-    #endregion
+    #endregion    
 
     #region inativar
 
@@ -358,7 +386,6 @@ public class UsuarioControllerTests : IntegrationTestsBase
         CriarClient(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
-
         var contaId = contaDb.Id;
 
 
@@ -387,6 +414,25 @@ public class UsuarioControllerTests : IntegrationTestsBase
     }
 
     [Fact]
+    public async Task Inativar_UsuarioJaEstaInativo_RetornaErro()
+    {
+        //Arrange
+        CriarClient(perfil: PerfilUsuario.Administrador);
+
+        var mc = mockUsuario(PerfilUsuario.Administrador, ativo: false);
+
+        var contaDb = await salvaEntidadeDb(mc);
+        var contaId = contaDb.Id;
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/usuario/inativar", contaId);
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Usuario_JaEstaInativo);
+    }
+
+    [Fact]
     public async Task Inativar_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
@@ -410,12 +456,9 @@ public class UsuarioControllerTests : IntegrationTestsBase
         //Arrange
         CriarClient(perfil: PerfilUsuario.Administrador);
 
-        var mc = mockUsuario(PerfilUsuario.Administrador);
-        mc.Ativo = false;
-        mc.DataInativacao = DateTime.Now.AddDays(-2);
+        var mc = mockUsuario(PerfilUsuario.Administrador, ativo: false);
 
         var contaDb = await salvaEntidadeDb(mc);
-
         var contaId = contaDb.Id;
 
 
@@ -441,6 +484,25 @@ public class UsuarioControllerTests : IntegrationTestsBase
 
         Assert.Equal(cc.DataCriacao, contaEf.DataCriacao);
         Assert.Equal(cc.UltimoLogin, contaEf.UltimoLogin);
+    }
+
+    [Fact]
+    public async Task Reativar_UsuarioJaEstaAtivo_RetornaErro()
+    {
+        //Arrange
+        CriarClient(perfil: PerfilUsuario.Administrador);
+
+        var mc = mockUsuario(PerfilUsuario.Administrador);
+
+        var contaDb = await salvaEntidadeDb(mc);
+        var contaId = contaDb.Id;
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/usuario/reativar", contaId);
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Usuario_JaEstaAtivo);
     }
 
     [Fact]

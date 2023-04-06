@@ -9,6 +9,9 @@ using MoneyLoris.Tests.Integration.Tests.Base;
 namespace MoneyLoris.Tests.Integration.Tests;
 public class LoginControllerTests : IntegrationTestsBase
 {
+    private readonly string SENHA_SHA256_123456 = "8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92"; //123456
+    private readonly string SENHA_SHA256_777888 = "6CCF5EB0B98684778C3B1A5415FDEECD6819DD2EF1CFB22EEE2C775CC41DC9CF"; //777888
+
     public LoginControllerTests() : base()
     {
         //seta relógio do sistema para todos os testes desta classe
@@ -32,7 +35,7 @@ public class LoginControllerTests : IntegrationTestsBase
             usuario.Login = "usuario";
         }
 
-        usuario.Senha = "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3"; //senha: 123
+        usuario.Senha = SENHA_SHA256_123456;
         usuario.DataCriacao = SystemTime.Now().AddDays(-1);
         usuario.Ativo = ativo;
         usuario.AlterarSenha = alterarSenha;
@@ -55,7 +58,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "admin",
-                Senha = "123",
+                Senha = "123456",
                 ManterConectado = true
             });
 
@@ -83,7 +86,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "usuario",
-                Senha = "123",
+                Senha = "123456",
                 ManterConectado = true
             });
 
@@ -111,7 +114,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "admin",
-                Senha = "123",
+                Senha = "123456",
                 ManterConectado = true
             });
 
@@ -139,7 +142,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "ronaldo",
-                Senha = "123",
+                Senha = "123456",
                 ManterConectado = true
             });
 
@@ -161,7 +164,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "admin",
-                Senha = "1234",
+                Senha = "senhaerrada",
                 ManterConectado = true
             });
 
@@ -183,7 +186,7 @@ public class LoginControllerTests : IntegrationTestsBase
             new LoginInputDto
             {
                 Login = "usuario",
-                Senha = "123",
+                Senha = "123456",
                 ManterConectado = true
             });
 
@@ -205,8 +208,8 @@ public class LoginControllerTests : IntegrationTestsBase
             new AlteracaoSenhaDto
             {
                 Login = "usuario",
-                SenhaAtual = "123",
-                NovaSenha = "123456"
+                SenhaAtual = "123456",
+                NovaSenha = "777888"
             });
 
         //Assert
@@ -214,7 +217,51 @@ public class LoginControllerTests : IntegrationTestsBase
 
         var usuario = Context.Usuarios.FirstOrDefault(c => c.Login == "usuario");
         Assert.NotNull(usuario);
-        Assert.Equal("8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92", usuario!.Senha);  //123456
+        Assert.Equal(SENHA_SHA256_777888, usuario!.Senha);
+    }
+
+    [Fact]
+    public async Task AlterarSenha_NovaSenhaIgualAnterior_RetornaErro()
+    {
+        //Arrange
+        CriarClient(logado: false);
+
+        await ArrangeUsuario(admin: false);
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/Login/AlterarSenha",
+            new AlteracaoSenhaDto
+            {
+                Login = "usuario",
+                SenhaAtual = "123456",
+                NovaSenha = "123456"
+            });
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Usuario_SenhaIgualAnterior);
+    }
+
+    [Fact]
+    public async Task AlterarSenha_NovaSenhaMuitoCurta_RetornaErro()
+    {
+        //Arrange
+        CriarClient(logado: false);
+
+        await ArrangeUsuario(admin: false);
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/Login/AlterarSenha",
+            new AlteracaoSenhaDto
+            {
+                Login = "usuario",
+                SenhaAtual = "123456",
+                NovaSenha = "12345"
+            });
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Usuario_SenhaInvalida);
     }
 
 
