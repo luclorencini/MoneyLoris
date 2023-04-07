@@ -106,7 +106,7 @@ public class UsuarioController_ListagemTests : IntegrationTestsBase
     )
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         ArrangeDadosListagem();
 
@@ -114,7 +114,7 @@ public class UsuarioController_ListagemTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/pesquisar", filtro);
 
         //Assert
-        var pag = await response.AssertResultOk<Pagination<ICollection<UsuarioListItemDto>>>();
+        var pag = await response.ConverteResultOk<Pagination<ICollection<UsuarioListItemDto>>>();
 
         var list = pag.DataPage;
 

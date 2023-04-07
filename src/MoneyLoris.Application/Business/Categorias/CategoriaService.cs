@@ -52,6 +52,11 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
+
         var categoria = new Categoria
         {
             Tipo = dto.Tipo,

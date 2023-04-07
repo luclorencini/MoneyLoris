@@ -19,6 +19,7 @@ public static class ErrorCodes
     #endregion
 
     #region Categoria
+    public static readonly string Categoria_AdminNaoPode = "CAADNP";
     public static readonly string Categoria_NaoEncontrada = "CANAEN";
     public static readonly string Categoria_NaoPertenceAoUsuario = "CANPUS";
     public static readonly string Categoria_NaoPodeAlterarTipo = "CANPAT";

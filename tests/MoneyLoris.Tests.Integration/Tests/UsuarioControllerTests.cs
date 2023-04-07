@@ -67,7 +67,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task AcessarTelaUsuarios_UsuarioAdmin_Retorna200()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.GetAsync("/usuario");
@@ -80,7 +80,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task AcessarTelaUsuarios_UsuarioComum_Retorna403()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Usuario);
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
 
         //Act
         var response = await HttpClient.GetAsync("/usuario");
@@ -93,7 +93,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task AcessarTelaUsuarios_UsuarioNaoLogado_Retorna403()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         //Act
         var response = await HttpClient.GetAsync("/usuario");
@@ -110,7 +110,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inserir_DadosCorretosAdministrador_UsuarioCriado()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var dto = new UsuarioCriacaoInputDto
@@ -123,7 +123,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/inserir", dto);
 
         //Assert
-        var idUsuario = await response.AssertResultOk<int>();
+        var idUsuario = await response.ConverteResultOk<int>();
 
         var usuario = await Context.Usuarios.FindAsync(idUsuario);
 
@@ -145,7 +145,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inserir_DadosCorretosUsuarioComum_UsuarioCriado()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var dto = new UsuarioCriacaoInputDto
@@ -158,7 +158,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/inserir", dto);
 
         //Assert
-        var idConta = await response.AssertResultOk<int>();
+        var idConta = await response.ConverteResultOk<int>();
 
         var conta = await Context.Usuarios.FindAsync(idConta);
 
@@ -182,7 +182,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inserir_DadosIncorretos_Erro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/inserir",
@@ -206,7 +206,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Info_UsuarioExiste_Retorna()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaEf = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
 
@@ -214,7 +214,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.GetAsync($"/usuario/info/{contaEf.Id}");
 
         //Assert
-        var dto = await response.AssertResultOk<UsuarioInfoDto>();
+        var dto = await response.ConverteResultOk<UsuarioInfoDto>();
 
         Assert.NotNull(dto);
         Assert.Equal(dto.Nome, contaEf.Nome);
@@ -229,7 +229,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Info_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.GetAsync($"/usuario/info/33");
@@ -247,7 +247,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Alterar_UsuarioExiste_FazAlteracaoNomeLogin()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
 
@@ -263,7 +263,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
             });
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var cc = mockUsuario(PerfilUsuario.Administrador); //controle
 
@@ -287,7 +287,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Alterar_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/alterar",
@@ -311,7 +311,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task MarcarAlterarSenha_UsuarioExiste_FazMarcacao()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
 
@@ -322,7 +322,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/redefinirSenha", contaId);
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var cc = mockUsuario(PerfilUsuario.Administrador); //controle
 
@@ -346,7 +346,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task MarcarAlterarSenha_UsuarioJaMarcado_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var mc = mockUsuario(PerfilUsuario.Administrador, alterarSenha: true);
 
@@ -365,7 +365,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task MarcarAlterarSenha_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/redefinirSenha", 1234);
@@ -383,7 +383,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inativar_UsuarioAtivo_FazInativacao()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
         var contaId = contaDb.Id;
@@ -393,7 +393,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/inativar", contaId);
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var cc = mockUsuario(PerfilUsuario.Administrador); //controle
 
@@ -417,7 +417,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inativar_UsuarioJaEstaInativo_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var mc = mockUsuario(PerfilUsuario.Administrador, ativo: false);
 
@@ -436,7 +436,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Inativar_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/inativar", 1234);
@@ -454,7 +454,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Reativar_UsuarioInativo_FazReativacao()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var mc = mockUsuario(PerfilUsuario.Administrador, ativo: false);
 
@@ -466,7 +466,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/reativar", contaId);
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var cc = mockUsuario(PerfilUsuario.Administrador); //controle
 
@@ -490,7 +490,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Reativar_UsuarioJaEstaAtivo_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var mc = mockUsuario(PerfilUsuario.Administrador);
 
@@ -509,7 +509,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Reativar_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/reativar", 1234);
@@ -527,7 +527,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Excluir_Administrador_UsuarioExiste_RealizaExclusao()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Administrador));
         var contaId = contaDb.Id;
@@ -536,7 +536,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/excluir", contaId);
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var contaEf = await Context.Usuarios.FindAsync(contaId);
         Assert.Null(contaEf);
@@ -546,7 +546,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Excluir_UsuarioComum_UsuarioExiste_RealizaExclusao()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         var contaDb = await salvaEntidadeDb(mockUsuario(PerfilUsuario.Usuario));
         var contaId = contaDb.Id;
@@ -555,7 +555,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         var response = await HttpClient.PostAsJsonAsync("/usuario/excluir", contaId);
 
         //Assert
-        await response.AssertResultOk<int>();
+        await response.ConverteResultOk<int>();
 
         var contaEf = await Context.Usuarios.FindAsync(contaId);
         Assert.Null(contaEf);
@@ -565,7 +565,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
     public async Task Excluir_UsuarioNaoExiste_RetornaErro()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/usuario/excluir", 1234);

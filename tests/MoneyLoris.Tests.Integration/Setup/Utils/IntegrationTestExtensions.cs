@@ -1,14 +1,18 @@
 ﻿using System.Net.Http.Json;
 using MoneyLoris.Application.Shared;
+using Xunit.Sdk;
 
 namespace MoneyLoris.Tests.Integration.Setup.Utils;
 public static class IntegrationTestExtensions
 {
-    public static async Task<T> AssertResultOk<T>(this HttpResponseMessage response)
+    public static async Task<T> ConverteResultOk<T>(this HttpResponseMessage response)
     {
         response.EnsureSuccessStatusCode();
 
-        var retorno = await response.ReadFromJsonCustomAsync<T>();
+        var retorno = await response.Content.ReadFromJsonAsync<Result<T>>();
+
+        if (!retorno!.IsOk() && retorno.ErrorCode == ErrorCodes.SystemError)
+            throw new XunitException($"{retorno.ErrorCode} - {retorno.Message}");
 
         Assert.True(retorno!.IsOk(), "retornou Ok = False, deveria retornar True");
 
@@ -19,7 +23,11 @@ public static class IntegrationTestExtensions
     {
         response.EnsureSuccessStatusCode();
 
-        var retorno = await response.ReadFromJsonCustomAsync<Result<object>>();
+        var retorno = await response.ReadFromJsonCustomAsync<Result>();
+
+        if (!retorno!.IsOk() && retorno.ErrorCode == ErrorCodes.SystemError)
+            throw new XunitException($"{retorno.ErrorCode} - {retorno.Message}");
+
 
         Assert.False(retorno!.IsOk(), "retornou Ok = True, deveria retornar False");
 
@@ -40,7 +48,7 @@ public static class IntegrationTestExtensions
         catch
         {
             var x = new ByteArrayContent(ms.ToArray());
-            var retEx = await x.ReadFromJsonAsync<Result<bool>>();
+            var retEx = await x.ReadFromJsonAsync<Result>();
 
             if (retEx == null)
                 throw new Exception($"Result NULL");

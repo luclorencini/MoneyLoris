@@ -9,9 +9,6 @@ using MoneyLoris.Tests.Integration.Tests.Base;
 namespace MoneyLoris.Tests.Integration.Tests;
 public class LoginControllerTests : IntegrationTestsBase
 {
-    private readonly string SENHA_SHA256_123456 = "8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92"; //123456
-    private readonly string SENHA_SHA256_777888 = "6CCF5EB0B98684778C3B1A5415FDEECD6819DD2EF1CFB22EEE2C775CC41DC9CF"; //777888
-
     public LoginControllerTests() : base()
     {
         //seta relógio do sistema para todos os testes desta classe
@@ -35,7 +32,7 @@ public class LoginControllerTests : IntegrationTestsBase
             usuario.Login = "usuario";
         }
 
-        usuario.Senha = SENHA_SHA256_123456;
+        usuario.Senha = TestConstants.SENHA_SHA256_123456;
         usuario.DataCriacao = SystemTime.Now().AddDays(-1);
         usuario.Ativo = ativo;
         usuario.AlterarSenha = alterarSenha;
@@ -49,7 +46,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_Sucesso_UsuarioAdmin_RetornaUrlTelaUsuario()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario();
 
@@ -63,7 +60,7 @@ public class LoginControllerTests : IntegrationTestsBase
             });
 
         //Assert
-        var retorno = await response.AssertResultOk<LoginRetornoDto>();
+        var retorno = await response.ConverteResultOk<LoginRetornoDto>();
 
         Assert.Equal("usuario", retorno.UrlRedir); // admin: redireciona pra tela de usuarios
         Assert.Null(retorno.AlterarSenha);
@@ -77,7 +74,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_Sucesso_UsuarioComum_RetornaUrlTelaLancamento()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(admin: false);
 
@@ -91,7 +88,7 @@ public class LoginControllerTests : IntegrationTestsBase
             });
 
         //Assert
-        var retorno = await response.AssertResultOk<LoginRetornoDto>();
+        var retorno = await response.ConverteResultOk<LoginRetornoDto>();
 
         Assert.Equal("lancamento", retorno.UrlRedir); // admin: redireciona pra tela de lançamento
         Assert.Null(retorno.AlterarSenha);
@@ -105,7 +102,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_NovoUsuarioMarcadoPraAlterarSenha_RetornaAlterarSenhaTrue()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(alterarSenha: true);
 
@@ -119,7 +116,7 @@ public class LoginControllerTests : IntegrationTestsBase
             });
 
         //Assert
-        var retorno = await response.AssertResultOk<LoginRetornoDto>();
+        var retorno = await response.ConverteResultOk<LoginRetornoDto>();
 
         Assert.Null(retorno.UrlRedir); // não liberou login: urlRedir nula
         Assert.True(retorno.AlterarSenha);
@@ -133,7 +130,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_UsuarioNaoExiste_Erro()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario();
 
@@ -155,7 +152,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_SenhaErrada_Erro()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario();
 
@@ -177,7 +174,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task SignIn_UsuarioInativo_Erro()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(admin: false, ativo: false);
 
@@ -199,7 +196,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task AlterarSenha_NovaSenhaValida_RetornaAlterarSenhaFalse()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(admin: false);
 
@@ -217,14 +214,14 @@ public class LoginControllerTests : IntegrationTestsBase
 
         var usuario = Context.Usuarios.FirstOrDefault(c => c.Login == "usuario");
         Assert.NotNull(usuario);
-        Assert.Equal(SENHA_SHA256_777888, usuario!.Senha);
+        Assert.Equal(TestConstants.SENHA_SHA256_777888, usuario!.Senha);
     }
 
     [Fact]
     public async Task AlterarSenha_NovaSenhaIgualAnterior_RetornaErro()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(admin: false);
 
@@ -246,7 +243,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task AlterarSenha_NovaSenhaMuitoCurta_RetornaErro()
     {
         //Arrange
-        CriarClient(logado: false);
+        SubirAplicacao(logado: false);
 
         await ArrangeUsuario(admin: false);
 
@@ -269,7 +266,7 @@ public class LoginControllerTests : IntegrationTestsBase
     public async Task TelaInicial_Logado_Retorna200()
     {
         //Arrange
-        CriarClient(perfil: PerfilUsuario.Administrador);
+        SubirAplicacao(perfil: PerfilUsuario.Administrador);
 
         //Act
         var response = await HttpClient.GetAsync("/lancamento");

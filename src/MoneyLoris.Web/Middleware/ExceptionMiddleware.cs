@@ -8,11 +8,13 @@ namespace MoneyLoris.Web.Middleware;
 
 public class ExceptionMiddleware
 {
+    private readonly IConfiguration _config;
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger logger)
+    public ExceptionMiddleware(IConfiguration config, RequestDelegate next, ILogger logger)
     {
+        _config = config;
         _next = next;
         _logger = logger;
     }
@@ -31,7 +33,7 @@ public class ExceptionMiddleware
             string code = null!;
             string message = null!;
 
-            var codException = GerarCodigoErro();
+            
 
             if (ex is BusinessException)
             {
@@ -41,10 +43,21 @@ public class ExceptionMiddleware
             else
             {
                 code = ErrorCodes.SystemError;
-                message = $"Ocorreu um erro inesperado. [{codException}]";
 
-                //só loga erros não esperados
-                _logger.LogError(ex, $"{codException}");
+                var isAmbienteTeste = Convert.ToBoolean(_config["AmbienteTeste"]);
+
+                if (isAmbienteTeste)
+                {
+                    message = ex.GetBaseException().Message;
+                }
+                else
+                {
+                    var codException = GerarCodigoErro();
+                    message = $"Ocorreu um erro inesperado. [{codException}]";
+
+                    //loga o erro não esperado
+                    _logger.LogError(ex, $"{codException}");
+                }
             }
 
             var rm = new Result(code, message);
