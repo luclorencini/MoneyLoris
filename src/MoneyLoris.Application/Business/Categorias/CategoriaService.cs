@@ -48,8 +48,6 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirCategoria(CategoriaCadastroDto dto)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         if (userInfo.IsAdmin)
@@ -151,6 +149,13 @@ public class CategoriaService : ServiceBase, ICategoriaService
     public async Task<Result<int>> InserirSubcategoria(SubcategoriaCadastroDto dto)
     {
         //TODO - regras de validação
+
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
 
         var subcat = new Subcategoria
         {
