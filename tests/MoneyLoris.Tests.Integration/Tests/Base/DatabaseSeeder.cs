@@ -1,6 +1,7 @@
 ﻿using MoneyLoris.Infrastructure.Persistence.Context;
+using MoneyLoris.Tests.Integration.Setup.Utils;
 
-namespace MoneyLoris.Tests.Integration.Setup.Utils;
+namespace MoneyLoris.Tests.Integration.Tests.Base;
 public class DatabaseSeeder
 {
     private readonly BaseApplicationDbContext Context = null!;
@@ -19,6 +20,9 @@ public class DatabaseSeeder
 
         var comum = TestConstants.UsuarioComum();
         await Context.Usuarios.AddAsync(comum);
+
+        var comub = TestConstants.UsuarioComumB();
+        await Context.Usuarios.AddAsync(comub);
 
         await Context.SaveChangesAsync();
     }

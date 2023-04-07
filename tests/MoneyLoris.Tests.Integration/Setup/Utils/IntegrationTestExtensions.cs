@@ -11,7 +11,7 @@ public static class IntegrationTestExtensions
 
         var retorno = await response.Content.ReadFromJsonAsync<Result<T>>();
 
-        if (!retorno!.IsOk() && retorno.ErrorCode == ErrorCodes.SystemError)
+        if (!retorno!.IsOk())
             throw new XunitException($"{retorno.ErrorCode} - {retorno.Message}");
 
         Assert.True(retorno!.IsOk(), "retornou Ok = False, deveria retornar True");
@@ -23,11 +23,10 @@ public static class IntegrationTestExtensions
     {
         response.EnsureSuccessStatusCode();
 
-        var retorno = await response.ReadFromJsonCustomAsync<Result>();
+        var retorno = await response.Content.ReadFromJsonAsync<Result>();
 
         if (!retorno!.IsOk() && retorno.ErrorCode == ErrorCodes.SystemError)
             throw new XunitException($"{retorno.ErrorCode} - {retorno.Message}");
-
 
         Assert.False(retorno!.IsOk(), "retornou Ok = True, deveria retornar False");
 
@@ -35,25 +34,25 @@ public static class IntegrationTestExtensions
     }
 
 
-    private static async Task<Result<T>?> ReadFromJsonCustomAsync<T>(this HttpResponseMessage response)
-    {
-        var ms = new MemoryStream();
+    //private static async Task<Result<T>?> ReadFromJsonCustomAsync<T>(this HttpResponseMessage response)
+    //{
+    //    var ms = new MemoryStream();
 
-        try
-        {
-            response.Content.CopyTo(ms, default, default);
-            var ret = await response.Content.ReadFromJsonAsync<Result<T>>();
-            return ret;
-        }
-        catch
-        {
-            var x = new ByteArrayContent(ms.ToArray());
-            var retEx = await x.ReadFromJsonAsync<Result>();
+    //    try
+    //    {
+    //        response.Content.CopyTo(ms, default, default);
+    //        var ret = await response.Content.ReadFromJsonAsync<Result<T>>();
+    //        return ret;
+    //    }
+    //    catch
+    //    {
+    //        var x = new ByteArrayContent(ms.ToArray());
+    //        var retEx = await x.ReadFromJsonAsync<Result>();
 
-            if (retEx == null)
-                throw new Exception($"Result NULL");
+    //        if (retEx == null)
+    //            throw new Exception($"Result NULL");
 
-            throw new Exception($"{retEx.ErrorCode} - {retEx.Message}");
-        }
-    }
+    //        throw new Exception($"{retEx.ErrorCode} - {retEx.Message}");
+    //    }
+    //}
 }

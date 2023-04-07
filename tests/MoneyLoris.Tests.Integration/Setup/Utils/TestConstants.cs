@@ -37,4 +37,19 @@ public static class TestConstants
             DataCriacao = SystemTime.Now()
         };
     }
+
+    public static Usuario UsuarioComumB()
+    {
+        return new Usuario
+        {
+            Id = 3,
+            IdPerfil = PerfilUsuario.Usuario,
+            Nome = "Usuário B",
+            Login = "usuariob",
+            Senha = TestConstants.SENHA_SHA256_123456,
+            Ativo = true,
+            AlterarSenha = false,
+            DataCriacao = SystemTime.Now()
+        };
+    }
 }

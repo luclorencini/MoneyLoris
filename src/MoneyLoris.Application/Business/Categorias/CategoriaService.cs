@@ -76,6 +76,11 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
+
         var categoria = await obterCategoria(dto.Id);
 
         if (categoria.IdUsuario != userInfo.Id)
@@ -99,9 +104,12 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> ExcluirCategoria(int id)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
 
         var categoria = await obterCategoria(id);
 
