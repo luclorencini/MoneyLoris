@@ -14,7 +14,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Administrador);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         //Act
         var dto = new CategoriaCadastroDto
@@ -36,7 +36,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         //Act
         var dto = new CategoriaCadastroDto
@@ -64,7 +64,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         //Act
         var dto = new CategoriaCadastroDto
@@ -96,7 +96,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
                 Nome = "Coisas",
                 Ordem = null,
                 Tipo = TipoLancamento.Receita,
-                IdUsuario = IdUsuarioDonoCategoria ?? TestConstants.UsuarioComum().Id
+                IdUsuario = IdUsuarioDonoCategoria ?? TestConstants.USUARIO_COMUM_ID
             });
 
         await Context.SaveChangesAsync();
@@ -110,7 +110,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Administrador);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         await inserirCategoria();
 
@@ -135,9 +135,9 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
-        await inserirCategoria(TestConstants.UsuarioComumB().Id);
+        await inserirCategoria(TestConstants.USUARIO_COMUM_B_ID);
 
         //Act
         var dto = new CategoriaCadastroDto
@@ -160,7 +160,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         await inserirCategoria();
 
@@ -185,7 +185,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         await inserirCategoria();
 
@@ -218,7 +218,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Administrador);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         await inserirCategoria();
 
@@ -235,9 +235,9 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
-        await inserirCategoria(TestConstants.UsuarioComumB().Id);
+        await inserirCategoria(TestConstants.USUARIO_COMUM_B_ID);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/categoria/excluir", 1);
@@ -252,7 +252,7 @@ public class CategoriaControllerTests : IntegrationTestsBase
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
-        await InserirUsuariosNaBase();
+        await DbSeeder.InserirUsuarios();
 
         await inserirCategoria();
 

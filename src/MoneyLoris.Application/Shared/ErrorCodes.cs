@@ -32,6 +32,7 @@ public static class ErrorCodes
     #region Categoria
     public static readonly string MeioPagamento_NaoEncontrado = "MPNAEN";
     public static readonly string MeioPagamento_NaoPertenceAoUsuario = "MPNPUS";
+    public static readonly string MeioPagamento_Inativo = "MPINTV";
     public static readonly string MeioPagamento_CartaoNaoPodeVirarConta = "MPCANC";
     public static readonly string MeioPagamento_ContaNaoPodeVirarCartao = "MPCONC";
     public static readonly string MeioPagamento_CartaoNaoPermiteOperacoesSaldo = "MPCNOS";
@@ -39,8 +40,10 @@ public static class ErrorCodes
     #endregion
 
     #region Lançamento
+    public static readonly string Lancamento_AdminNaoPode = "LAADNP";
     public static readonly string Lancamento_NaoEncontrado = "LANAEN";
     public static readonly string Lancamento_NaoPertenceAoUsuario = "LANPUS";
+    public static readonly string Lancamento_TipoDiferenteDaCategoria = "LANTDC";
     public static readonly string Lancamento_OperacaoNaoEhTransferencia = "LAONTR";
     public static readonly string Lancamento_TransferenciaOrigemNaoPodeSerCartao = "LTONCA";
     public static readonly string Lancamento_TransferenciaEntreContasDestinoNaoPodeSerCartao = "LTCDCA";

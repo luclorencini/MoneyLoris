@@ -15,6 +15,7 @@ public class IntegrationTestsBase : IDisposable
 {
     protected HttpClient HttpClient = null!;
     protected BaseApplicationDbContext Context = null!;
+    protected DatabaseSeeder DbSeeder = null!;
 
     //referencia: https://gunnarpeipman.com/aspnet-core-integration-tests-appsettings/
 
@@ -71,15 +72,9 @@ public class IntegrationTestsBase : IDisposable
 
         Context = scope.ServiceProvider.GetRequiredService<BaseApplicationDbContext>();
 
+        DbSeeder = new DatabaseSeeder(Context);
+
         Context.Database.EnsureCreated();
-
-        
-    }
-
-    public async Task InserirUsuariosNaBase()
-    {
-        var dbSeed = new DatabaseSeeder(Context);
-        await dbSeed.InserirUsuarios();
     }
 
     public void Dispose()

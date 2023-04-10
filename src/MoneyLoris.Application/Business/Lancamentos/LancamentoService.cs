@@ -95,6 +95,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_AdminNaoPode,
+                message: "Administradores não possuem lançamentos.");
+
         var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
 
         if (meio == null)
@@ -106,6 +111,29 @@ public class LancamentoService : ServiceBase, ILancamentoService
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário.");
+
+        if (!meio.Ativo)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_Inativo,
+                message: "Conta/Cartão está inativo.");
+
+        var categoria = await _categoriaRepository.GetById(dto.IdCategoria);
+
+        if (categoria == null)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoEncontrada,
+                message: "Categoria não encontrada");
+
+        if (categoria.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
+                message: "Categoria não pertence ao usuário.");
+
+        if (categoria.Tipo != tipo)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_TipoDiferenteDaCategoria,
+                message: "Tipo do lançamento é diferente do tipo da categoria.");
+
 
         var lancamento = PreparaLancamentoSimples(dto, tipo, userInfo.Id);
 
@@ -285,6 +313,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_AdminNaoPode,
+                message: "Administradores não possuem lançamentos.");
+
         //lançamento
 
         var lancamento = await _lancamentoRepo.GetById(idLancamento);
@@ -302,11 +335,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
         //meio
 
         var meio = await _meioPagamentoRepo.GetById(lancamento.IdMeioPagamento);
-
-        if (meio == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão não encontrado");
 
         if (meio.IdUsuario != userInfo.Id)
             throw new BusinessException(
