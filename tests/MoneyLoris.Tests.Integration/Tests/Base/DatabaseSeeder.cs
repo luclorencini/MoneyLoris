@@ -1,5 +1,6 @@
 ﻿using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Shared;
 using MoneyLoris.Infrastructure.Persistence.Context;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 
@@ -70,6 +71,30 @@ public class DatabaseSeeder
                 Ativo = ativo,
                 Saldo = saldo,
                 Cor = "000000"
+            });
+
+        await Context.SaveChangesAsync();
+
+        return ent.Entity;
+    }
+
+    public async Task<Lancamento> InserirLancamentoSimples(
+        int IdMeioPagamento, int IdCategoria, decimal valor = 100,
+        int idUsuario = TestConstants.USUARIO_COMUM_ID,
+        TipoLancamento tipo = TipoLancamento.Despesa)
+    {
+        var ent = await Context.Lancamentos.AddAsync(
+            new Lancamento
+            {
+                IdUsuario = idUsuario,
+                IdCategoria = IdCategoria,
+                IdMeioPagamento = IdMeioPagamento,
+                Tipo = tipo,
+                Descricao = "Compras",
+                Valor = valor,
+                Data = SystemTime.Today(),
+                Operacao = OperacaoLancamento.LancamentoSimples,
+                Realizado = true,
             });
 
         await Context.SaveChangesAsync();

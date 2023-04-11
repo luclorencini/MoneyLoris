@@ -10,30 +10,6 @@ namespace MoneyLoris.Tests.Integration.Tests;
 public class LancamentoController_ExcluirTests : IntegrationTestsBase
 {
 
-    private async Task<Lancamento> InserirLancamentoSimples(
-        int IdMeioPagamento, int IdCategoria, decimal valor = 100,
-        int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        TipoLancamento tipo = TipoLancamento.Despesa)
-    {
-        var ent = await Context.Lancamentos.AddAsync(
-            new Lancamento
-            {
-                IdUsuario = idUsuario,
-                IdCategoria = IdCategoria,
-                IdMeioPagamento = IdMeioPagamento,
-                Tipo = tipo,
-                Descricao = "Compras",
-                Valor = valor,
-                Data = SystemTime.Today(),
-                Operacao = OperacaoLancamento.LancamentoSimples,
-                Realizado = true,
-            });
-
-        await Context.SaveChangesAsync();
-
-        return ent.Entity;
-    }
-
     #region Validacoes
 
     [Fact]
@@ -45,8 +21,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria();
         var mei = await DbSeeder.InserirMeioPagamento();
-
-        var lanc = await InserirLancamentoSimples(mei.Id, cat.Id);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id);
 
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lanc.Id);
 
@@ -79,8 +54,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria();
         var mei = await DbSeeder.InserirMeioPagamento();
-
-        var lanc = await InserirLancamentoSimples(mei.Id, cat.Id, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lanc.Id);
@@ -99,8 +73,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria();
         var mei = await DbSeeder.InserirMeioPagamento(idUsuario: TestConstants.USUARIO_COMUM_B_ID);
-
-        var lanc = await InserirLancamentoSimples(mei.Id, cat.Id);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lanc.Id);
@@ -121,8 +94,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Receita);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 200, tipo: TipoMeioPagamento.ContaCorrente);
-
-        var lan = await InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
+        var lan = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lan.Id);
@@ -152,8 +124,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Receita);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
-
-        var lan = await InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
+        var lan = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lan.Id);

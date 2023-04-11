@@ -228,6 +228,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_AdminNaoPode,
+                message: "Administradores não possuem lançamentos.");
+
         var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
 
         //validação meio pagamento
@@ -335,6 +340,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
         //meio
 
         var meio = await _meioPagamentoRepo.GetById(lancamento.IdMeioPagamento);
+
+        if (meio == null)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_NaoEncontrado,
+                message: "Conta ou Cartão não encontrado");
 
         if (meio.IdUsuario != userInfo.Id)
             throw new BusinessException(
