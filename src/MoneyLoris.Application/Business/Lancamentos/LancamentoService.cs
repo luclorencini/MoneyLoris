@@ -247,11 +247,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário.");
 
-        if (meio.Id != dto.IdMeioPagamento)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
-                message: "Não é possível trocar o meio de pagamento na alteração.");
-
         // validação lançamento
 
         var lancamento = await _lancamentoRepo.GetById(dto.Id);
@@ -266,6 +261,10 @@ public class LancamentoService : ServiceBase, ILancamentoService
                 code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
                 message: "Lançamento não pertence ao usuário");
 
+        if (lancamento.IdMeioPagamento != dto.IdMeioPagamento)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
+                message: "Não é possível trocar o meio de pagamento na alteração.");
 
         // validação categoria e subcategoria
 
@@ -294,7 +293,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
                 throw new BusinessException(
                     code: ErrorCodes.Subcategoria_NaoPertenceACategoria,
                     message: "Subcategoria não pertence à categoria informada");
-
         }
 
         //prepara alteração

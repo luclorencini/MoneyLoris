@@ -33,14 +33,16 @@ public class DatabaseSeeder
     public async Task<Categoria> InserirCategoria(
         TipoLancamento tipo = TipoLancamento.Despesa,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        bool inserirSubcategoria = false)
+        string nome = "Outros",
+        bool inserirSubcategoria = false
+    )
     {
         var ent = await Context.Categorias.AddAsync(
             new Categoria
             {
                 Tipo = tipo,
                 IdUsuario = idUsuario,
-                Nome = "Outros",
+                Nome = nome,
 
                 Subcategorias = !inserirSubcategoria ? null! :
                 new List<Subcategoria>
@@ -60,14 +62,16 @@ public class DatabaseSeeder
         decimal? saldo = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
         TipoMeioPagamento tipo = TipoMeioPagamento.ContaCorrente,
-        bool ativo = true)
+        bool ativo = true, 
+        string nome = "Conta"
+    )
     {
         var ent = await Context.MeiosPagamento.AddAsync(
             new MeioPagamento
             {
                 Tipo = tipo,
                 IdUsuario = idUsuario,
-                Nome = "Conta",
+                Nome = nome,
                 Ativo = ativo,
                 Saldo = saldo,
                 Cor = "000000"
@@ -79,16 +83,21 @@ public class DatabaseSeeder
     }
 
     public async Task<Lancamento> InserirLancamentoSimples(
-        int IdMeioPagamento, int IdCategoria, decimal valor = 100,
+        int idMeioPagamento, 
+        int idCategoria, 
+        int? idSubcategoria = null,
+        decimal valor = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        TipoLancamento tipo = TipoLancamento.Despesa)
+        TipoLancamento tipo = TipoLancamento.Despesa
+    )
     {
         var ent = await Context.Lancamentos.AddAsync(
             new Lancamento
             {
                 IdUsuario = idUsuario,
-                IdCategoria = IdCategoria,
-                IdMeioPagamento = IdMeioPagamento,
+                IdCategoria = idCategoria,
+                IdSubcategoria = idSubcategoria,
+                IdMeioPagamento = idMeioPagamento,
                 Tipo = tipo,
                 Descricao = "Compras",
                 Valor = valor,

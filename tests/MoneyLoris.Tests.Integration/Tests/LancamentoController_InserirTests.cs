@@ -122,7 +122,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
     }
 
     [Fact]
-    public async Task LancarReceita_CategoriaNaoEncontrado_RetornaErro()
+    public async Task LancarReceita_CategoriaNaoEncontrada_RetornaErro()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
