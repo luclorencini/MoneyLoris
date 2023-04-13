@@ -24,7 +24,7 @@ public class IntegrationTestsBase : IDisposable
         //faz alguns overrides no Program.cs do projeto Web:
 
         var projectDir = Directory.GetCurrentDirectory();
-        var configPath = Path.Combine(projectDir, "appsettings.json");
+        var configPath = Path.Combine(projectDir, "appsettings.integration.tests.json");
 
 
         var webAppFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
