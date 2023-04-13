@@ -66,12 +66,10 @@ public class CategoriaService : ServiceBase, ICategoriaService
         categoria = await _categoriaRepo.Insert(categoria);
 
         return (categoria.Id, "Categoria criada com sucesso.");
-
     }
+
     public async Task<Result<int>> AlterarCategoria(CategoriaCadastroDto dto)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         if (userInfo.IsAdmin)
@@ -97,7 +95,6 @@ public class CategoriaService : ServiceBase, ICategoriaService
         await _categoriaRepo.Update(categoria);
 
         return (categoria.Id, "Categoria alterada com sucesso.");
-
     }
 
     public async Task<Result<int>> ExcluirCategoria(int id)
@@ -148,14 +145,20 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirSubcategoria(SubcategoriaCadastroDto dto)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         if (userInfo.IsAdmin)
             throw new BusinessException(
                 code: ErrorCodes.Categoria_AdminNaoPode,
                 message: "Administradores não possuem categorias.");
+
+        var categoria = await obterCategoria(dto.IdCategoria);
+
+        if (categoria.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
+                message: "Categoria não pertence ao usuário.");
+
 
         var subcat = new Subcategoria
         {
@@ -171,9 +174,26 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> AlterarSubcategoria(SubcategoriaCadastroDto dto)
     {
-        //TODO - regras de validação
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
+
+        var categoria = await obterCategoria(dto.IdCategoria);
+
+        if (categoria.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
+                message: "Categoria não pertence ao usuário.");
 
         var subcat = await obterSubcategoria(dto.Id);
+
+        if (subcat.IdCategoria != categoria.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Subcategoria_NaoPertenceACategoria,
+                message: "Subcategoria não pertence à categoria informada");
 
         subcat.Nome = dto.Nome;
         subcat.Ordem = dto.Ordem;
@@ -185,7 +205,27 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> ExcluirSubcategoria(int id)
     {
-        //TODO - regras de validação
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_AdminNaoPode,
+                message: "Administradores não possuem categorias.");
+
+        var subcat = await _subcategoriaRepo.GetById(id);
+
+        if (subcat == null)
+            throw new BusinessException(
+                code: ErrorCodes.Subcategoria_NaoEncontrada,
+                message: "Subcategoria não encontrada");
+
+        var categoria = await _categoriaRepo.GetById(subcat.IdCategoria);
+
+        if (categoria.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
+                message: "Categoria não pertence ao usuário.");
+
 
         await _subcategoriaRepo.Delete(id);
 

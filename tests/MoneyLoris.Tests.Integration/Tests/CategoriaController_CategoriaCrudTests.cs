@@ -7,7 +7,7 @@ using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
 namespace MoneyLoris.Tests.Integration.Tests;
-public class CategoriaControllerTests : IntegrationTestsBase
+public class CategoriaController_CategoriaCrudTests : IntegrationTestsBase
 {
     [Fact]
     public async Task Inserir_UsuarioAdmin_RetornaErro()
