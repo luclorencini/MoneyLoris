@@ -33,7 +33,8 @@ public class DatabaseSeeder
     public async Task<Categoria> InserirCategoria(
         TipoLancamento tipo = TipoLancamento.Despesa,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        string nome = "Outros"
+        string nome = "Outros",
+        byte? ordem = null
     )
     {
         var ent = await Context.Categorias.AddAsync(
@@ -41,7 +42,8 @@ public class DatabaseSeeder
             {
                 Tipo = tipo,
                 IdUsuario = idUsuario,
-                Nome = nome
+                Nome = nome,
+                Ordem = ordem
             });
 
         await Context.SaveChangesAsync();
@@ -51,14 +53,16 @@ public class DatabaseSeeder
 
     public async Task<Subcategoria> InserirSubcategoria(
         int idCategoria,
-        string nome = "Sub-outros"
+        string nome = "Sub-outros",
+        byte? ordem = null
     )
     {
         var ent = await Context.Subcategorias.AddAsync(
             new Subcategoria
             {
                 IdCategoria = idCategoria,
-                Nome = nome
+                Nome = nome,
+                Ordem = ordem
             });
 
         await Context.SaveChangesAsync();
