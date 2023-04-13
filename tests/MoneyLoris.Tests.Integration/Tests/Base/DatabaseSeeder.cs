@@ -33,8 +33,7 @@ public class DatabaseSeeder
     public async Task<Categoria> InserirCategoria(
         TipoLancamento tipo = TipoLancamento.Despesa,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        string nome = "Outros",
-        bool inserirSubcategoria = false
+        string nome = "Outros"
     )
     {
         var ent = await Context.Categorias.AddAsync(
@@ -42,15 +41,24 @@ public class DatabaseSeeder
             {
                 Tipo = tipo,
                 IdUsuario = idUsuario,
-                Nome = nome,
+                Nome = nome
+            });
 
-                Subcategorias = !inserirSubcategoria ? null! :
-                new List<Subcategoria>
-                {
-                    new Subcategoria {
-                        Nome = "Sub-outros",
-                    }
-                }
+        await Context.SaveChangesAsync();
+
+        return ent.Entity;
+    }
+
+    public async Task<Subcategoria> InserirSubcategoria(
+        int idCategoria,
+        string nome = "Sub-outros"
+    )
+    {
+        var ent = await Context.Subcategorias.AddAsync(
+            new Subcategoria
+            {
+                IdCategoria = idCategoria,
+                Nome = nome
             });
 
         await Context.SaveChangesAsync();
@@ -62,7 +70,7 @@ public class DatabaseSeeder
         decimal? saldo = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
         TipoMeioPagamento tipo = TipoMeioPagamento.ContaCorrente,
-        bool ativo = true, 
+        bool ativo = true,
         string nome = "Conta"
     )
     {
@@ -83,8 +91,8 @@ public class DatabaseSeeder
     }
 
     public async Task<Lancamento> InserirLancamentoSimples(
-        int idMeioPagamento, 
-        int idCategoria, 
+        int idMeioPagamento,
+        int idCategoria,
         int? idSubcategoria = null,
         decimal valor = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,

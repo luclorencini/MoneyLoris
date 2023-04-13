@@ -292,7 +292,8 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa, inserirSubcategoria: true);
+        var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
@@ -302,7 +303,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
             Descricao = "Compras",
             Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
-            IdSubcategoria = cat.Subcategorias.First().Id,
+            IdSubcategoria = sub.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
         };

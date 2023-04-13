@@ -234,9 +234,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var cat = await DbSeeder.InserirCategoria(inserirSubcategoria: true);
+        var cat = await DbSeeder.InserirCategoria();
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento();
-        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, cat.Subcategorias.First().Id);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id);
 
 
         //Act
@@ -266,11 +267,13 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var cat = await DbSeeder.InserirCategoria(inserirSubcategoria: true);
+        var cat = await DbSeeder.InserirCategoria();
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento();
-        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, cat.Subcategorias.First().Id);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id);
 
-        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", inserirSubcategoria: true);
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos");
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
 
         //Act
         var dto = new LancamentoCadastroDto
@@ -280,7 +283,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
             Descricao = "Compras",
             Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
-            IdSubcategoria = catB.Subcategorias.First().Id,
+            IdSubcategoria = subB.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
         };
@@ -301,11 +304,13 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var cat = await DbSeeder.InserirCategoria(inserirSubcategoria: true);
+        var cat = await DbSeeder.InserirCategoria();
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 200);
-        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, cat.Subcategorias.First().Id, valor: -50);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -50);
 
-        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", inserirSubcategoria: true);
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos");
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
 
         //Act
         var dto = new LancamentoCadastroDto
@@ -315,7 +320,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
             Descricao = "Gastos",
             Tipo = TipoLancamento.Despesa,
             IdCategoria = catB.Id,
-            IdSubcategoria = catB.Subcategorias.First().Id,
+            IdSubcategoria = subB.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
         };
