@@ -60,9 +60,12 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Inserir(MeioPagamentoCriacaoDto dto)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_AdminNaoPode,
+                message: "Administradores não possuem meios de pagamento.");
 
         var meio = new MeioPagamento
         {
@@ -75,8 +78,23 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
             Saldo = 0
         };
 
-        if (IsCartao(meio.Tipo))
+        if (IsCartao(dto.Tipo))
         {
+            if (dto.Limite is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Limite é obrigatório para cartões de crédito.");
+
+            if (dto.DiaFechamento is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Dia de Fechamento é obrigatório para cartões de crédito.");
+
+            if (dto.DiaVencimento is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Dia de Vencimento é obrigatório para cartões de crédito.");
+
             meio.Limite = dto.Limite;
             meio.DiaFechamento = dto.DiaFechamento;
             meio.DiaVencimento = dto.DiaVencimento;
@@ -92,9 +110,12 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Alterar(MeioPagamentoCadastroDto dto)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_AdminNaoPode,
+                message: "Administradores não possuem meios de pagamento.");
 
         var meio = await obterMeioPagamento(dto.Id);
 
@@ -146,6 +167,8 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário.");
+
+        //todo - não pode excluir se tiver algum lançamento
 
         await _meioPagamentoRepo.Delete(id);
 
@@ -204,5 +227,5 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
             .ToList();
 
         return new Result<ICollection<MeioPagamentoListItemDto>>(ret);
-    }    
+    }
 }
