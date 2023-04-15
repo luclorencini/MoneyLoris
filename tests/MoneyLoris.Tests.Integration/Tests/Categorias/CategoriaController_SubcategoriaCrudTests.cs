@@ -5,7 +5,7 @@ using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
+namespace MoneyLoris.Tests.Integration.Tests.Categorias;
 public class CategoriaController_SubcategoriaCrudTests : IntegrationTestsBase
 {
     [Fact]

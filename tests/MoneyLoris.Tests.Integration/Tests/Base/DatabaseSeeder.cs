@@ -71,11 +71,12 @@ public class DatabaseSeeder
     }
 
     public async Task<MeioPagamento> InserirMeioPagamento(
-        decimal? saldo = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
         TipoMeioPagamento tipo = TipoMeioPagamento.ContaCorrente,
-        bool ativo = true,
-        string nome = "Conta"
+        string nome = "Conta",
+        byte? ordem = null,
+        decimal? saldo = 100,
+        bool ativo = true
     )
     {
         var ent = await Context.MeiosPagamento.AddAsync(
@@ -87,6 +88,7 @@ public class DatabaseSeeder
                 Ativo = ativo,
                 Saldo = saldo,
                 Cor = "000000",
+                Ordem = ordem,
 
                 Limite = (tipo == TipoMeioPagamento.CartaoCredito ? 5000 : null),
                 DiaFechamento = (tipo == TipoMeioPagamento.CartaoCredito ? 1 : null),

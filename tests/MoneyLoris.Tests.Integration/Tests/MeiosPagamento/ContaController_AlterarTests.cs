@@ -5,7 +5,7 @@ using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
+namespace MoneyLoris.Tests.Integration.Tests.MeiosPagamento;
 public class ContaController_AlterarTests : IntegrationTestsBase
 {
     [Fact]

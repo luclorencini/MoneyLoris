@@ -9,7 +9,7 @@ using MoneyLoris.Application.Utils;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
+namespace MoneyLoris.Tests.Integration.Tests.Usuarios;
 public class UsuarioControllerTests : IntegrationTestsBase
 {
     private readonly string SENHA_PADRAO_SHA256 = "2010992D6EA323E39585AC882D3BE4C5457520E651CDD5770EEA40EDADCF02D0"; //dinheiro
@@ -332,7 +332,7 @@ public class UsuarioControllerTests : IntegrationTestsBase
         Assert.Equal(cc.Nome, contaEf!.Nome);
         Assert.Equal(cc.Login, contaEf.Login);
         Assert.Equal(cc.IdPerfil, contaEf.IdPerfil);
-        
+
         Assert.Equal(SENHA_PADRAO_SHA256, contaEf.Senha);
         Assert.True(contaEf.AlterarSenha);
 

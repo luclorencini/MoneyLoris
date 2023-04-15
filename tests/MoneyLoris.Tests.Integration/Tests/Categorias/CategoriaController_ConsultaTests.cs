@@ -3,8 +3,8 @@ using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
-public class CategoriaController_ListagemTests : IntegrationTestsBase
+namespace MoneyLoris.Tests.Integration.Tests.Categorias;
+public class CategoriaController_ConsultaTests : IntegrationTestsBase
 {
     [Fact]
     public async Task Listar_NenhumaCategoriaDoUsuario_RetornaListaVazia()

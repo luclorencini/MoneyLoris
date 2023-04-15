@@ -6,7 +6,7 @@ using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
+namespace MoneyLoris.Tests.Integration.Tests.Usuarios;
 public class UsuarioController_ListagemTests : IntegrationTestsBase
 {
     private void ArrangeDadosListagem()
@@ -24,8 +24,8 @@ public class UsuarioController_ListagemTests : IntegrationTestsBase
                     Login = $"login.{(i + 1).ToString("D2")}",
                     Senha = "abc",
                     DataCriacao = DateTime.Now,
-                    Ativo = (i % 5 != 4), // para cada 4 ativos, 1 inativo (05, 10, 15)
-                    IdPerfil = (i % 3 == 0 ? PerfilUsuario.Administrador : PerfilUsuario.Usuario), // para cada 1 admin, 2 usuarios comuns (01, 04, 07)
+                    Ativo = i % 5 != 4, // para cada 4 ativos, 1 inativo (05, 10, 15)
+                    IdPerfil = i % 3 == 0 ? PerfilUsuario.Administrador : PerfilUsuario.Usuario, // para cada 1 admin, 2 usuarios comuns (01, 04, 07)
                 });
         }
 

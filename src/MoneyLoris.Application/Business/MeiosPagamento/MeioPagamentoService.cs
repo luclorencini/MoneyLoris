@@ -38,9 +38,16 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<MeioPagamentoCadastroDto>> Obter(int id)
     {
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
         var meio = await obterMeioPagamento(id);
 
-        var dto = new MeioPagamentoCadastroDto(meio);
+        if (meio.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
+                message: "Conta/Cartão não pertence ao usuário.");
+
+        var dto = new MeioPagamentoCadastroDto(meio!);
 
         return dto;
     }

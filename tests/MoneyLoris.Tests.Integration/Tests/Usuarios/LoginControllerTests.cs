@@ -6,7 +6,7 @@ using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
 
-namespace MoneyLoris.Tests.Integration.Tests;
+namespace MoneyLoris.Tests.Integration.Tests.Usuarios;
 public class LoginControllerTests : IntegrationTestsBase
 {
     public LoginControllerTests() : base()
