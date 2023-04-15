@@ -86,7 +86,11 @@ public class DatabaseSeeder
                 Nome = nome,
                 Ativo = ativo,
                 Saldo = saldo,
-                Cor = "000000"
+                Cor = "000000",
+
+                Limite = (tipo == TipoMeioPagamento.CartaoCredito ? 5000 : null),
+                DiaFechamento = (tipo == TipoMeioPagamento.CartaoCredito ? 1 : null),
+                DiaVencimento = (tipo == TipoMeioPagamento.CartaoCredito ? 10 : null)
             });
 
         await Context.SaveChangesAsync();

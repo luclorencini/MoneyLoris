@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Entities;
@@ -10,13 +11,16 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 {
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
     private readonly IAuthenticationManager _authenticationManager;
+    private readonly ILancamentoRepository _lancamentoRepo;
 
     public MeioPagamentoService(
         IMeioPagamentoRepository meioPagamentoRepo,
-        IAuthenticationManager authenticationManager)
+        IAuthenticationManager authenticationManager,
+        ILancamentoRepository lancamentoRepo)
     {
         _meioPagamentoRepo = meioPagamentoRepo;
         _authenticationManager = authenticationManager;
+        _lancamentoRepo = lancamentoRepo;
     }
 
     public async Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar()
@@ -139,13 +143,29 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         meio.Tipo = dto.Tipo;
         meio.Cor = dto.Cor;
         meio.Ordem = dto.Ordem;
-
+       
         if (IsCartao(meio.Tipo))
         {
+            if (dto.Limite is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Limite é obrigatório para cartões de crédito.");
+
+            if (dto.DiaFechamento is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Dia de Fechamento é obrigatório para cartões de crédito.");
+
+            if (dto.DiaVencimento is null)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Dia de Vencimento é obrigatório para cartões de crédito.");
+
             meio.Limite = dto.Limite;
             meio.DiaFechamento = dto.DiaFechamento;
             meio.DiaVencimento = dto.DiaVencimento;
         }
+
 
         await _meioPagamentoRepo.Update(meio);
 
@@ -157,9 +177,12 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Excluir(int id)
     {
-        //TODO - regras de validação
-
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_AdminNaoPode,
+                message: "Administradores não possuem meios de pagamento.");
 
         var meio = await obterMeioPagamento(id);
 
@@ -168,7 +191,13 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário.");
 
-        //todo - não pode excluir se tiver algum lançamento
+        var qtdeLancamentos = await _lancamentoRepo.QuantidadePorMeioPagamento(meio.Id);
+
+        if (qtdeLancamentos > 0)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_PossuiLancamentos,
+                message: "Conta/Cartão possui lançamentos.");
+
 
         await _meioPagamentoRepo.Delete(id);
 

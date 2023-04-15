@@ -39,6 +39,7 @@ public static class ErrorCodes
     public static readonly string MeioPagamento_ContaNaoPodeVirarCartao = "MPCONC";
     public static readonly string MeioPagamento_CartaoNaoPermiteOperacoesSaldo = "MPCNOS";
     public static readonly string MeioPagamento_TipoDiferenteAlteracao = "MPTDAL";
+    public static readonly string MeioPagamento_PossuiLancamentos = "MPPOLA";
     #endregion
 
     #region Lançamento

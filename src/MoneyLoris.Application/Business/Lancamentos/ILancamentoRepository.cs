@@ -11,4 +11,5 @@ public interface ILancamentoRepository : IRepositoryBase<Lancamento>
     Task<decimal> SomatorioReceitasFiltro(LancamentoFiltroDto filtro, int idUsuario);
     Task<decimal> SomatorioDespesasFiltro(LancamentoFiltroDto filtro, int idUsuario);
     Task<ICollection<Lancamento>> ObterLancamentosRecentes(int idUsuario, TipoLancamento tipo, string termoBusca);
+    Task<int> QuantidadePorMeioPagamento(int idMeioPagamento);
 }

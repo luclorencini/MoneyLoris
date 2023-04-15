@@ -103,4 +103,13 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
         return list;
     }
 
+    public async Task<int> QuantidadePorMeioPagamento(int idMeioPagamento)
+    {
+        var qtde = await _dbset
+            .Where(l => l.IdMeioPagamento == idMeioPagamento)
+            .CountAsync();
+
+        return qtde;
+    }
+
 }
