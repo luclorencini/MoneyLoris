@@ -22,10 +22,12 @@ public static class ErrorCodes
     public static readonly string Categoria_AdminNaoPode = "CAADNP";
     public static readonly string Categoria_NaoEncontrada = "CANAEN";
     public static readonly string Categoria_NaoPertenceAoUsuario = "CANPUS";
+    public static readonly string Categoria_CamposObrigatorios = "CACOBR";
     public static readonly string Categoria_NaoPodeAlterarTipo = "CANPAT";
 
     public static readonly string Subcategoria_NaoEncontrada = "SCNAEN";
     public static readonly string Subcategoria_NaoPertenceACategoria = "SCNPCA";
+    public static readonly string Subcategoria_CamposObrigatorios = "SCCOBR";
 
     #endregion
 

@@ -1,6 +1,7 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
@@ -8,8 +9,6 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.MeiosPagamento;
 public class MeioPagamentoValidator : IMeioPagamentoValidator
 {
-    #region DI
-
     private readonly UserAuthInfo userInfo;
     private readonly ILancamentoRepository _lancamentoRepo;
 
@@ -22,7 +21,6 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
         _lancamentoRepo = lancamentoRepo;
     }
 
-    #endregion
 
     public void NaoEhAdmin()
     {
@@ -40,7 +38,7 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 message: "Conta ou Cartão não encontrado");
     }
 
-    public void PossuiPermissao(MeioPagamento meio)
+    public void PertenceAoUsuario(MeioPagamento meio)
     {
         if (meio.IdUsuario != userInfo.Id)
             throw new BusinessException(
@@ -50,6 +48,11 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
 
     public void EstaConsistente(MeioPagamento meio)
     {
+        if (meio is null)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                message: "Meio de Pagamento nao informado");
+
         if (meio.IdUsuario <= 0)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_CamposObrigatorios,

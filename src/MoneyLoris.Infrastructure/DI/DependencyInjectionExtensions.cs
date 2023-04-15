@@ -6,6 +6,7 @@ using MoneyLoris.Application.Business.Categorias;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento;
+using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Business.Usuarios;
 using MoneyLoris.Application.Business.Usuarios.Interfaces;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
@@ -40,6 +41,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
         services.AddScoped<ICategoriaService, CategoriaService>();
+        services.AddScoped<ICategoriaValidator, CategoriaValidator>();
         services.AddScoped<ICategoriaRepository, CategoriaRepository>();
         services.AddScoped<ISubcategoriaRepository, SubcategoriaRepository>();
 

@@ -2,6 +2,7 @@
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
@@ -43,7 +44,7 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         var meio = await _meioPagamentoRepo.GetById(id);
 
         _validator.Existe(meio);
-        _validator.PossuiPermissao(meio);
+        _validator.PertenceAoUsuario(meio);
 
         var dto = new MeioPagamentoCadastroDto(meio!);
 
@@ -96,7 +97,7 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         var meio = await _meioPagamentoRepo.GetById(dto.Id);
 
         _validator.Existe(meio);
-        _validator.PossuiPermissao(meio);
+        _validator.PertenceAoUsuario(meio);
         _validator.NaoPodeMudarDeContaPraCartaoOuViceVersa(meio, dto);
 
         meio.Nome = dto.Nome;
@@ -128,7 +129,7 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         var meio = await _meioPagamentoRepo.GetById(id);
 
         _validator.Existe(meio);
-        _validator.PossuiPermissao(meio);
+        _validator.PertenceAoUsuario(meio);
         await _validator.NaoPossuiLancamentos(meio);
 
         await _meioPagamentoRepo.Delete(id);

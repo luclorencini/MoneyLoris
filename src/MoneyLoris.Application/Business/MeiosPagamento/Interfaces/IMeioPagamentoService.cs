@@ -1,7 +1,7 @@
 ﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Shared;
 
-namespace MoneyLoris.Application.Business.MeiosPagamento;
+namespace MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 public interface IMeioPagamentoService
 {
     Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar();

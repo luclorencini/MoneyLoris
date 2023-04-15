@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
-using MoneyLoris.Application.Business.MeiosPagamento;
+using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Web.Controllers.Base;
 

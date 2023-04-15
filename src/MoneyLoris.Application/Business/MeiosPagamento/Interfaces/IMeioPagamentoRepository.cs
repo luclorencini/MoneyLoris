@@ -1,7 +1,7 @@
 ﻿using MoneyLoris.Application.Common.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
 
-namespace MoneyLoris.Application.Business.MeiosPagamento;
+namespace MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 public interface IMeioPagamentoRepository : IRepositoryBase<MeioPagamento>
 {
     Task<ICollection<MeioPagamento>> ListarMeiosPagamentoUsuario(int idUsuario);

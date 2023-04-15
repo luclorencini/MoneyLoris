@@ -20,7 +20,9 @@ public class CategoriaServiceTestsAi
         _categoriaRepoMock = new Mock<ICategoriaRepository>();
         _subcategoriaRepoMock = new Mock<ISubcategoriaRepository>();
         _authenticationManagerMock = new Mock<IAuthenticationManager>();
+
         _categoriaService = new CategoriaService(
+            new CategoriaValidator(_authenticationManagerMock.Object),
             _categoriaRepoMock.Object,
             _subcategoriaRepoMock.Object,
             _authenticationManagerMock.Object);

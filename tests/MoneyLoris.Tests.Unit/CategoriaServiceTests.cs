@@ -11,30 +11,34 @@ namespace MoneyLoris.Tests.Unit;
 public class CategoriaServiceTests
 {
 
-    private readonly Mock<ICategoriaRepository> catRepo;
-    private readonly Mock<ISubcategoriaRepository> subRepo;
-    private readonly Mock<IAuthenticationManager> authMan;
+    private readonly Mock<ICategoriaRepository> _categoriaRepoMock;
+    private readonly Mock<ISubcategoriaRepository> _subcategoriaRepoMock;
+    private readonly Mock<IAuthenticationManager> _authenticationManagerMock;
 
     private readonly CategoriaService sut;
 
     public CategoriaServiceTests()
     {
-        catRepo = new Mock<ICategoriaRepository>();
-        subRepo = new Mock<ISubcategoriaRepository>();
-        authMan = new Mock<IAuthenticationManager>();
+        _categoriaRepoMock = new Mock<ICategoriaRepository>();
+        _subcategoriaRepoMock = new Mock<ISubcategoriaRepository>();
+        _authenticationManagerMock = new Mock<IAuthenticationManager>();
 
-        sut = new CategoriaService(catRepo.Object, subRepo.Object, authMan.Object);
+        sut = new CategoriaService(
+            new CategoriaValidator(_authenticationManagerMock.Object),
+            _categoriaRepoMock.Object, 
+            _subcategoriaRepoMock.Object, 
+            _authenticationManagerMock.Object);
     }
 
     [Fact]
     public async Task Alterar_DadosCorretos_Salva()
     {
         //Arrange
-        authMan.Setup(x => x.ObterInfoUsuarioLogado()).Returns(
+        _authenticationManagerMock.Setup(x => x.ObterInfoUsuarioLogado()).Returns(
             new UserAuthInfo { Id = 5, IsAdmin = false }
             );
 
-        catRepo.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(
+        _categoriaRepoMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(
             new Categoria { IdUsuario = 5, Tipo = TipoLancamento.Receita }
             );
 
@@ -49,22 +53,22 @@ public class CategoriaServiceTests
         var ret = await sut.AlterarCategoria(dto);
 
         //Assert
-        catRepo.Verify(x => x.Update(It.IsAny<Categoria>()));
+        _categoriaRepoMock.Verify(x => x.Update(It.IsAny<Categoria>()));
     }
 
     [Fact]
     public async Task Alterar_UsuarioAdmin_Erro()
     {
         //Arrange
-        authMan.Setup(x => x.ObterInfoUsuarioLogado()).Returns(
+        _authenticationManagerMock.Setup(x => x.ObterInfoUsuarioLogado()).Returns(
             new UserAuthInfo { Id = 5, IsAdmin = true }
             );
 
-        catRepo.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(
+        _categoriaRepoMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(
             new Categoria { IdUsuario = 5, Tipo = TipoLancamento.Receita }
             );
 
-        //Act
+        //Act & Assert
         var dto = new CategoriaCadastroDto
         {
             Nome = "Pessoal",

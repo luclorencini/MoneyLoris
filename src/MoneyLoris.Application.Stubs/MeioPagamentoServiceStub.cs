@@ -1,5 +1,5 @@
-﻿using MoneyLoris.Application.Business.MeiosPagamento;
-using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
+using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;

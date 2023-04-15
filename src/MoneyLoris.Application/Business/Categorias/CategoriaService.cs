@@ -9,15 +9,18 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Categorias;
 public class CategoriaService : ServiceBase, ICategoriaService
 {
+    private readonly ICategoriaValidator _validator;
     private readonly ICategoriaRepository _categoriaRepo;
     private readonly ISubcategoriaRepository _subcategoriaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public CategoriaService(
+        ICategoriaValidator validator,
         ICategoriaRepository categoriaRepo,
         ISubcategoriaRepository subcategoriaRepo,
         IAuthenticationManager authenticationManager)
     {
+        _validator = validator;
         _categoriaRepo = categoriaRepo;
         _subcategoriaRepo = subcategoriaRepo;
         _authenticationManager = authenticationManager;
@@ -39,7 +42,10 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<CategoriaCadastroDto>> ObterCategoria(int id)
     {
-        var categoria = await obterCategoria(id);
+        var categoria = await _categoriaRepo.GetById(id);
+
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
 
         var dto = new CategoriaCadastroDto(categoria);
 
@@ -48,12 +54,9 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirCategoria(CategoriaCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         var categoria = new Categoria
         {
@@ -63,6 +66,8 @@ public class CategoriaService : ServiceBase, ICategoriaService
             IdUsuario = userInfo.Id
         };
 
+        _validator.EstaConsistente(categoria);
+
         categoria = await _categoriaRepo.Insert(categoria);
 
         return (categoria.Id, "Categoria criada com sucesso.");
@@ -70,27 +75,18 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> AlterarCategoria(CategoriaCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        var categoria = await _categoriaRepo.GetById(dto.Id);
 
-        var categoria = await obterCategoria(dto.Id);
-
-        if (categoria.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
-                message: "Categoria não pertence ao usuário.");
-
-        if (categoria.Tipo != dto.Tipo)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPodeAlterarTipo,
-                message: "Categoria não pode ter seu tipo alterado.");
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
+        _validator.NaoPodeAlterarTipo(categoria, dto.Tipo);
 
         categoria.Nome = dto.Nome;
         categoria.Ordem = dto.Ordem;
+
+        _validator.EstaConsistente(categoria);
 
         await _categoriaRepo.Update(categoria);
 
@@ -99,42 +95,24 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> ExcluirCategoria(int id)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        var categoria = await _categoriaRepo.GetById(id);
 
-        var categoria = await obterCategoria(id);
-
-        if (categoria.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
-                message: "Categoria não pertence ao usuário.");
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
 
         await _categoriaRepo.Delete(id);
 
         return (id, "Categoria excluída com sucesso.");
     }
 
-    private async Task<Categoria> obterCategoria(int id)
-    {
-        var categoria = await _categoriaRepo.GetById(id);
-
-        if (categoria == null)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoEncontrada,
-                message: "Categoria não encontrada");
-
-        return categoria;
-    }
-
-
 
     public async Task<Result<SubcategoriaCadastroDto>> ObterSubcategoria(int id)
     {
-        var subcat = await obterSubcategoria(id);
+        var subcat = await _subcategoriaRepo.GetById(id);
+
+        _validator.Existe(subcat);
 
         var dto = new SubcategoriaCadastroDto(subcat);
 
@@ -145,20 +123,12 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> InserirSubcategoria(SubcategoriaCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        var categoria = await _categoriaRepo.GetById(dto.IdCategoria);
 
-        var categoria = await obterCategoria(dto.IdCategoria);
-
-        if (categoria.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
-                message: "Categoria não pertence ao usuário.");
-
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
 
         var subcat = new Subcategoria
         {
@@ -167,6 +137,8 @@ public class CategoriaService : ServiceBase, ICategoriaService
             Ordem = dto.Ordem
         };
 
+        _validator.EstaConsistente(subcat);
+
         subcat = await _subcategoriaRepo.Insert(subcat);
 
         return (subcat.Id, "Subcategoria criada com sucesso.");
@@ -174,29 +146,22 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> AlterarSubcategoria(SubcategoriaCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        var categoria = await _categoriaRepo.GetById(dto.IdCategoria);
 
-        var categoria = await obterCategoria(dto.IdCategoria);
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
 
-        if (categoria.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
-                message: "Categoria não pertence ao usuário.");
+        var subcat = await _subcategoriaRepo.GetById(dto.Id);
 
-        var subcat = await obterSubcategoria(dto.Id);
-
-        if (subcat.IdCategoria != categoria.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Subcategoria_NaoPertenceACategoria,
-                message: "Subcategoria não pertence à categoria informada");
+        _validator.Existe(subcat);
+        _validator.PertenceACategoria(subcat, categoria);
 
         subcat.Nome = dto.Nome;
         subcat.Ordem = dto.Ordem;
+
+        _validator.EstaConsistente(subcat);
 
         await _subcategoriaRepo.Update(subcat);
 
@@ -205,43 +170,22 @@ public class CategoriaService : ServiceBase, ICategoriaService
 
     public async Task<Result<int>> ExcluirSubcategoria(int id)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_AdminNaoPode,
-                message: "Administradores não possuem categorias.");
+        _validator.NaoEhAdmin();
 
         var subcat = await _subcategoriaRepo.GetById(id);
 
-        if (subcat == null)
-            throw new BusinessException(
-                code: ErrorCodes.Subcategoria_NaoEncontrada,
-                message: "Subcategoria não encontrada");
+        _validator.Existe(subcat);
 
         var categoria = await _categoriaRepo.GetById(subcat.IdCategoria);
 
-        if (categoria.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Categoria_NaoPertenceAoUsuario,
-                message: "Categoria não pertence ao usuário.");
+        _validator.Existe(categoria);
+        _validator.PertenceAoUsuario(categoria);
 
+        _validator.PertenceACategoria(subcat, categoria);
 
         await _subcategoriaRepo.Delete(id);
 
         return (id, "Subcategoria excluída com sucesso.");
-    }
-
-    private async Task<Subcategoria> obterSubcategoria(int id)
-    {
-        var subcat = await _subcategoriaRepo.GetById(id);
-
-        if (subcat == null)
-            throw new BusinessException(
-                code: ErrorCodes.Subcategoria_NaoEncontrada,
-                message: "Subcategoria não encontrada");
-
-        return subcat;
     }
 
     public async Task<Result<ICollection<CategoriaListItemDto>>> ObterCategoriasUsuario(TipoLancamento tipo)
