@@ -106,7 +106,9 @@ public class DatabaseSeeder
         int? idSubcategoria = null,
         decimal valor = 100,
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
-        TipoLancamento tipo = TipoLancamento.Despesa
+        TipoLancamento tipo = TipoLancamento.Despesa,
+        string descricao = "Compras",
+        DateTime? data = null
     )
     {
         var ent = await Context.Lancamentos.AddAsync(
@@ -117,9 +119,9 @@ public class DatabaseSeeder
                 IdSubcategoria = idSubcategoria,
                 IdMeioPagamento = idMeioPagamento,
                 Tipo = tipo,
-                Descricao = "Compras",
+                Descricao = descricao,
                 Valor = valor,
-                Data = SystemTime.Today(),
+                Data = (data.HasValue ? data.Value : SystemTime.Today()),
                 Operacao = OperacaoLancamento.LancamentoSimples,
                 Realizado = true,
             });
