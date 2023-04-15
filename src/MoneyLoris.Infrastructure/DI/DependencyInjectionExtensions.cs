@@ -44,6 +44,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ISubcategoriaRepository, SubcategoriaRepository>();
 
         services.AddScoped<IMeioPagamentoService, MeioPagamentoService>();
+        services.AddScoped<IMeioPagamentoValidator, MeioPagamentoValidator>();
         services.AddScoped<IMeioPagamentoRepository, MeioPagamentoRepository>();
 
         services.AddScoped<ILancamentoService, LancamentoService>();

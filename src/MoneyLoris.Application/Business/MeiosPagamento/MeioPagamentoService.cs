@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Common.Base;
@@ -9,18 +10,19 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.MeiosPagamento;
 public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 {
+    private readonly IMeioPagamentoValidator _validator;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
     private readonly IAuthenticationManager _authenticationManager;
-    private readonly ILancamentoRepository _lancamentoRepo;
 
     public MeioPagamentoService(
+        IMeioPagamentoValidator validator,
         IMeioPagamentoRepository meioPagamentoRepo,
-        IAuthenticationManager authenticationManager,
-        ILancamentoRepository lancamentoRepo)
+        IAuthenticationManager authenticationManager
+    )
     {
+        _validator = validator;
         _meioPagamentoRepo = meioPagamentoRepo;
         _authenticationManager = authenticationManager;
-        _lancamentoRepo = lancamentoRepo;
     }
 
     public async Task<Result<ICollection<MeioPagamentoCadastroListItemDto>>> Listar()
@@ -38,30 +40,14 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<MeioPagamentoCadastroDto>> Obter(int id)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        var meio = await _meioPagamentoRepo.GetById(id);
 
-        var meio = await obterMeioPagamento(id);
-
-        if (meio.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
+        _validator.Existe(meio);
+        _validator.PossuiPermissao(meio);
 
         var dto = new MeioPagamentoCadastroDto(meio!);
 
         return dto;
-    }
-
-    private async Task<MeioPagamento> obterMeioPagamento(int id)
-    {
-        var meio = await _meioPagamentoRepo.GetById(id);
-
-        if (meio == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão não encontrado");
-
-        return meio;
     }
 
     private bool IsCartao(TipoMeioPagamento tipo)
@@ -71,12 +57,9 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Inserir(MeioPagamentoCriacaoDto dto)
     {
+        _validator.NaoEhAdmin();
+        
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_AdminNaoPode,
-                message: "Administradores não possuem meios de pagamento.");
 
         var meio = new MeioPagamento
         {
@@ -91,25 +74,12 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
         if (IsCartao(dto.Tipo))
         {
-            if (dto.Limite is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Limite é obrigatório para cartões de crédito.");
-
-            if (dto.DiaFechamento is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Dia de Fechamento é obrigatório para cartões de crédito.");
-
-            if (dto.DiaVencimento is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Dia de Vencimento é obrigatório para cartões de crédito.");
-
             meio.Limite = dto.Limite;
             meio.DiaFechamento = dto.DiaFechamento;
             meio.DiaVencimento = dto.DiaVencimento;
         }
+
+        _validator.EstaConsistente(meio);
 
         meio = await _meioPagamentoRepo.Insert(meio);
 
@@ -121,58 +91,27 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Alterar(MeioPagamentoCadastroDto dto)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_AdminNaoPode,
-                message: "Administradores não possuem meios de pagamento.");
+        var meio = await _meioPagamentoRepo.GetById(dto.Id);
 
-        var meio = await obterMeioPagamento(dto.Id);
-
-        if (meio.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
-
-        if (IsCartao(meio.Tipo) && !IsCartao(dto.Tipo))
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_CartaoNaoPodeVirarConta,
-                message: "Cartão não pode ter seu tipo alterado para conta.");
-
-        if (!IsCartao(meio.Tipo) && IsCartao(dto.Tipo))
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_ContaNaoPodeVirarCartao,
-                message: "Conta não pode ter seu tipo alterado para cartão.");
-
+        _validator.Existe(meio);
+        _validator.PossuiPermissao(meio);
+        _validator.NaoPodeMudarDeContaPraCartaoOuViceVersa(meio, dto);
 
         meio.Nome = dto.Nome;
         meio.Tipo = dto.Tipo;
         meio.Cor = dto.Cor;
         meio.Ordem = dto.Ordem;
-       
+
         if (IsCartao(meio.Tipo))
         {
-            if (dto.Limite is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Limite é obrigatório para cartões de crédito.");
-
-            if (dto.DiaFechamento is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Dia de Fechamento é obrigatório para cartões de crédito.");
-
-            if (dto.DiaVencimento is null)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Dia de Vencimento é obrigatório para cartões de crédito.");
-
             meio.Limite = dto.Limite;
             meio.DiaFechamento = dto.DiaFechamento;
             meio.DiaVencimento = dto.DiaVencimento;
         }
 
+        _validator.EstaConsistente(meio);
 
         await _meioPagamentoRepo.Update(meio);
 
@@ -184,27 +123,13 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
     public async Task<Result<int>> Excluir(int id)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+        _validator.NaoEhAdmin();
 
-        if (userInfo.IsAdmin)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_AdminNaoPode,
-                message: "Administradores não possuem meios de pagamento.");
+        var meio = await _meioPagamentoRepo.GetById(id);
 
-        var meio = await obterMeioPagamento(id);
-
-        if (meio.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
-
-        var qtdeLancamentos = await _lancamentoRepo.QuantidadePorMeioPagamento(meio.Id);
-
-        if (qtdeLancamentos > 0)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_PossuiLancamentos,
-                message: "Conta/Cartão possui lançamentos.");
-
+        _validator.Existe(meio);
+        _validator.PossuiPermissao(meio);
+        await _validator.NaoPossuiLancamentos(meio);
 
         await _meioPagamentoRepo.Delete(id);
 
