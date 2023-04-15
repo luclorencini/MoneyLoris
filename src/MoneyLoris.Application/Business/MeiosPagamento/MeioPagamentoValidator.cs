@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+﻿using System.Net;
+using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -9,7 +10,7 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.MeiosPagamento;
 public class MeioPagamentoValidator : IMeioPagamentoValidator
 {
-    private readonly UserAuthInfo userInfo;
+    private readonly IAuthenticationManager _authenticationManager;
     private readonly ILancamentoRepository _lancamentoRepo;
 
     public MeioPagamentoValidator(
@@ -17,9 +18,11 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
         ILancamentoRepository lancamentoRepo
     )
     {
-        userInfo = authenticationManager.ObterInfoUsuarioLogado();
+        _authenticationManager = authenticationManager;
         _lancamentoRepo = lancamentoRepo;
     }
+
+    private UserAuthInfo userInfo => _authenticationManager.ObterInfoUsuarioLogado();
 
 
     public void NaoEhAdmin()
