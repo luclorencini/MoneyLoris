@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MoneyLoris.Application.Business.Auth.Interfaces;
-using MoneyLoris.Application.Business.Lancamentos;
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
@@ -59,7 +57,7 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
     public async Task<Result<int>> Inserir(MeioPagamentoCriacaoDto dto)
     {
         _validator.NaoEhAdmin();
-        
+
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         var meio = new MeioPagamento

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Infrastructure.Persistence.Context;

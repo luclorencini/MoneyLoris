@@ -50,17 +50,17 @@ public class CategoriaValidator : ICategoriaValidator
         if (categoria is null)
             throw new BusinessException(
                 code: ErrorCodes.Categoria_CamposObrigatorios,
-                message: "Categoria nao informada");
+                message: "Categoria não informada");
 
         if (categoria.IdUsuario <= 0)
             throw new BusinessException(
                 code: ErrorCodes.Categoria_CamposObrigatorios,
-                message: "Usuário nao informado");
+                message: "Usuário não informado");
 
         if (String.IsNullOrWhiteSpace(categoria.Nome))
             throw new BusinessException(
                 code: ErrorCodes.Categoria_CamposObrigatorios,
-                message: "Nome nao informado");
+                message: "Nome não informado");
     }
 
     public void NaoPodeAlterarTipo(Categoria categoria, TipoLancamento tipoSugerido)
@@ -96,17 +96,17 @@ public class CategoriaValidator : ICategoriaValidator
         if (subcat is null)
             throw new BusinessException(
                 code: ErrorCodes.Subcategoria_CamposObrigatorios,
-                message: "Subcategoria nao informada");
+                message: "Subcategoria não informada");
 
         if (subcat.IdCategoria <= 0)
             throw new BusinessException(
                 code: ErrorCodes.Subcategoria_CamposObrigatorios,
-                message: "Categoria nao informada");
+                message: "Categoria não informada");
 
         if (String.IsNullOrWhiteSpace(subcat.Nome))
             throw new BusinessException(
                 code: ErrorCodes.Subcategoria_CamposObrigatorios,
-                message: "Nome nao informado");
+                message: "Nome não informado");
     }
 
     #endregion

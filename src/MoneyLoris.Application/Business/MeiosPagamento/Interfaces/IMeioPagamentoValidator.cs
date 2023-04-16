@@ -7,6 +7,7 @@ public interface IMeioPagamentoValidator
     void NaoEhAdmin();
     void Existe(MeioPagamento meio);
     void PertenceAoUsuario(MeioPagamento meio);
+    void Ativo(MeioPagamento meio);
     void EstaConsistente(MeioPagamento meio);
 
     void NaoPodeMudarDeContaPraCartaoOuViceVersa(MeioPagamento meio, MeioPagamentoCadastroDto dto);

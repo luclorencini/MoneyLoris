@@ -48,6 +48,7 @@ public static class ErrorCodes
     public static readonly string Lancamento_AdminNaoPode = "LAADNP";
     public static readonly string Lancamento_NaoEncontrado = "LANAEN";
     public static readonly string Lancamento_NaoPertenceAoUsuario = "LANPUS";
+    public static readonly string Lancamento_CamposObrigatorios = "LACOBR";
     public static readonly string Lancamento_TipoDiferenteDaCategoria = "LANTDC";
     public static readonly string Lancamento_OperacaoNaoEhTransferencia = "LAONTR";
     public static readonly string Lancamento_TransferenciaOrigemNaoPodeSerCartao = "LTONCA";

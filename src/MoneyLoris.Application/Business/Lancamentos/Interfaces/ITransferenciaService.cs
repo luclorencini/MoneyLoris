@@ -1,7 +1,7 @@
 ﻿using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Shared;
 
-namespace MoneyLoris.Application.Business.Lancamentos;
+namespace MoneyLoris.Application.Business.Lancamentos.Interfaces;
 public interface ITransferenciaService
 {
     Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto dto);

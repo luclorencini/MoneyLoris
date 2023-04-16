@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using MoneyLoris.Application.Business.Auth.Interfaces;
-using MoneyLoris.Application.Business.Lancamentos;
+using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
@@ -49,6 +49,14 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 message: "Conta/Cartão não pertence ao usuário");
     }
 
+    public void Ativo(MeioPagamento meio)
+    {
+        if (!meio.Ativo)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_Inativo,
+                message: "Conta/Cartão está inativo");
+    }
+
     public void EstaConsistente(MeioPagamento meio)
     {
         if (meio is null)
@@ -87,6 +95,11 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 throw new BusinessException(
                     code: ErrorCodes.MeioPagamento_CamposObrigatorios,
                     message: "Dia de Vencimento é obrigatório para cartões de crédito");
+
+            if (meio.Saldo != 0)
+                throw new BusinessException(
+                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
+                    message: "Saldo de Cartão de Crédito deve ser sempre zero");
         }
     }
 

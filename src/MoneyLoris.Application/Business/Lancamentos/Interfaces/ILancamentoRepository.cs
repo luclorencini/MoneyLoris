@@ -3,7 +3,7 @@ using MoneyLoris.Application.Common.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 
-namespace MoneyLoris.Application.Business.Lancamentos;
+namespace MoneyLoris.Application.Business.Lancamentos.Interfaces;
 public interface ILancamentoRepository : IRepositoryBase<Lancamento>
 {
     Task<ICollection<Lancamento>> PesquisaPaginada(LancamentoFiltroDto filtro, int idUsuario);

@@ -1,0 +1,114 @@
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Business.Lancamentos.Interfaces;
+using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Shared;
+
+namespace MoneyLoris.Application.Business.Lancamentos;
+public class LancamentoValidator : ILancamentoValidator
+{
+    private readonly IAuthenticationManager _authenticationManager;
+
+    public LancamentoValidator(IAuthenticationManager authenticationManager)
+    {
+        _authenticationManager = authenticationManager;
+    }
+
+    private UserAuthInfo userInfo => _authenticationManager.ObterInfoUsuarioLogado();
+
+    public void NaoEhAdmin()
+    {
+        if (userInfo.IsAdmin)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_AdminNaoPode,
+                message: "Administradores não possuem lançamentos");
+    }
+
+    public void Existe(Lancamento lancamento)
+    {
+        if (lancamento == null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_NaoEncontrado,
+                message: "Lançamento não encontrado");
+    }
+
+    public void PertenceAoUsuario(Lancamento lancamento)
+    {
+        if (lancamento.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
+                message: "Lançamento não pertence ao usuário");
+    }
+
+    public void EstaConsistente(Lancamento lancamento)
+    {
+        if (lancamento is null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Lançamento não informado");
+
+        if (lancamento.IdUsuario <= 0)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Usuário nao informado");
+
+        if (lancamento.IdMeioPagamento <= 0)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Meio de Pagamento não informado");
+
+        if (String.IsNullOrWhiteSpace(lancamento.Descricao))
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Descrição não informada");
+
+        //valor
+        if (lancamento.Tipo == TipoLancamento.Receita &&
+            lancamento.Valor <= 0)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Lançamento de receita deve ter valor positivo");
+
+        if (lancamento.Tipo == TipoLancamento.Despesa &&
+            lancamento.Valor >= 0)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Lançamento de despesa deve ter valor negativo");
+
+        //lançamento simples
+        if (lancamento.Operacao == OperacaoLancamento.LancamentoSimples &&
+            lancamento.IdLancamentoTransferencia is not null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Apenas lançamento de transferência possuem lançamento relacionado");
+
+        if (lancamento.Operacao == OperacaoLancamento.LancamentoSimples &&
+            lancamento.TipoTransferencia is not null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Tipo de transferência não se aplica a lançamento simples");
+
+        //transferência
+        if (lancamento.Operacao == OperacaoLancamento.Transferencia &&
+            lancamento.IdLancamentoTransferencia is null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Lançamento que compõe transferência precisa ter lançamento relacionado");
+
+        if (lancamento.Operacao == OperacaoLancamento.Transferencia &&
+            lancamento.TipoTransferencia is null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Lançamento que compõe transferência precisa definir o tipo da transferência");
+    }
+
+    public void NaoPodeTrocarMeioPagamento(Lancamento lancamento, LancamentoCadastroDto dto)
+    {
+        if (lancamento.IdMeioPagamento != dto.IdMeioPagamento)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
+                message: "Não é possível trocar o meio de pagamento na alteração");
+    }
+
+}

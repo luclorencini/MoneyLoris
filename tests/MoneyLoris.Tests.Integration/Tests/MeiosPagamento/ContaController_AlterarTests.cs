@@ -292,7 +292,7 @@ public class ContaController_AlterarTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mp = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
+        var mp = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito, saldo: 0);
 
         //Act
         var dto = new MeioPagamentoCadastroDto
@@ -322,7 +322,7 @@ public class ContaController_AlterarTests : IntegrationTestsBase
         Assert.Equal(dto.Tipo, meio.Tipo);
         Assert.Equal(dto.Cor, meio.Cor);
         Assert.True(meio.Ativo);
-        Assert.Equal(100, meio.Saldo);
+        Assert.Equal(0, meio.Saldo);
         Assert.Equal(dto.Limite, meio.Limite);
         Assert.Equal(dto.DiaFechamento, meio.DiaFechamento);
         Assert.Equal(dto.DiaVencimento, meio.DiaVencimento);

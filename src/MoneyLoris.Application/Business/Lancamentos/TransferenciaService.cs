@@ -1,5 +1,6 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Entities;

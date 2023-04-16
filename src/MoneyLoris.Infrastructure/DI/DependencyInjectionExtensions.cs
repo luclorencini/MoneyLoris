@@ -5,6 +5,7 @@ using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
+using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Business.Usuarios;
@@ -50,8 +51,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMeioPagamentoRepository, MeioPagamentoRepository>();
 
         services.AddScoped<ILancamentoService, LancamentoService>();
-        services.AddScoped<ITransferenciaService, TransferenciaService>();
+        services.AddScoped<ILancamentoValidator, LancamentoValidator>();
         services.AddScoped<ILancamentoRepository, LancamentoRepository>();
+
+        services.AddScoped<ITransferenciaService, TransferenciaService>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();
         services.AddScoped<IReportLancamentosCategoriaRepository, ReportLancamentosCategoriaRepository>();
