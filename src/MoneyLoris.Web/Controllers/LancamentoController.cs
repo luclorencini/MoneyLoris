@@ -9,10 +9,15 @@ namespace MoneyLoris.Web.Controllers;
 public class LancamentoController : BaseController
 {
     private readonly ILancamentoService _lancamentoService;
+    private readonly ILancamentoConsultaService _consultaService;
 
-    public LancamentoController(ILancamentoService lancamentoService)
+    public LancamentoController(
+        ILancamentoService lancamentoService,
+        ILancamentoConsultaService consultaService
+    )
     {
         _lancamentoService = lancamentoService;
+        _consultaService = consultaService;
     }
 
     public IActionResult Index()
@@ -23,14 +28,14 @@ public class LancamentoController : BaseController
     [HttpPost()]
     public async Task<IActionResult> Pesquisar([FromBody] LancamentoFiltroDto filtro)
     {
-        var ret = await _lancamentoService.Pesquisar(filtro);
+        var ret = await _consultaService.Pesquisar(filtro);
         return Ok(ret);
     }
 
     [HttpPost()]
     public async Task<IActionResult> Balanco([FromBody] LancamentoFiltroDto filtro)
     {
-        var ret = await _lancamentoService.ObterBalanco(filtro);
+        var ret = await _consultaService.ObterBalanco(filtro);
         return Ok(ret);
     }
 
@@ -40,7 +45,7 @@ public class LancamentoController : BaseController
     [Route("/lancamento/sugestoes/receitas")]
     public async Task<IActionResult> SugestoesReceitas([FromBody] string termoBusca)
     {
-        var ret = await _lancamentoService.ObterSugestoesReceitas(termoBusca);
+        var ret = await _consultaService.ObterSugestoesReceitas(termoBusca);
         return Ok(ret);
     }
 
@@ -48,9 +53,13 @@ public class LancamentoController : BaseController
     [Route("/lancamento/sugestoes/despesas")]
     public async Task<IActionResult> SugestoesDespesas([FromBody] string termoBusca)
     {
-        var ret = await _lancamentoService.ObterSugestoesDespesas(termoBusca);
+        var ret = await _consultaService.ObterSugestoesDespesas(termoBusca);
         return Ok(ret);
     }
+
+    #endregion
+
+    #region Cadastro
 
     [HttpPost()]
     [Route("/lancamento/lancar/receita")]
@@ -67,10 +76,6 @@ public class LancamentoController : BaseController
         var ret = await _lancamentoService.InserirDespesa(lancamento);
         return Ok(ret);
     }
-
-    #endregion
-
-    #region Cadastro (alterar/excluir)
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Obter(int id)
