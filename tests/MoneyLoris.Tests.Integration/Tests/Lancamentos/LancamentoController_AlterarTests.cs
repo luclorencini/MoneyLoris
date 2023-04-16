@@ -298,18 +298,18 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
     #endregion
 
     [Fact]
-    public async Task Alterar_DadosCorretos_AlteraOQueForPermitido()
+    public async Task Alterar_Despesa_Conta_ValorNaoMudou_DadosAlterados_SaldoSeMantem()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var cat = await DbSeeder.InserirCategoria();
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 200);
-        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -50);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 200, tipo: TipoMeioPagamento.ContaCorrente);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
-        var catB = await DbSeeder.InserirCategoria(nome: "Diversos");
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
         var subB = await DbSeeder.InserirSubcategoria(catB.Id);
 
         //Act
@@ -322,7 +322,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
             IdCategoria = catB.Id,
             IdSubcategoria = subB.Id,
             IdMeioPagamento = mei.Id,
-            Valor = 10
+            Valor = 50
         };
 
         var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
@@ -346,7 +346,8 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
         Assert.True(ldb.Realizado);
         Assert.Null(ldb.IdLancamentoTransferencia);
-        Assert.Equal(-50, ldb.Valor);  //valor ainda não pode mudar
+        Assert.True(ldb.Valor < 0);  //lançamento de Despesa é sempre negativo
+        Assert.Equal(-50, ldb.Valor);
 
         var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
 
@@ -355,4 +356,357 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         Assert.Equal(200, conta.Saldo);  //se o valor nao muda, o saldo tambem nao
     }
 
+    [Fact]
+    public async Task Alterar_Despesa_Conta_ValorMudouPraMenos_DadosAlterados_SaldoAumenta()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 400, tipo: TipoMeioPagamento.Poupanca);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -90, tipo: TipoLancamento.Despesa);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Gastos",
+            Tipo = TipoLancamento.Despesa,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 70
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Despesa, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor < 0);  //lançamento de Despesa é sempre negativo
+        Assert.Equal(-70, ldb.Valor);  //valor mudou
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(420, conta.Saldo);  //se o valor muda, o saldo atualiza
+    }
+
+    [Fact]
+    public async Task Alterar_Despesa_Conta_ValorMudouPraMais_DadosAlterados_SaldoDiminui()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 400, tipo: TipoMeioPagamento.CartaoBeneficio);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -90, tipo: TipoLancamento.Despesa);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Gastos",
+            Tipo = TipoLancamento.Despesa,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 180
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Despesa, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor < 0);  //lançamento de Despesa é sempre negativo
+        Assert.Equal(-180, ldb.Valor);  //valor mudou
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(310, conta.Saldo);  //se o valor muda, o saldo atualiza
+    }
+
+    [Fact]
+    public async Task Alterar_Despesa_CartaoCredito_ValorMudouPraMenos_DadosAlterados_SaldoDeCartaoEhSempreZero()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Gastos",
+            Tipo = TipoLancamento.Despesa,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 60
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Despesa, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor < 0);  //lançamento de Despesa é sempre negativo
+        Assert.Equal(-60, ldb.Valor);  //valor mudou
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(0, conta.Saldo);  //saldo de cartão de crédito é sempre zero
+    }
+
+    [Fact]
+    public async Task Alterar_Receita_Conta_ValorNaoMudou_DadosAlterados_SaldoSeMantem()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 300, tipo: TipoMeioPagamento.Carteira);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 40, tipo: TipoLancamento.Receita);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Rendimentos",
+            Tipo = TipoLancamento.Receita,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 40
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Receita, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor > 0);  //lançamento de Receita é sempre positivo
+        Assert.Equal(40, ldb.Valor);
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(300, conta.Saldo);  //se o valor nao muda, o saldo tambem nao
+    }
+
+    [Fact]
+    public async Task Alterar_Receita_Conta_ValorMudouPraMais_DadosAlterados_SaldoAumenta()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 500, tipo: TipoMeioPagamento.ContaPagamento);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 110, tipo: TipoLancamento.Receita);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Rendimentos",
+            Tipo = TipoLancamento.Receita,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 150
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Receita, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor > 0);  //lançamento de Receita é sempre positivo
+        Assert.Equal(150, ldb.Valor);
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(540, conta.Saldo);  //se o valor muda, o saldo atualiza
+    }
+
+    [Fact]
+    public async Task Alterar_Receita_Conta_ValorMudouPraMenos_DadosAlterados_SaldoDiminui()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 500, tipo: TipoMeioPagamento.ContaPagamento);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 110, tipo: TipoLancamento.Receita);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Rendimentos",
+            Tipo = TipoLancamento.Receita,
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 80
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var ldb = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, ldb!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, ldb.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Receita, ldb.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, ldb.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, ldb!.Data);
+        Assert.Equal(dto.Descricao, ldb.Descricao);
+        Assert.Equal(dto.IdCategoria, ldb.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, ldb.IdSubcategoria);
+        Assert.True(ldb.Realizado);
+        Assert.Null(ldb.IdLancamentoTransferencia);
+        Assert.True(ldb.Valor > 0);  //lançamento de Receita é sempre positivo
+        Assert.Equal(80, ldb.Valor);
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(470, conta.Saldo);  //se o valor muda, o saldo atualiza
+    }    
 }

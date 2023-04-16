@@ -304,9 +304,43 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
 
-        //TODO - futuro: permitir ajustar o novo valor do lançamento, e recalcula o saldo baseado na diferença
+        //SALDO: se o valor do lançamento mudar, recalcula o saldo baseado na diferença (exceto para cartões de crédito)
 
-        await _lancamentoRepo.Update(lancamento);
+        var valorAtual = lancamento.Valor;
+        var novoValor = ValorNegativoSeDespesa(lancamento.Tipo, dto.Valor);
+        var diferenca = valorAtual - novoValor;
+
+        var atualizarSaldo = false;
+
+        if (diferenca != 0)
+        {
+            lancamento.Valor = novoValor;
+
+            if (meio.Tipo != TipoMeioPagamento.CartaoCredito)
+            {
+                meio.Saldo -= diferenca;
+                atualizarSaldo = true;
+            }
+        }
+
+        try
+        {
+            await _lancamentoRepo.BeginTransaction();
+
+            await _lancamentoRepo.Update(lancamento);
+
+            if (atualizarSaldo)
+            {
+                await _meioPagamentoRepo.Update(meio);
+            }
+
+            await _lancamentoRepo.CommitTransaction();
+        }
+        catch (Exception)
+        {
+            await _lancamentoRepo.RollbackTransaction();
+            throw;
+        }
 
         return (lancamento.Id,
             $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
