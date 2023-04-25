@@ -19,7 +19,7 @@ public static class IntegrationTestExtensions
         return retorno.Value!;
     }
 
-    public static async Task AssertResultNotOk(this HttpResponseMessage response, string errorCode)
+    public static async Task<Result> AssertResultNotOk(this HttpResponseMessage response, string errorCode)
     {
         response.EnsureSuccessStatusCode();
 
@@ -31,6 +31,8 @@ public static class IntegrationTestExtensions
         Assert.False(retorno!.IsOk(), "retornou Ok = True, deveria retornar False");
 
         Assert.Equal(errorCode, retorno.ErrorCode);
+
+        return retorno;
     }
 
 

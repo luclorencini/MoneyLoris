@@ -56,6 +56,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ILancamentoRepository, LancamentoRepository>();
 
         services.AddScoped<ITransferenciaService, TransferenciaService>();
+        services.AddScoped<ITransferenciaValdator, TransferenciaValdator>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();
         services.AddScoped<IReportLancamentosCategoriaRepository, ReportLancamentosCategoriaRepository>();

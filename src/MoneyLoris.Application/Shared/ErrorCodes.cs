@@ -51,8 +51,12 @@ public static class ErrorCodes
     public static readonly string Lancamento_CamposObrigatorios = "LACOBR";
     public static readonly string Lancamento_TipoDiferenteDaCategoria = "LANTDC";
     public static readonly string Lancamento_OperacaoNaoEhTransferencia = "LAONTR";
-    public static readonly string Lancamento_TransferenciaOrigemNaoPodeSerCartao = "LTONCA";
-    public static readonly string Lancamento_TransferenciaEntreContasDestinoNaoPodeSerCartao = "LTCDCA";
-    public static readonly string Lancamento_PagamentoFaturaDestinoNaoPodeSerConta = "LPFDCO";
+    #endregion
+
+    #region Transferencia
+    public static readonly string Transferencia_AdminNaoPode = "TRADNP";
+    public static readonly string Transferencia_MeioOrigemNaoPodeSerCartao = "TRONCA";
+    public static readonly string Transferencia_EntreContasDestinoNaoPodeSerCartao = "TRCDCA";
+    public static readonly string Transferencia_PagamentoFaturaDestinoNaoPodeSerConta = "TPFDCO";
     #endregion
 }

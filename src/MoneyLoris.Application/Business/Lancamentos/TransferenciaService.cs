@@ -11,15 +11,18 @@ using MoneyLoris.Application.Utils;
 namespace MoneyLoris.Application.Business.Lancamentos;
 public class TransferenciaService : ServiceBase, ITransferenciaService
 {
+    private readonly ITransferenciaValdator _transferenciaValdator;
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public TransferenciaService(
+        ITransferenciaValdator transferenciaValdator,
         ILancamentoRepository lancamentoRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
         IAuthenticationManager authenticationManager)
     {
+        _transferenciaValdator = transferenciaValdator;
         _lancamentoRepo = lancamentoRepo;
         _meioPagamentoRepo = meioPagamentoRepo;
         _authenticationManager = authenticationManager;
@@ -37,6 +40,8 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
     private async Task<Result<int>> InserirTransferenciaTransactional(TransferenciaInsertDto dto, TipoTransferencia tipoTransferencia)
     {
+        _transferenciaValdator.NaoEhAdmin();
+
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         // validações meio origem
@@ -55,7 +60,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
         if (meioOrigem.Tipo == TipoMeioPagamento.CartaoCredito)
             throw new BusinessException(
-                code: ErrorCodes.Lancamento_TransferenciaOrigemNaoPodeSerCartao,
+                code: ErrorCodes.Transferencia_MeioOrigemNaoPodeSerCartao,
                 message: "Origem da transferência não pode ser Cartão de Crédito.");
 
         // validações meio destino
@@ -74,12 +79,12 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
         if (tipoTransferencia == TipoTransferencia.TransferenciaEntreContas && meioDestino.Tipo == TipoMeioPagamento.CartaoCredito)
             throw new BusinessException(
-                code: ErrorCodes.Lancamento_TransferenciaEntreContasDestinoNaoPodeSerCartao,
+                code: ErrorCodes.Transferencia_EntreContasDestinoNaoPodeSerCartao,
                 message: "Destino da transferência entre contas não pode ser Cartão de Crédito.");
 
         if (tipoTransferencia == TipoTransferencia.PagamentoFatura && meioDestino.Tipo != TipoMeioPagamento.CartaoCredito)
             throw new BusinessException(
-                code: ErrorCodes.Lancamento_PagamentoFaturaDestinoNaoPodeSerConta,
+                code: ErrorCodes.Transferencia_PagamentoFaturaDestinoNaoPodeSerConta,
                 message: "Destino do pagamento de fatura não pode ser uma Conta.");
 
         // setup
