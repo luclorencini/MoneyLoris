@@ -23,6 +23,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
         var mei = await DbSeeder.InserirMeioPagamento();
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id);
 
+        //Act
         var response = await HttpClient.PostAsJsonAsync("/lancamento/excluir", lanc.Id);
 
         //Assert

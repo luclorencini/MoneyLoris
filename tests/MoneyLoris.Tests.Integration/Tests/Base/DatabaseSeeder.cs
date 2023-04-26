@@ -100,6 +100,7 @@ public class DatabaseSeeder
         return ent.Entity;
     }
 
+
     public async Task<Lancamento> InserirLancamentoSimples(
         int idMeioPagamento,
         int idCategoria,
@@ -109,6 +110,57 @@ public class DatabaseSeeder
         TipoLancamento tipo = TipoLancamento.Despesa,
         string descricao = "Compras",
         DateTime? data = null
+    )
+    {
+        return await _inserirLancamento(
+            OperacaoLancamento.LancamentoSimples,
+            idMeioPagamento,
+            idCategoria,
+            idSubcategoria,
+            valor,
+            idUsuario,
+            tipo,
+            descricao,
+            data,
+            tipoTransferencia: null
+        );
+    }
+
+    public async Task<Lancamento> InserirLancamentoTransferencia(
+        int idMeioPagamento,
+        TipoTransferencia tipoTransferencia = TipoTransferencia.TransferenciaEntreContas,
+        decimal valor = 100,
+        int idUsuario = TestConstants.USUARIO_COMUM_ID,
+        TipoLancamento tipo = TipoLancamento.Despesa,
+        string descricao = "Compras",
+        DateTime? data = null
+    )
+    {
+        return await _inserirLancamento(
+            OperacaoLancamento.Transferencia,
+            idMeioPagamento,
+            idCategoria: null,
+            idSubcategoria: null,
+            valor,
+            idUsuario,
+            tipo,
+            descricao,
+            data,
+            tipoTransferencia
+        );
+    }
+
+    private async Task<Lancamento> _inserirLancamento(
+        OperacaoLancamento operacao,
+        int idMeioPagamento,
+        int? idCategoria,
+        int? idSubcategoria,
+        decimal valor,
+        int idUsuario,
+        TipoLancamento tipo,
+        string descricao,
+        DateTime? data,
+        TipoTransferencia? tipoTransferencia
     )
     {
         var ent = await Context.Lancamentos.AddAsync(
@@ -122,12 +174,21 @@ public class DatabaseSeeder
                 Descricao = descricao,
                 Valor = valor,
                 Data = (data.HasValue ? data.Value : SystemTime.Today()),
-                Operacao = OperacaoLancamento.LancamentoSimples,
+                Operacao = operacao,
                 Realizado = true,
+                TipoTransferencia = tipoTransferencia
             });
 
         await Context.SaveChangesAsync();
 
         return ent.Entity;
+    }
+
+    public async Task AssociarLancamentosTransferencia(Lancamento origem, Lancamento destino)
+    {
+        origem.IdLancamentoTransferencia = destino.Id;
+        destino.IdLancamentoTransferencia = origem.Id;
+
+        await Context.SaveChangesAsync();
     }
 }

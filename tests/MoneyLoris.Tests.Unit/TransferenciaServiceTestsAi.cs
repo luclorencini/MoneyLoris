@@ -22,7 +22,12 @@ public class TransferenciaServiceTestsAi
         _lancamentoRepoMock = new Mock<ILancamentoRepository>();
         _meioPagamentoRepoMock = new Mock<IMeioPagamentoRepository>();
         _authenticationManagerMock = new Mock<IAuthenticationManager>();
-        _transferenciaService = new TransferenciaService(_lancamentoRepoMock.Object, _meioPagamentoRepoMock.Object, _authenticationManagerMock.Object);
+        _transferenciaService = new TransferenciaService(
+            new TransferenciaValdator(_authenticationManagerMock.Object),
+                _lancamentoRepoMock.Object, 
+                _meioPagamentoRepoMock.Object, 
+                _authenticationManagerMock.Object
+            );
     }
 
     [Fact]

@@ -207,6 +207,8 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
     public async Task<Result<int>> Excluir(int idLancamentoOrigem)
     {
+        _transferenciaValdator.NaoEhAdmin();
+
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         // validações lançamento origem
@@ -254,12 +256,12 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
         if (meioOrigem == null)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão não encontrado");
+                message: "Conta ou Cartão origem não encontrado");
 
         if (meioOrigem.IdUsuario != userInfo.Id)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
+                message: "Conta/Cartão origem não pertence ao usuário.");
 
         // validações meio destino
 
@@ -268,12 +270,12 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
         if (meioDestino == null)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão não encontrado");
+                message: "Conta ou Cartão destino não encontrado");
 
         if (meioDestino.IdUsuario != userInfo.Id)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão não pertence ao usuário.");
+                message: "Conta/Cartão destino não pertence ao usuário.");
 
 
         // transação 
