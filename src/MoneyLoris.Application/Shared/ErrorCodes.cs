@@ -34,7 +34,11 @@ public static class ErrorCodes
     #region Categoria
     public static readonly string MeioPagamento_AdminNaoPode = "MPADNP";
     public static readonly string MeioPagamento_NaoEncontrado = "MPNAEN";
+    public static readonly string MeioPagamento_OrigemNaoEncontrado = "MPONEN";
+    public static readonly string MeioPagamento_DestinoNaoEncontrado = "MPDNEN";
     public static readonly string MeioPagamento_NaoPertenceAoUsuario = "MPNPUS";
+    public static readonly string MeioPagamento_OrigemNaoPertenceAoUsuario = "MPONPU";
+    public static readonly string MeioPagamento_DestinoNaoPertenceAoUsuario = "MPDNPU";
     public static readonly string MeioPagamento_CamposObrigatorios = "MPACOB";
     public static readonly string MeioPagamento_Inativo = "MPINTV";
     public static readonly string MeioPagamento_CartaoNaoPodeVirarConta = "MPCANC";
@@ -47,16 +51,22 @@ public static class ErrorCodes
     #region Lançamento
     public static readonly string Lancamento_AdminNaoPode = "LAADNP";
     public static readonly string Lancamento_NaoEncontrado = "LANAEN";
+    public static readonly string Lancamento_OrigemNaoEncontrado = "LAONAE";
+    public static readonly string Lancamento_DestinoNaoEncontrado = "LAONAE";
     public static readonly string Lancamento_NaoPertenceAoUsuario = "LANPUS";
+    public static readonly string Lancamento_OrigemNaoPertenceAoUsuario = "LAONPU";
+    public static readonly string Lancamento_DestinoNaoPertenceAoUsuario = "LADNPU";
     public static readonly string Lancamento_CamposObrigatorios = "LACOBR";
     public static readonly string Lancamento_TipoDiferenteDaCategoria = "LANTDC";
-    public static readonly string Lancamento_OperacaoNaoEhTransferencia = "LAONTR";
+    
     #endregion
 
     #region Transferencia
     public static readonly string Transferencia_AdminNaoPode = "TRADNP";
     public static readonly string Transferencia_MeioOrigemNaoPodeSerCartao = "TRONCA";
-    public static readonly string Transferencia_EntreContasDestinoNaoPodeSerCartao = "TRCDCA";
-    public static readonly string Transferencia_PagamentoFaturaDestinoNaoPodeSerConta = "TPFDCO";
+    public static readonly string Transferencia_EntreContasDestinoNaoPodeSerCartao = "TRCDNC";
+    public static readonly string Transferencia_PagamentoFaturaDestinoTemQueSerCartao = "TPFDTC";
+    public static readonly string Transferencia_OperacaoLancamentoOrigemNaoEhTransferencia = "TOLONT";
+    public static readonly string Transferencia_OperacaoLancamentoDestinoNaoEhTransferencia = "TOLDNT";
     #endregion
 }

@@ -23,7 +23,7 @@ public class TransferenciaServiceTestsAi
         _meioPagamentoRepoMock = new Mock<IMeioPagamentoRepository>();
         _authenticationManagerMock = new Mock<IAuthenticationManager>();
         _transferenciaService = new TransferenciaService(
-            new TransferenciaValdator(_authenticationManagerMock.Object),
+            new TransferenciaValidator(_authenticationManagerMock.Object),
                 _lancamentoRepoMock.Object, 
                 _meioPagamentoRepoMock.Object, 
                 _authenticationManagerMock.Object

@@ -11,17 +11,23 @@ using MoneyLoris.Application.Utils;
 namespace MoneyLoris.Application.Business.Lancamentos;
 public class TransferenciaService : ServiceBase, ITransferenciaService
 {
-    private readonly ITransferenciaValdator _transferenciaValdator;
+    private readonly IMeioPagamentoValidator _meioPagamentoValidator;
+    private readonly ILancamentoValidator _lancamentoValidator;
+    private readonly ITransferenciaValidator _transferenciaValdator;
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public TransferenciaService(
-        ITransferenciaValdator transferenciaValdator,
+        IMeioPagamentoValidator meioPagamentoValidator,
+        ILancamentoValidator lancamentoValidator,
+        ITransferenciaValidator transferenciaValdator,
         ILancamentoRepository lancamentoRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
         IAuthenticationManager authenticationManager)
     {
+        _lancamentoValidator = lancamentoValidator;
+        _meioPagamentoValidator = meioPagamentoValidator;
         _transferenciaValdator = transferenciaValdator;
         _lancamentoRepo = lancamentoRepo;
         _meioPagamentoRepo = meioPagamentoRepo;
@@ -44,48 +50,18 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        // validações meio origem
-
         var meioOrigem = await _meioPagamentoRepo.GetById(dto.IdMeioPagamentoOrigem);
 
-        if (meioOrigem == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão origem não encontrado");
-
-        if (meioOrigem.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão origem não pertence ao usuário.");
-
-        if (meioOrigem.Tipo == TipoMeioPagamento.CartaoCredito)
-            throw new BusinessException(
-                code: ErrorCodes.Transferencia_MeioOrigemNaoPodeSerCartao,
-                message: "Origem da transferência não pode ser Cartão de Crédito.");
-
-        // validações meio destino
+        _meioPagamentoValidator.OrigemExiste(meioOrigem);
+        _meioPagamentoValidator.OrigemPertenceAoUsuario(meioOrigem);
+        _transferenciaValdator.MeioOrigemNaoPodeSerCartao(meioOrigem);
 
         var meioDestino = await _meioPagamentoRepo.GetById(dto.IdMeioPagamentoDestino);
 
-        if (meioDestino == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão destino não encontrado");
-
-        if (meioDestino.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão destino não pertence ao usuário.");
-
-        if (tipoTransferencia == TipoTransferencia.TransferenciaEntreContas && meioDestino.Tipo == TipoMeioPagamento.CartaoCredito)
-            throw new BusinessException(
-                code: ErrorCodes.Transferencia_EntreContasDestinoNaoPodeSerCartao,
-                message: "Destino da transferência entre contas não pode ser Cartão de Crédito.");
-
-        if (tipoTransferencia == TipoTransferencia.PagamentoFatura && meioDestino.Tipo != TipoMeioPagamento.CartaoCredito)
-            throw new BusinessException(
-                code: ErrorCodes.Transferencia_PagamentoFaturaDestinoNaoPodeSerConta,
-                message: "Destino do pagamento de fatura não pode ser uma Conta.");
+        _meioPagamentoValidator.DestinoExiste(meioDestino);
+        _meioPagamentoValidator.DestinoPertenceAoUsuario(meioDestino);
+        _transferenciaValdator.SeTransferenciaEntreContasMeioDestinoNaoPodeSerCartao(tipoTransferencia, meioDestino);
+        _transferenciaValdator.SePagamentoFaturaMeioDestinoTemQueSerCartao(tipoTransferencia, meioDestino);
 
         // setup
 
@@ -209,73 +185,27 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
     {
         _transferenciaValdator.NaoEhAdmin();
 
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-
-        // validações lançamento origem
-
         var lancamentoOrigem = await _lancamentoRepo.GetById(idLancamentoOrigem);
 
-        if (lancamentoOrigem == null)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoEncontrado,
-                message: "Lançamento origem não encontrado");
-
-        if (lancamentoOrigem.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
-                message: "Lançamento origem não pertence ao usuário");
-
-        if (lancamentoOrigem.Operacao != OperacaoLancamento.Transferencia)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_OperacaoNaoEhTransferencia,
-                message: "Lançamento origem não é uma transferência / pagamento de fatura");
-
-        // validações lançamento destino
+        _lancamentoValidator.OrigemExiste(lancamentoOrigem);
+        _lancamentoValidator.OrigemPertenceAoUsuario(lancamentoOrigem);
+        _transferenciaValdator.OperacaoLancamentoOrigemTemQueSerTransferencia(lancamentoOrigem);
 
         var lancamentoDestino = await _lancamentoRepo.GetById(lancamentoOrigem.IdLancamentoTransferencia!.Value);
 
-        if (lancamentoDestino == null)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoEncontrado,
-                message: "Lançamento destino não encontrado");
-
-        if (lancamentoDestino.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
-                message: "Lançamento destino não pertence ao usuário");
-
-        if (lancamentoDestino.Operacao != OperacaoLancamento.Transferencia)
-            throw new BusinessException(
-                code: ErrorCodes.Lancamento_OperacaoNaoEhTransferencia,
-                message: "Lançamento destino não é uma transferência / pagamento de fatura");
-
-        // validações meio origem
+        _lancamentoValidator.DestinoExiste(lancamentoDestino);
+        _lancamentoValidator.DestinoPertenceAoUsuario(lancamentoDestino);
+        _transferenciaValdator.OperacaoLancamentoDestinoTemQueSerTransferencia(lancamentoDestino);
 
         var meioOrigem = await _meioPagamentoRepo.GetById(lancamentoOrigem.IdMeioPagamento);
 
-        if (meioOrigem == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão origem não encontrado");
-
-        if (meioOrigem.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão origem não pertence ao usuário.");
-
-        // validações meio destino
+        _meioPagamentoValidator.OrigemExiste(meioOrigem);
+        _meioPagamentoValidator.OrigemPertenceAoUsuario(meioOrigem);
 
         var meioDestino = await _meioPagamentoRepo.GetById(lancamentoDestino.IdMeioPagamento);
 
-        if (meioDestino == null)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoEncontrado,
-                message: "Conta ou Cartão destino não encontrado");
-
-        if (meioDestino.IdUsuario != userInfo.Id)
-            throw new BusinessException(
-                code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
-                message: "Conta/Cartão destino não pertence ao usuário.");
+        _meioPagamentoValidator.DestinoExiste(meioDestino);
+        _meioPagamentoValidator.DestinoPertenceAoUsuario(meioDestino);
 
 
         // transação 
@@ -297,7 +227,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
             await _lancamentoRepo.CommitTransaction();
 
-            return (idLancamentoOrigem, 
+            return (idLancamentoOrigem,
                 $"{lancamentoOrigem.TipoTransferencia!.Value.ObterDescricao()} excluída com sucesso.");
         }
         catch (Exception)

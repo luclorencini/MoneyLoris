@@ -33,6 +33,23 @@ public class LancamentoValidator : ILancamentoValidator
                 message: "Lançamento não encontrado");
     }
 
+    public void OrigemExiste(Lancamento lancamentoOrigem)
+    {
+        if (lancamentoOrigem == null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_OrigemNaoEncontrado,
+                message: "Lançamento origem não encontrado");
+    }
+
+    public void DestinoExiste(Lancamento lancamentoDestino)
+    {
+        if (lancamentoDestino == null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_DestinoNaoEncontrado,
+                message: "Lançamento destino não encontrado");
+    }
+
+
     public void PertenceAoUsuario(Lancamento lancamento)
     {
         if (lancamento.IdUsuario != userInfo.Id)
@@ -40,6 +57,23 @@ public class LancamentoValidator : ILancamentoValidator
                 code: ErrorCodes.Lancamento_NaoPertenceAoUsuario,
                 message: "Lançamento não pertence ao usuário");
     }
+
+    public void OrigemPertenceAoUsuario(Lancamento lancamentoOrigem)
+    {
+        if (lancamentoOrigem.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_OrigemNaoPertenceAoUsuario,
+                message: "Lançamento origem não pertence ao usuário");
+    }
+
+    public void DestinoPertenceAoUsuario(Lancamento lancamentoDestino)
+    {
+        if (lancamentoDestino.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_DestinoNaoPertenceAoUsuario,
+                message: "Lançamento destino não pertence ao usuário");
+    }
+
 
     public void EstaConsistente(Lancamento lancamento)
     {

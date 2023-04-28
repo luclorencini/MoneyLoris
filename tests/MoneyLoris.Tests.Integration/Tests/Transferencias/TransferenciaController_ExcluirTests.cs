@@ -45,9 +45,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Lancamento_NaoEncontrado);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.Lancamento_OrigemNaoEncontrado);
     }
 
     [Fact]
@@ -70,9 +68,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Lancamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.Lancamento_OrigemNaoPertenceAoUsuario);
     }
 
     [Fact]
@@ -96,9 +92,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Lancamento_OperacaoNaoEhTransferencia);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.Transferencia_OperacaoLancamentoOrigemNaoEhTransferencia);
     }
 
     //[Fact]
@@ -126,9 +120,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Lancamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("destino", ret!.Message);
+            ErrorCodes.Lancamento_DestinoNaoPertenceAoUsuario);
     }
 
     [Fact]
@@ -152,9 +144,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Lancamento_OperacaoNaoEhTransferencia);
-
-        Assert.Contains("destino", ret!.Message);
+            ErrorCodes.Transferencia_OperacaoLancamentoDestinoNaoEhTransferencia);
     }
 
     //[Fact]
@@ -182,9 +172,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.MeioPagamento_OrigemNaoPertenceAoUsuario);
     }
 
     //[Fact]
@@ -212,9 +200,7 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("destino", ret!.Message);
+            ErrorCodes.MeioPagamento_DestinoNaoPertenceAoUsuario);
     }
 
     #endregion

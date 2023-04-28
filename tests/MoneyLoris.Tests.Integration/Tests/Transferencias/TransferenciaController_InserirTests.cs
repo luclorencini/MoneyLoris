@@ -60,9 +60,7 @@ public class TransferenciaController_InserirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoEncontrado);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.MeioPagamento_OrigemNaoEncontrado);
     }
 
     [Fact]
@@ -88,9 +86,7 @@ public class TransferenciaController_InserirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("origem", ret!.Message);
+            ErrorCodes.MeioPagamento_OrigemNaoPertenceAoUsuario);
     }
 
     [Fact]
@@ -141,9 +137,7 @@ public class TransferenciaController_InserirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoEncontrado);
-
-        Assert.Contains("destino", ret!.Message);
+            ErrorCodes.MeioPagamento_DestinoNaoEncontrado);
     }
 
     [Fact]
@@ -169,9 +163,7 @@ public class TransferenciaController_InserirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.MeioPagamento_NaoPertenceAoUsuario);
-
-        Assert.Contains("destino", ret!.Message);
+            ErrorCodes.MeioPagamento_DestinoNaoPertenceAoUsuario);
     }
 
     [Fact]
@@ -223,7 +215,7 @@ public class TransferenciaController_InserirTests : IntegrationTestsBase
 
         //Assert
         var ret = await response.AssertResultNotOk(
-            ErrorCodes.Transferencia_PagamentoFaturaDestinoNaoPodeSerConta);
+            ErrorCodes.Transferencia_PagamentoFaturaDestinoTemQueSerCartao);
     }
 
     #endregion

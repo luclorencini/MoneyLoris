@@ -1,5 +1,4 @@
-﻿using System.Net;
-using MoneyLoris.Application.Business.Auth.Interfaces;
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -33,6 +32,7 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 message: "Administradores não possuem meios de pagamento");
     }
 
+
     public void Existe(MeioPagamento meio)
     {
         if (meio == null)
@@ -41,6 +41,23 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 message: "Conta ou Cartão não encontrado");
     }
 
+    public void OrigemExiste(MeioPagamento meioOrigem)
+    {
+        if (meioOrigem == null)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_OrigemNaoEncontrado,
+                message: "Conta ou Cartão origem não encontrado");
+    }
+
+    public void DestinoExiste(MeioPagamento meioDestino)
+    {
+        if (meioDestino == null)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_DestinoNaoEncontrado,
+                message: "Conta ou Cartão destino não encontrado");
+    }
+
+
     public void PertenceAoUsuario(MeioPagamento meio)
     {
         if (meio.IdUsuario != userInfo.Id)
@@ -48,6 +65,23 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 code: ErrorCodes.MeioPagamento_NaoPertenceAoUsuario,
                 message: "Conta/Cartão não pertence ao usuário");
     }
+
+    public void OrigemPertenceAoUsuario(MeioPagamento meioOrigem)
+    {
+        if (meioOrigem.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_OrigemNaoPertenceAoUsuario,
+                message: "Conta/Cartão origem não pertence ao usuário.");
+    }
+
+    public void DestinoPertenceAoUsuario(MeioPagamento meioDestino)
+    {
+        if (meioDestino.IdUsuario != userInfo.Id)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_DestinoNaoPertenceAoUsuario,
+                message: "Conta/Cartão destino não pertence ao usuário.");
+    }
+
 
     public void Ativo(MeioPagamento meio)
     {
