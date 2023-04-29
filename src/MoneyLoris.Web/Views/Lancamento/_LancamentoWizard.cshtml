@@ -52,6 +52,11 @@
                                     <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
                                 </div>
 
+                                <div class="col col-12 mt-3" v-if="isCartaoCredito">
+                                    <h5 class="my-2">Quantas parcelas?</h5>
+                                    <input class="form-control form-control-lg fs-4 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
+                                </div>
+
                                 <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso3()">
                                         <span>Próximo</span>
@@ -169,7 +174,17 @@
                             </div>
                             <div>
                                 <div class="fs-4 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
-                                <div class="fs-6 fst-italic lh-1">{{meioPagamentoSelecionado.tipoDescricao}}</div>
+
+                                <div class="fs-6 fst-italic lh-1 d-flex">
+                                    <div>{{meioPagamentoSelecionado.tipoDescricao}}</div>
+                                    <div class="" v-if="isCartaoCredito">
+                                        <span class="mx-1">-</span>
+                                        <span v-if="dados.parcelas == 1">Á vista</span>
+                                        <span class="fw-bold" v-else>{{dados.parcelas}} vezes</span>
+                                    </div>
+                                </div>
+
+                                
                             </div>
                         </div>
 
@@ -216,6 +231,10 @@
             }),
 
             computed: {
+
+                isCartaoCredito(){
+                    return (this.meioPagamentoSelecionado.tipo == 3);
+                },
 
                 labelTipo() {
                     return (this.tipo == 1 ? "Receita" : "Despesa");
@@ -304,6 +323,11 @@
                 avancarPasso2() {
                     this.passo = 2;
                     this.dados.data = utils.dateToInput(new Date());
+
+                    if (this.isCartaoCredito && !this.dados.parcelas) {
+                        this.dados.parcelas = 1;
+                    }
+
                     this.setFocus('campoValor');
                 },
 

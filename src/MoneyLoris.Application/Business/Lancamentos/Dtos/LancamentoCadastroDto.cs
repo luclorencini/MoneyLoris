@@ -14,6 +14,7 @@ public class LancamentoCadastroDto
     public int? IdSubcategoria { get; set; }
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
+    public short? Parcelas { get; set; }
 
     public LancamentoCadastroDto()
     {
@@ -25,7 +26,7 @@ public class LancamentoCadastroDto
         Data = lancamento.Data;
         Tipo = lancamento.Tipo;
         IdMeioPagamento = lancamento.IdMeioPagamento;
-        IdCategoria = lancamento.IdCategoria.Value;
+        IdCategoria = lancamento.IdCategoria!.Value;
         IdSubcategoria = lancamento.IdSubcategoria;
         Descricao = lancamento.Descricao;
         Valor = lancamento.Valor;

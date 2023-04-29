@@ -137,9 +137,26 @@ public class LancamentoValidator : ILancamentoValidator
                 message: "Lançamento que compõe transferência precisa definir o tipo da transferência");
     }
 
-    public void NaoPodeTrocarMeioPagamento(Lancamento lancamento, LancamentoCadastroDto dto)
+
+    public void LancamentoCartaoCreditoTemQueTerParcela(MeioPagamento meio, short? parcelas)
     {
-        if (lancamento.IdMeioPagamento != dto.IdMeioPagamento)
+        if (meio.Tipo == TipoMeioPagamento.CartaoCredito && parcelas is null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CartaoCreditoSemParcela,
+                message: "Não é possível lançar uma despesa de Cartão de Crédito sem informar número de parcelas");
+    }
+
+    public void TipoLancamentoIgualTipoCategoria(TipoLancamento tipo, Categoria categoria)
+    {
+        if (categoria.Tipo != tipo)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_TipoDiferenteDaCategoria,
+                message: "Tipo do lançamento é diferente do tipo da categoria.");
+    }
+
+    public void NaoPodeTrocarMeioPagamento(Lancamento lancamento, int idMeioPagamentoInformado)
+    {
+        if (lancamento.IdMeioPagamento != idMeioPagamentoInformado)
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
                 message: "Não é possível trocar o meio de pagamento na alteração");

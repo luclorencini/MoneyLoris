@@ -1,5 +1,6 @@
 ﻿using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Business.Lancamentos.Interfaces;
 public interface ILancamentoValidator
@@ -16,5 +17,7 @@ public interface ILancamentoValidator
 
     void EstaConsistente(Lancamento lancamento);
 
-    void NaoPodeTrocarMeioPagamento(Lancamento lancamento, LancamentoCadastroDto dto);
+    void LancamentoCartaoCreditoTemQueTerParcela(MeioPagamento meio, short? parcelas);
+    void TipoLancamentoIgualTipoCategoria(TipoLancamento tipo, Categoria categoria);
+    void NaoPodeTrocarMeioPagamento(Lancamento lancamento, int idMeioPagamentoInformado);
 }

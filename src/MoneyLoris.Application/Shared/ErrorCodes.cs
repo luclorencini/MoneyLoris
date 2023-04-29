@@ -58,7 +58,8 @@ public static class ErrorCodes
     public static readonly string Lancamento_DestinoNaoPertenceAoUsuario = "LADNPU";
     public static readonly string Lancamento_CamposObrigatorios = "LACOBR";
     public static readonly string Lancamento_TipoDiferenteDaCategoria = "LANTDC";
-    
+    public static readonly string Lancamento_CartaoCreditoSemParcela = "LACCSP";
+
     #endregion
 
     #region Transferencia
