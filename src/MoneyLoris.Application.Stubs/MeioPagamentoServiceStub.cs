@@ -1,6 +1,7 @@
 ﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Application.Utils;
@@ -123,7 +124,7 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
         return await TaskSuccess(lc);
     }
 
-    public Task<decimal> AtualizarSaldo(int id, decimal valor)
+    public Task<decimal?> RecalcularSaldo(MeioPagamento meio, decimal valorDelta)
     {
         throw new NotImplementedException();
     }

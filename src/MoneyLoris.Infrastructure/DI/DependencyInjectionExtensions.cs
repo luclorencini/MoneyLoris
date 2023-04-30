@@ -53,6 +53,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ILancamentoService, LancamentoService>();
         services.AddScoped<ILancamentoConsultaService, LancamentoConsultaService>();
         services.AddScoped<ILancamentoValidator, LancamentoValidator>();
+        services.AddScoped<ILancamentoConverter, LancamentoConverter>();
         services.AddScoped<IParcelaCalculator, ParcelaCalculator>();
         services.AddScoped<ILancamentoRepository, LancamentoRepository>();
 

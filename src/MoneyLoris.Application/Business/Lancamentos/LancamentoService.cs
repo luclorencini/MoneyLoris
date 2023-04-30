@@ -16,10 +16,12 @@ public class LancamentoService : ServiceBase, ILancamentoService
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
+    private readonly IMeioPagamentoService _meioPagamentoService;
     private readonly ICategoriaValidator _categoriaValidator;
     private readonly ICategoriaRepository _categoriaRepo;
     private readonly ISubcategoriaRepository _subcategoriaRepository;
     private readonly IAuthenticationManager _authenticationManager;
+    private readonly ILancamentoConverter _lancamentoConverter;
     private readonly IParcelaCalculator _parcelaCalculator;
 
     public LancamentoService(
@@ -27,20 +29,24 @@ public class LancamentoService : ServiceBase, ILancamentoService
         ILancamentoRepository lancamentoRepo,
         IMeioPagamentoValidator meioPagamentoValidator,
         IMeioPagamentoRepository meioPagamentoRepo,
+        IMeioPagamentoService meioPagamentoService,
         ICategoriaValidator categoriaValidator,
         ICategoriaRepository categoriaRepository,
         ISubcategoriaRepository subcategoriaRepo,
         IAuthenticationManager authenticationManager,
+        ILancamentoConverter lancamentoConverter,
         IParcelaCalculator parcelaCalculator)
     {
         _lancamentoValidator = lancamentoValidator;
         _lancamentoRepo = lancamentoRepo;
         _meioPagamentoValidator = meioPagamentoValidator;
         _meioPagamentoRepo = meioPagamentoRepo;
+        _meioPagamentoService = meioPagamentoService;
         _categoriaValidator = categoriaValidator;
         _categoriaRepo = categoriaRepository;
         _subcategoriaRepository = subcategoriaRepo;
         _authenticationManager = authenticationManager;
+        _lancamentoConverter = lancamentoConverter;
         _parcelaCalculator = parcelaCalculator;
     }
 
@@ -81,6 +87,8 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     internal async Task<(int, decimal?)> Inserir(LancamentoCadastroDto dto, TipoLancamento tipo)
     {
+        //validações
+
         _lancamentoValidator.NaoEhAdmin();
 
         var meio = await _meioPagamentoRepo.GetById(dto.IdMeioPagamento);
@@ -97,9 +105,26 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.Parcelas);
 
-        var lancamentos = preparaLancamentos(dto, meio, tipo);
+        //preparar lançamentos
+
+        ICollection<Lancamento> lancamentos = null!;
+
+        //se for despesa no cartão de crédito com mais de uma parcela, prepara o parcelamento
+        if (dto.Tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
+        {
+            lancamentos = PrepararLancamentosParcelados(dto, tipo);
+        }
+        else
+        {
+            var lanc = _lancamentoConverter.Converter(dto, tipo);
+            lancamentos = new List<Lancamento> { lanc };
+        }
+
 
         //inicia transação
+
+        decimal? novoSaldo = null!;
+
         try
         {
             decimal valorTotal = 0;
@@ -113,109 +138,42 @@ public class LancamentoService : ServiceBase, ILancamentoService
             }
 
             //só atualiza saldo se não for cartao
-            var novoSaldo = await RecalcularSaldoConta(meio, valorTotal);
+            novoSaldo = await _meioPagamentoService.RecalcularSaldo(meio, valorTotal);
 
             await _lancamentoRepo.CommitTransaction();
-
-            return (lancamentos.First().Id, novoSaldo);
         }
         catch (Exception)
         {
             await _lancamentoRepo.RollbackTransaction();
             throw;
         }
+
+
+        //retorna o id do lançamento criado, ou do primeiro lançamento em caso de parcelamento
+        return (lancamentos.First().Id, novoSaldo);
     }
 
-    private ICollection<Lancamento> preparaLancamentos(LancamentoCadastroDto dto, MeioPagamento meio, TipoLancamento tipo)
+    private ICollection<Lancamento> PrepararLancamentosParcelados(LancamentoCadastroDto dto, TipoLancamento tipo)
     {
         var lancamentos = new List<Lancamento>();
 
-        //se for despesa no cartão de crédito com mais de uma parcela, prepara o parcelamento
-        if (dto.Tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
+        var parcelas = _parcelaCalculator.CalculaParcelas(dto.Valor, dto.Parcelas!.Value, dto.Data);
+
+        int index = 1;
+
+        foreach (var p in parcelas)
         {
-            var parcelas = _parcelaCalculator.CalculaParcelas(dto.Valor, dto.Parcelas.Value, dto.Data);
+            var lanc = _lancamentoConverter.Converter(dto, tipo,
+                data: p.data, valor: p.valor,
+                descricao: $"{dto.Descricao} - {index}/{parcelas.Count}"
+            );
 
-            int index = 1;
+            index++;
 
-            foreach (var p in parcelas)
-            {
-                var lanc = montaLancamentoInclusao(dto, tipo,
-                    data: p.data, valor: p.valor,
-                    descricao: $"{dto.Descricao} - {index}/{parcelas.Count}"
-                );
-
-                index++;
-
-                lancamentos.Add(lanc);
-            }
-        }
-        else
-        {
-            var lanc = montaLancamentoInclusao(dto, tipo);
             lancamentos.Add(lanc);
         }
 
         return lancamentos;
-    }
-
-    private Lancamento montaLancamentoInclusao(LancamentoCadastroDto dto, TipoLancamento tipo,
-        DateTime? data = null, string descricao = null!, decimal? valor = null)
-    {
-
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-
-        var val = (valor.HasValue ? valor.Value : dto.Valor);
-
-        var lancamento = new Lancamento
-        {
-            IdUsuario = userInfo.Id,
-
-            IdMeioPagamento = dto.IdMeioPagamento,
-            IdCategoria = dto.IdCategoria,
-            IdSubcategoria = dto.IdSubcategoria,
-
-            Tipo = tipo,
-
-            Data = (data.HasValue ? data.Value : dto.Data),
-            Descricao = (!String.IsNullOrWhiteSpace(descricao) ? descricao : dto.Descricao),
-
-            //dto sempre manda o valor positivo. Assim, se for despesa, precisa tornar negativo
-
-            Valor = ValorNegativoSeDespesa(tipo, val),
-
-            Operacao = OperacaoLancamento.LancamentoSimples,
-            TipoTransferencia = null,
-
-            Realizado = true,
-            IdLancamentoTransferencia = null,
-        };
-
-        _lancamentoValidator.EstaConsistente(lancamento);
-
-        return lancamento;
-    }
-
-    private async Task<decimal?> RecalcularSaldoConta(MeioPagamento meio, decimal valorDelta)
-    {
-        decimal? novoSaldo = null!;
-
-        if (meio.Tipo != TipoMeioPagamento.CartaoCredito)
-        {
-            meio.Saldo = meio.Saldo + valorDelta;
-
-            await _meioPagamentoRepo.Update(meio);
-
-            novoSaldo = meio.Saldo!.Value;
-        }
-
-        return novoSaldo;
-    }
-
-    private decimal ValorNegativoSeDespesa(TipoLancamento tipo, decimal valor)
-    {
-        //troca o sinal do valor se for despesa
-        valor = (tipo == TipoLancamento.Despesa ? valor * -1 : valor);
-        return valor;
     }
 
 
@@ -261,35 +219,24 @@ public class LancamentoService : ServiceBase, ILancamentoService
         //SALDO: se o valor do lançamento mudar, recalcula o saldo baseado na diferença (exceto para cartões de crédito)
 
         var valorAtual = lancamento.Valor;
-        var novoValor = ValorNegativoSeDespesa(lancamento.Tipo, dto.Valor);
-        var diferenca = valorAtual - novoValor;
-
-        var atualizarSaldo = false;
-
-        if (diferenca != 0)
-        {
-            lancamento.Valor = novoValor;
-
-            if (meio.Tipo != TipoMeioPagamento.CartaoCredito)
-            {
-                meio.Saldo -= diferenca;
-                atualizarSaldo = true;
-            }
-        }
+        var novoValor = _lancamentoConverter.AjustaValorLancamento(lancamento.Tipo, dto.Valor);
+        lancamento.Valor = novoValor;
 
         _lancamentoValidator.EstaConsistente(lancamento);
 
+        var delta = novoValor - valorAtual;
+
         //inicia transação
+
+        decimal? novoSaldo = null!;
+
         try
         {
             await _lancamentoRepo.BeginTransaction();
 
             await _lancamentoRepo.Update(lancamento);
 
-            if (atualizarSaldo)
-            {
-                await _meioPagamentoRepo.Update(meio);
-            }
+            novoSaldo = await _meioPagamentoService.RecalcularSaldo(meio, delta);
 
             await _lancamentoRepo.CommitTransaction();
         }
@@ -299,8 +246,13 @@ public class LancamentoService : ServiceBase, ILancamentoService
             throw;
         }
 
-        return (lancamento.Id,
-            $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
+        //retorno
+
+        var msg = $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.";
+        if (novoSaldo.HasValue)
+            msg += $" Novo saldo: {novoSaldo}";
+
+        return (lancamento.Id, msg);
     }
 
     public async Task<Result<int>> Excluir(int idLancamento)
@@ -321,6 +273,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
 
         //inicia transação
+
+        decimal? novoSaldo = null!;
+
         try
         {
             await _lancamentoRepo.BeginTransaction();
@@ -328,20 +283,22 @@ public class LancamentoService : ServiceBase, ILancamentoService
             await _lancamentoRepo.Delete(idLancamento);
 
             //só atualiza saldo se não for cartao
-            var novoSaldo = await RecalcularSaldoConta(meio, (lancamento.Valor * -1)); ///inverte o sinal pra reverter o valor do saldo
+            novoSaldo = await _meioPagamentoService.RecalcularSaldo(meio, (lancamento.Valor * -1)); ///inverte o sinal pra reverter o valor do saldo
 
             await _lancamentoRepo.CommitTransaction();
-
-            var msg = "Lançamento excluído com sucesso.";
-            if (novoSaldo.HasValue)
-                msg += $" Novo saldo: {novoSaldo}";
-
-            return (idLancamento, msg);
         }
         catch (Exception)
         {
             await _lancamentoRepo.RollbackTransaction();
             throw;
         }
+
+        //retorno
+
+        var msg = "Lançamento excluído com sucesso.";
+        if (novoSaldo.HasValue)
+            msg += $" Novo saldo: {novoSaldo}";
+
+        return (idLancamento, msg);
     }
 }

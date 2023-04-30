@@ -150,6 +150,23 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
         throw new NotImplementedException();
     }
 
+    public async Task<decimal?> RecalcularSaldo(MeioPagamento meio, decimal valorDelta)
+    {
+        if (valorDelta == 0) return null;  // não tem valor a alterar
+
+        if (meio.Tipo == TipoMeioPagamento.CartaoCredito) return null; // não se altera saldo de cartão, ele é sempre zero
+
+        //atualiza saldo com o valor delta informado
+
+        meio.Saldo = meio.Saldo + valorDelta;
+
+        await _meioPagamentoRepo.Update(meio);
+
+        var novoSaldo = meio.Saldo!.Value;
+
+        return novoSaldo;
+    }
+
     public async Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento()
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
