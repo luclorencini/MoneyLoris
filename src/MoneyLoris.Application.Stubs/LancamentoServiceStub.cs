@@ -169,9 +169,9 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return await TaskSuccess((123, "Despesa lançada com sucesso."));
     }
 
-    public async Task<Result<LancamentoCadastroDto>> Obter(int id)
+    public async Task<Result<LancamentoInfoDto>> Obter(int id)
     {
-        var ret = new LancamentoCadastroDto { 
+        var ret = new LancamentoInfoDto { 
             Id = 502,
             Data = SystemTime.Today().AddDays(-1),
             Tipo = TipoLancamento.Despesa,

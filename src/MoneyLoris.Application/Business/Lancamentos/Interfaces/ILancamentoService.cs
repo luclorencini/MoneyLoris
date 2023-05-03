@@ -4,7 +4,7 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Lancamentos.Interfaces;
 public interface ILancamentoService
 {
-    Task<Result<LancamentoCadastroDto>> Obter(int id);
+    Task<Result<LancamentoInfoDto>> Obter(int id);
     Task<Result<int>> InserirReceita(LancamentoCadastroDto dto);
     Task<Result<int>> InserirDespesa(LancamentoCadastroDto dto);
     Task<Result<int>> Alterar(LancamentoCadastroDto dto);

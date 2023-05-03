@@ -26,7 +26,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Receita,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -53,7 +52,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdMeioPagamento = 555,
             Valor = 10
@@ -81,7 +79,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Receita,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -109,7 +106,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -136,7 +132,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Receita,
             IdCategoria = 555,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -164,7 +159,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -192,7 +186,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Receita,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -220,7 +213,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -248,7 +240,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -278,7 +269,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Receita,
             IdCategoria = cat.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10
@@ -296,7 +286,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.NotNull(lanc);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, lanc!.IdUsuario);
         Assert.Equal(dto.IdMeioPagamento, lanc.IdMeioPagamento);
-        Assert.Equal(dto.Tipo, lanc.Tipo);
+        Assert.Equal(TipoLancamento.Receita, lanc.Tipo);
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc.Operacao);
         Assert.Null(lanc.TipoTransferencia);
         Assert.Equal(dto.Data, lanc!.Data);
@@ -330,7 +320,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = SystemTime.Today(),
             Descricao = "Compras",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdSubcategoria = sub.Id,
             IdMeioPagamento = mei.Id,
@@ -350,7 +339,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.NotNull(lanc);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, lanc!.IdUsuario);
         Assert.Equal(dto.IdMeioPagamento, lanc.IdMeioPagamento);
-        Assert.Equal(dto.Tipo, lanc.Tipo);
+        Assert.Equal(TipoLancamento.Despesa, lanc.Tipo);
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc.Operacao);
         Assert.Null(lanc.TipoTransferencia);
         Assert.Equal(dto.Data, lanc!.Data);
@@ -387,7 +376,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         {
             Data = dataLanc1,
             Descricao = "Compras parceladas",
-            Tipo = TipoLancamento.Despesa,
             IdCategoria = cat.Id,
             IdSubcategoria = sub.Id,
             IdMeioPagamento = mei.Id,
@@ -413,7 +401,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.Equal(idLancamento, lanc1.Id);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, lanc1!.IdUsuario);
         Assert.Equal(dto.IdMeioPagamento, lanc1.IdMeioPagamento);
-        Assert.Equal(dto.Tipo, lanc1.Tipo);
+        Assert.Equal(TipoLancamento.Despesa, lanc1.Tipo);
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc1.Operacao);
         Assert.Null(lanc1.TipoTransferencia);
         Assert.Equal(dataLanc1, lanc1!.Data);
@@ -430,7 +418,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.NotNull(lanc2);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, lanc2!.IdUsuario);
         Assert.Equal(dto.IdMeioPagamento, lanc2.IdMeioPagamento);
-        Assert.Equal(dto.Tipo, lanc2.Tipo);
+        Assert.Equal(TipoLancamento.Despesa, lanc2.Tipo);
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc2.Operacao);
         Assert.Null(lanc2.TipoTransferencia);
         Assert.Equal(dataLanc2, lanc2!.Data);

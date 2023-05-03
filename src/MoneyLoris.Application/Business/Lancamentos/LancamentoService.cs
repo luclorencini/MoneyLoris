@@ -51,14 +51,14 @@ public class LancamentoService : ServiceBase, ILancamentoService
     }
 
 
-    public async Task<Result<LancamentoCadastroDto>> Obter(int id)
+    public async Task<Result<LancamentoInfoDto>> Obter(int id)
     {
         var lancamento = await _lancamentoRepo.GetById(id);
 
         _lancamentoValidator.Existe(lancamento);
         _lancamentoValidator.PertenceAoUsuario(lancamento);
 
-        var dto = new LancamentoCadastroDto(lancamento);
+        var dto = new LancamentoInfoDto(lancamento);
 
         return dto;
     }
@@ -110,7 +110,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         ICollection<Lancamento> lancamentos = null!;
 
         //se for despesa no cartão de crédito com mais de uma parcela, prepara o parcelamento
-        if (dto.Tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
+        if (tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
         {
             lancamentos = PrepararLancamentosParcelados(dto, tipo);
         }
