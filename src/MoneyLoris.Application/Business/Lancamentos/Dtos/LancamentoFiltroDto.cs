@@ -17,4 +17,5 @@ public class LancamentoFiltroDto : PaginationFilter
     public bool TrazerDespesas { get; set; }
 
     public bool SomarTransferencias { get; set; }
+    public bool MaisAntigosPrimeiro { get; set; }
 }

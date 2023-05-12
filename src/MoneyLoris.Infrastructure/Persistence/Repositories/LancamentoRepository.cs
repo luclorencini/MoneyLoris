@@ -14,13 +14,23 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
 
     public async Task<ICollection<Lancamento>> PesquisaPaginada(LancamentoFiltroDto filtro, int idUsuario)
     {
-        var list = await _dbset
+        var query = _dbset
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
             .Include(l => l.Subcategoria)
-            .Where(whereQueryListagem(filtro, idUsuario))
-            .OrderByDescending(l => l.Data)
-            .ThenByDescending(l => l.Id)
+            .Where(whereQueryListagem(filtro, idUsuario));
+
+
+        if (filtro.MaisAntigosPrimeiro)
+        {
+            query = query.OrderBy(l => l.Data).ThenBy(l => l.Id);
+        }
+        else
+        {
+            query = query.OrderByDescending(l => l.Data).ThenByDescending(l => l.Id);
+        }
+
+        var list = await query
             .IncluiPaginacao(filtro)
             .AsNoTracking()
             .ToListAsync();
