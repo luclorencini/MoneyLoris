@@ -1,5 +1,6 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Application.Utils;
 
@@ -15,12 +16,12 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
         _authenticationManager = authenticationManager;
     }
 
-    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(ReportLancamentoFilterDto filtro)
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var despesas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Despesa, mes, ano, quantidade);
-        var receitas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Receita, mes, ano, quantidade);
+        var despesas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Despesa, filtro.Mes, filtro.Ano, filtro.Quantidade);
+        var receitas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Receita, filtro.Mes, filtro.Ano, filtro.Quantidade);
 
         var ret = new List<CategoriaReportItemDto>
         {

@@ -1,11 +1,12 @@
 ﻿using MoneyLoris.Application.Reports.LancamentosCategoria;
+using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
 public class ReportLancamentosCategoriaServiceStub : IReportLancamentosCategoriaService
 {
 
-    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(int mes, int ano, int quantidade)
+    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(ReportLancamentoFilterDto filtro)
     {
         var ret = new List<CategoriaReportItemDto>
         {

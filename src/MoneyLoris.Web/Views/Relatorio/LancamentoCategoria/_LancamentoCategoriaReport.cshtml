@@ -7,7 +7,7 @@
         <section class="sys-container-fullhd container-titulo">
             <div class="area-titulo">
                 @await Html.PartialAsync("_BotaoVoltar")
-                <div class="titulo">Relatório: Lançamentos por Categoria</div>
+                <div class="titulo">Lançamentos por Categoria</div>
             </div>
         </section>
 
@@ -22,55 +22,18 @@
                             <i class="sys-fg-dark-2 mx-2" v-bind:class="{'fa-solid fa-square-minus': !allClosed, 'fa-solid fa-square-plus': allClosed}" v-on:click="collapseAll()"></i>
                         </div>
 
-                        <div class="mes mes-titulo">
-                            <div class="m">JAN</div>
-                            <div class="y">2023</div>
-                        </div>
-
-                        <div class="mes mes-titulo">
-                            <div class="m">FEV</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">MAR</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">ABR</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">MAI</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">JUN</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">JUL</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">AGO</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">SET</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">OUT</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">NOV</div>
-                            <div class="y">2023</div>
-                        </div>
-                        <div class="mes mes-titulo">
-                            <div class="m">DEZ</div>
-                            <div class="y">2023</div>
-                        </div>
+                        <template v-if="filtro.quantidade == 1">
+                            <div class="mes mes-titulo">
+                                <div class="m">{{mesAbreviado(filtro.mes)}}</div>
+                                <div class="y">{{filtro.ano}}</div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="mes mes-titulo" v-for="n in filtro.quantidade">
+                                <div class="m">{{mesAbreviado(n)}}</div>
+                                <div class="y">{{filtro.ano}}</div>
+                            </div>
+                        </template>
 
                     </div>
 
@@ -88,7 +51,7 @@
                             <span>{{n1.descricao}}</span>
                         </div>
 
-                        <div class="mes valor-g1" v-for="n in numMeses">
+                        <div class="mes valor-g1" v-for="n in filtro.quantidade">
                             <Moeda :valor="n1[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                         </div>
 
@@ -105,7 +68,7 @@
                                         <span>{{n2.descricao}}</span>
                                     </div>
 
-                                    <div class="mes valor-g2" v-for="n in numMeses">
+                                    <div class="mes valor-g2" v-for="n in filtro.quantidade">
                                         <Moeda :valor="n2[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                                     </div>
 
@@ -120,7 +83,7 @@
                                                     <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
                                                 </div>
 
-                                                <div class="mes valor-g3" v-for="n in numMeses">
+                                                <div class="mes valor-g3" v-for="n in filtro.quantidade">
                                                     <Moeda :valor="n3[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                                                 </div>
 
@@ -155,12 +118,24 @@
             data: () => ({
                 filtro: {},
                 dados: [],
-
-                numMeses: 12,
                 allClosed: false
             }),
 
             async mounted() {
+
+                //filtro base, melhorar no futuro
+
+                this.filtro.ano = new Date().getFullYear();
+
+                if (window.innerWidth > 991) {
+                    this.filtro.mes = 1;
+                    this.filtro.quantidade = 12;
+                }
+                else {
+                    this.filtro.mes = new Date().getMonth() + 1;
+                    this.filtro.quantidade = 1;
+                }
+
                 await this.obterRelatorio();
             },
 
@@ -170,8 +145,7 @@
 
                     await this.showLoadingSplashAndExecute(async () => {
 
-                        //let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
-                        let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`);
+                        let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
 
                         if (ret.ok) {
                             this.dados = ret.value;
@@ -206,6 +180,12 @@
 
                 valorField(n) {
                     return 'valor' + (n + '').padStart(2, '0');
+                },
+
+                mesAbreviado(n) {
+                    //todo - usar o ano na lógica caso tenha virada de ano
+                    const d = new Date(this.filtro.ano, n - 1, 1);
+                    return utils.dataMesShort(d);
                 }
             }
         }
@@ -224,20 +204,26 @@
             color: var(--sys-color-dark-1);
         }
 
-            .rep-linha .item {
-                display: flex;
-                align-items: center;
-                border: 1px solid var(--sys-color-light-2);
-                padding: 0 0.25rem;
+        @@media (max-width: 991px) { /*lg*/
+            .rep-linha {
+                grid-template-columns: auto 35%;
             }
+        }
 
-            .rep-linha .mes {
-                border: 1px solid var(--sys-color-light-2);
-            }
+        .rep-linha .item {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--sys-color-light-2);
+            padding: 0 0.25rem;
+        }
 
-            .rep-linha:not(.rep-linha-titulo):hover {
-                background-color: #fffde7;
-            }
+        .rep-linha .mes {
+            border: 1px solid var(--sys-color-light-2);
+        }
+
+        .rep-linha:not(.rep-linha-titulo):hover {
+            background-color: #fffde7;
+        }
 
         .rep-linha-receita {
             background-color: #e1f5fe;

@@ -106,8 +106,8 @@ main {
 @media (max-width: 991px) { /*lg*/
 
     .container-titulo {
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
         background-color: var(--sys-color-dark-4);
         align-items: baseline;
     }

@@ -1,4 +1,4 @@
-﻿namespace MoneyLoris.Application.Reports.LancamentosCategoria;
+﻿namespace MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 public class CategoriaReportItemDto
 {
     public string Descricao { get; set; } = default!;

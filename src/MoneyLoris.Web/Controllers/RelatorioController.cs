@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
+using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Web.Controllers.Base;
 
 namespace MoneyLoris.Web.Controllers;
@@ -21,9 +21,9 @@ public class RelatorioController : BaseController
     }
 
     [HttpPost()]
-    public IActionResult Pesquisar()
+    public IActionResult Pesquisar([FromBody] ReportLancamentoFilterDto filtro)
     {
-        var ret = _reportService.RelatorioLancamentosPorCategoria(1, 2023, 12);
+        var ret = _reportService.RelatorioLancamentosPorCategoria(filtro);
         return Ok(ret);
     }
 }
