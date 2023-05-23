@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
@@ -16,7 +17,9 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
         _authenticationManager = authenticationManager;
     }
 
-    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(ReportLancamentoFilterDto filtro)
+    #region Consolidado
+    
+    public Result<ICollection<CategoriaReportItemDto>> LancamentosPorCategoriaConsolidado(ReportLancamentoFilterDto filtro)
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
@@ -139,4 +142,12 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
             }
         }
     }
+
+    #endregion
+
+    public Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro)
+    {
+        throw new NotImplementedException();
+    }
+
 }

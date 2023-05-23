@@ -1,0 +1,93 @@
+﻿<partial name="/Views/Lancamento/_LancamentoTable.cshtml"></partial>
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-report-lanc-agr-det-modal">
+
+        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Detalhamento da Categoria</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="list-group mt-2 mb-5">
+
+                            <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const CategoriaAgrupadorDetalheModal = {
+
+            name: 'CategoriaAgrupadorDetalheModal',
+            template: '#template-report-lanc-agr-det-modal',
+            mixins: [BaseMixin],
+            components: { LancamentoTable, ConfirmationDialog },
+
+            data: () => ({
+                filtro: {},
+                totalResults: 0,
+                lista: [],
+                modal: null
+            }),
+
+            methods: {
+
+                /*
+                campos esperados no filtro:
+                    idCategoria: o id da categoria
+                    idSubcategoria: o id da subcategoria, ou null se não tiver
+                    ano: o ano selecionado (ex: 2023)
+                    mes: o mes selecionado, entre 1 e 12
+                */
+                async carregar(filtro) {
+
+                    this.filtro = filtro;
+
+                    await this.obterListagem();
+
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+                },
+
+                async obterListagem() {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson(`/relatorio/detalheListagem`, this.filtro);
+
+                        if (ret.ok) {
+                            this.totalResults = ret.value.total;
+                            this.lista = ret.value.dataPage;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                },
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    @* Não há css específico deste componente *@
+
+    @*<style type="text/css">
+    </style>*@
+}

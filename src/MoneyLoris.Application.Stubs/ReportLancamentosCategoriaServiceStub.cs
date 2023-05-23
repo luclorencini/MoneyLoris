@@ -1,12 +1,15 @@
-﻿using MoneyLoris.Application.Reports.LancamentosCategoria;
+﻿using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Enums;
+using MoneyLoris.Application.Reports.LancamentosCategoria;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
-public class ReportLancamentosCategoriaServiceStub : IReportLancamentosCategoriaService
+public class ReportLancamentosCategoriaServiceStub : ServiceBase, IReportLancamentosCategoriaService
 {
 
-    public Result<ICollection<CategoriaReportItemDto>> RelatorioLancamentosPorCategoria(ReportLancamentoFilterDto filtro)
+    public Result<ICollection<CategoriaReportItemDto>> LancamentosPorCategoriaConsolidado(ReportLancamentoFilterDto filtro)
     {
         var ret = new List<CategoriaReportItemDto>
         {
@@ -110,5 +113,43 @@ public class ReportLancamentosCategoriaServiceStub : IReportLancamentosCategoria
         };
 
         return ret;
+    }
+
+    public Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro)
+    {
+        var lancs = MockList();
+
+        //totalizador
+        var totalFiltrado = lancs.Count();
+
+        //corte de pagina
+        lancs = lancs.Skip(filtro.ResultsPerPage * (filtro.CurrentPage - 1)).Take(filtro.ResultsPerPage).ToList();
+
+        return TaskSuccess(dataPage: lancs, total: totalFiltrado);
+    }
+
+    private ICollection<LancamentoListItemDto> MockList()
+    {
+        var list = new List<LancamentoListItemDto>();
+
+        for (int i = 1; i <= 60; i++)
+        {
+            list.Add(new LancamentoListItemDto
+            {
+                Id = 600 + i,
+                Data = DateTime.Now.AddDays(-(10 + i)),
+                Tipo = (i % 2 == 0 ? TipoLancamento.Despesa : TipoLancamento.Receita),
+                Operacao = OperacaoLancamento.LancamentoSimples,
+                MeioPagamentoNome = "PicPay",
+                MeioPagamentoTipo = TipoMeioPagamento.CarteiraDigital,
+                MeioPagamentoCor = "11C56E",
+                Categoria = "Outras Despesas",
+                Subcategoria = null!,
+                Descricao = $"Compra {i}",
+                Valor = (i % 2 == 0 ? -(25.00M + i) : (25.00M + i))
+            });
+        }
+
+        return list;
     }
 }

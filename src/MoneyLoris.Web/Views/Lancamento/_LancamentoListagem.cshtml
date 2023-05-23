@@ -2,6 +2,8 @@
 <partial name="_Pagination" />
 
 <partial name="_LancamentoListagemFiltro"></partial>
+<partial name="_LancamentoTable"></partial>
+
 <partial name="_LancamentoWizard"></partial>
 <partial name="_TransferenciaWizard"></partial>
 
@@ -70,56 +72,16 @@
 
             <div class="list-group mt-2 mb-5">
 
-                <div class="list-group-item d-none d-lg-block">
-                    <div class="lancamento-container">
-                        <div class="data"><span class="fw-bold">Data</span></div>
-                        <div class="conta"><span class="fw-bold">Conta / Cartão</span></div>
-                        <div class="categoria"><span class="fw-bold">Categoria / Subcategoria</span></div>
-                        <div class="descricao"><span class="fw-bold">Descrição</span></div>
-                        <div class="valor"><span>Valor</span></div>
-                        <div class="opcoes"></div>
-                    </div>
-                </div>
-
-                <!---->
-
-                <template v-if="totalResults > 0">
-                    <div v-for="l in lista" class="list-group-item sys-clicavel" v-on:click="editarLancamento(l)">
-                        <div class="lancamento-container">
-                            <div class="data">
-                                <div class="d-none d-lg-block">{{utils.dataCurta(l.data)}}</div>
-                                <div class="d-lg-none data-mob">
-                                    <div class="dia">{{utils.dataDia(l.data)}}</div>
-                                    <div class="mes">{{utils.dataMesShort(l.data)}}</div>
-                                </div>
-                            </div>
-                            <div class="conta">
-                                <i class="fa-solid fa-xl me-2 d-none d-lg-block" v-bind:class="utils.cssIconeByTipoConta(l.meioPagamentoTipo)" v-bind:style="{ 'color': '#' + l.meioPagamentoCor}"></i>
-                                <span>{{l.meioPagamentoNome}}</span>
-                            </div>
-                            <div class="categoria"><span>{{l.categoria}}</span><span v-if="l.subcategoria"> / {{l.subcategoria}}</span></div>
-                            <div class="descricao">{{l.descricao}}</div>
-                            <div class="valor"><Moeda :valor="l.valor"></Moeda></div>
-                            <div class="opcoes">
-                                <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-                <div v-else class="list-group-item d-flex justify-content-center py-3">
-                    Nenhum lançamento realizado
-                </div>
+                <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
 
                 <div class="list-group-item">
                     <Pagination v-if="totalResults > 0"
-                        v-bind:currentPage="filtro.currentPage"
-                        v-bind:resultsPerPage="filtro.resultsPerPage"
-                        v-bind:totalResults="totalResults"
-                        v-on:pagination-change="paginar($event)">
+                    v-bind:currentPage="filtro.currentPage"
+                    v-bind:resultsPerPage="filtro.resultsPerPage"
+                    v-bind:totalResults="totalResults"
+                    v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
-
-                <!---->
 
             </div>
 
@@ -147,7 +109,7 @@
             template: '#template-lancamento-listagem',
             mixins: [BaseMixin],
             components: {
-                Moeda, Pagination, LancamentoListagemFiltro,
+                Moeda, Pagination, LancamentoListagemFiltro, LancamentoTable,
                 LancamentoWizard, TransferenciaWizard, LancamentoModal, TransferenciaModal
             },
 
@@ -235,11 +197,11 @@
                     this.$refs.tranWizard.initPagamentoFatura();
                 },
 
-                editarLancamento(l){
-                    if (l.operacao == 1){ // 1 - lançamento simples, 2 - transferencia
+                editarLancamento(l) {
+                    if (l.operacao == 1) { // 1 - lançamento simples, 2 - transferencia
                         this.$refs.lancModal.carregar(l.id);
                     }
-                    else{
+                    else {
                         this.$refs.tranModal.carregar(l.idLancamentoOrigemTransferencia);
                     }
                 }
@@ -303,102 +265,6 @@
         }
 
 
-
-        .lancamento-container {
-            display: grid;
-            grid-template-columns: 7rem 15rem 18rem auto 8rem 4rem;
-            grid-template-areas:
-                "ga-data ga-conta ga-categoria ga-descricao ga-valor ga-opcoes";
-            align-items: center;
-        }
-
-            .lancamento-container .data {
-                grid-area: ga-data;
-            }
-
-            .lancamento-container .conta {
-                grid-area: ga-conta;
-                display: flex;
-                align-items: center;
-            }
-
-            .lancamento-container .categoria {
-                grid-area: ga-categoria;
-            }
-
-            .lancamento-container .descricao {
-                grid-area: ga-descricao;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .lancamento-container .valor {
-                grid-area: ga-valor;
-                text-align: right;
-                font-weight: bold;
-            }
-
-            .lancamento-container .opcoes {
-                grid-area: ga-opcoes;
-                text-align: end;
-            }
-
-        @@media (max-width: 991px) { /*lg*/
-
-            .lancamento-container {
-                grid-template-columns: 3rem auto 8rem;
-                grid-template-areas:
-                    "ga-data ga-descricao ga-valor"
-                    "ga-data ga-categoria ga-conta"
-            }
-
-                .lancamento-container .data .data-mob {
-                    display: flex;
-                    flex-direction: column;
-                    color: var(--sys-color-dark-1);
-                    align-items: center;
-                    margin: 0.1rem 0.5rem 0.1rem 0;
-                }
-
-                    .lancamento-container .data .data-mob .dia {
-                        font-size: 1.5rem;
-                        font-weight: bold;
-                        line-height: 1.6rem;
-                    }
-
-                    .lancamento-container .data .data-mob .mes {
-                        font-size: 0.65rem;
-                        font-weight: 600;
-                        line-height: 0.75rem;
-                    }
-
-                .lancamento-container .descricao {
-                    font-weight: 600;
-                    font-size: 0.95rem;
-                }
-
-                .lancamento-container .categoria {
-                    font-size: 0.75rem;
-                    font-style: italic;
-                }
-
-                .lancamento-container .valor {
-                    font-weight: 600;
-                    font-size: 0.95rem;
-                }
-
-                .lancamento-container .conta {
-                    justify-content: end;
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                    color: var(--sys-color-dark-1);
-                }
-
-                .lancamento-container .opcoes {
-                    display: none;
-                }
-        }
 
         .barra-filtro-periodo {
             display: none;

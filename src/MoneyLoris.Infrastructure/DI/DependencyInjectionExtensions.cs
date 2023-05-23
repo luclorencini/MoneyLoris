@@ -73,6 +73,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICategoriaService, CategoriaServiceStub>();
         services.AddScoped<IMeioPagamentoService, MeioPagamentoServiceStub>();
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
+        services.AddScoped<ILancamentoConsultaService, LancamentoConsultaServiceStub>();
         services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaServiceStub>();

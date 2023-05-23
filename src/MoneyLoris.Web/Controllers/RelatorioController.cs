@@ -20,10 +20,25 @@ public class RelatorioController : BaseController
         return View("~/Views/Relatorio/LancamentoCategoria/LancamentoCategoriaIndex.cshtml");
     }
 
-    [HttpPost()]
+    [HttpPost]
     public IActionResult Pesquisar([FromBody] ReportLancamentoFilterDto filtro)
     {
-        var ret = _reportService.RelatorioLancamentosPorCategoria(filtro);
+        var ret = _reportService.LancamentosPorCategoriaConsolidado(filtro);
         return Ok(ret);
     }
+
+    //[HttpPost]
+    //public IActionResult ObterDetalheInfo([FromBody] ReportLancamentoDetalheFilterDto filtro)
+    //{
+
+    //}
+
+    [HttpPost]
+    public async Task<IActionResult> DetalheListagem([FromBody] ReportLancamentoDetalheFilterDto filtro)
+    {
+        var ret = await _reportService.PesquisarDetalhe(filtro);
+        return Ok(ret);
+    }
+
+
 }

@@ -1,5 +1,7 @@
 ﻿<partial name="_Moeda" />
 
+<partial name="/Views/Relatorio/LancamentoCategoria/_CategoriaAgrupadorDetalheModal.cshtml" />
+
 @using (Html.VueTemplate())
 {
     <script type="text/html" id="template-report-lanc-cat">
@@ -55,7 +57,7 @@
 
                         <template v-if="filtro.quantidade > 1">
                             <div class="mes mes-titulo" v-for="i in cabecalhoItens">
-                                <div class="m">{{i.mes}}</div>
+                                <div class="m">{{i.mesAbreviado}}</div>
                                 <div class="y">{{i.ano}}</div>
                             </div>
                         </template>
@@ -107,8 +109,8 @@
                                                     <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
                                                 </div>
 
-                                                <div class="mes valor-g3" v-for="n in filtro.quantidade">
-                                                    <Moeda :valor="n3[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                                <div class="mes valor-g3 sys-clicavel" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n3, index)">
+                                                    <Moeda :valor="n3[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                                                 </div>
 
                                             </div>
@@ -125,6 +127,8 @@
 
         </section>
 
+        <CategoriaAgrupadorDetalheModal ref="detalheModal"></CategoriaAgrupadorDetalheModal>
+
     </script>
 }
 
@@ -137,7 +141,7 @@
             name: 'LancamentoCategoriaReport',
             template: '#template-report-lanc-cat',
             mixins: [BaseMixin],
-            components: { Moeda },
+            components: { Moeda, CategoriaAgrupadorDetalheModal },
 
             data: () => ({
                 filtro: {},
@@ -152,12 +156,13 @@
 
                     if (this.filtro && this.filtro.mes) {
                         for (let i = this.filtro.mes; i < this.filtro.mes + this.filtro.quantidade; i++) {
-                            
+
                             let mes = (i <= 12 ? i : i - 12);
                             let ano = (i <= 12 ? this.filtro.ano : this.filtro.ano + 1);
 
                             let item = {
-                                mes: this.mesAbreviado(mes),
+                                mes: mes,
+                                mesAbreviado: this.mesAbreviado(mes),
                                 ano: ano
                             };
 
@@ -305,6 +310,20 @@
                 mesPorExtenso(n) {
                     const d = new Date(this.filtro.ano, n - 1, 1);
                     return `${d.toLocaleString('pt-BR', { month: 'long' })}`;
+                },
+
+                //métodos do detalhe
+
+                verDetalhamento(node, index) {
+
+                    let filtro = {
+                        idCategoria: node.idCategoria,
+                        idSubcategoria: node.idSubcategoria,
+                        ano: this.cabecalhoItens[index - 1].ano,
+                        mes: this.cabecalhoItens[index - 1].mes
+                    };
+
+                    this.$refs.detalheModal.carregar(filtro);
                 }
             }
         }
