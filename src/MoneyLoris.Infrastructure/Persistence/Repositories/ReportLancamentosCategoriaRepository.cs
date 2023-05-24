@@ -1,10 +1,14 @@
 ﻿using System.Data;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Utils;
 using MoneyLoris.Infrastructure.Persistence.Context;
+using MoneyLoris.Infrastructure.Persistence.Repositories.Base;
 
 namespace MoneyLoris.Infrastructure.Persistence.Repositories;
 public class ReportLancamentosCategoriaRepository : IReportLancamentosCategoriaRepository
@@ -16,6 +20,7 @@ public class ReportLancamentosCategoriaRepository : IReportLancamentosCategoriaR
         _context = context;
     }
 
+    #region Consolidado
 
     public List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade)
     {
@@ -120,4 +125,88 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
 
         return ret;
     }
+
+    #endregion
+
+    #region Detalhe
+
+    public async Task<int> DetalheTotalRegistros(ReportLancamentoDetalheFilterDto filtro, int idUsuario)
+    {
+        var total = await _context.Lancamentos
+            .Where(whereQueryDetalhe(filtro, idUsuario))
+            .AsNoTracking()
+            .CountAsync();
+
+        return total;
+    }
+
+    public async Task<ICollection<Lancamento>> DetalhePaginado(ReportLancamentoDetalheFilterDto filtro, int idUsuario)
+    {
+        var list = await _context.Lancamentos
+            .Include(l => l.MeioPagamento)
+            .Include(l => l.Categoria)
+            .Include(l => l.Subcategoria)
+            .Where(whereQueryDetalhe(filtro, idUsuario))
+            .OrderBy(l => l.Data).ThenBy(l => l.Id)
+            .IncluiPaginacao(filtro)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return list;
+    }
+
+    public async Task<decimal> DetalheSomatorio(ReportLancamentoDetalheFilterDto filtro, int idUsuario)
+    {
+        var val = await _context.Lancamentos
+            .Where(whereQueryDetalhe(filtro, idUsuario))
+            .SumAsync(l => l.Valor);
+
+        return val;
+    }
+
+    private Expression<Func<Lancamento, bool>> whereQueryDetalhe(ReportLancamentoDetalheFilterDto filtro, int idUsuario)
+    {
+        var dataIni = new DateTime(filtro.Ano, filtro.Mes, 1);
+        var dataFim = dataIni.UltimoDiaMes();
+
+        Expression<Func<Lancamento, bool>> query = null!;
+
+        if (filtro.TodosDaCategoria)
+        {
+            //traz todos os lançamentos da categoria informada, independente se tem subcategoria ou não
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.IdCategoria == filtro.IdCategoria;
+        }
+
+        else if (filtro.IdSubcategoria == null)
+        {
+            //traz todos os lançamentos da categoria informada que não possuem subcategoria informada
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == null;
+        }
+        else
+        {
+            //traz todos os lançamentos da categoria e subcategoria informadas
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == filtro.IdSubcategoria;
+        }
+
+        return query;
+    }
+
+    #endregion
 }

@@ -114,7 +114,7 @@ public class ReportLancamentosCategoriaServiceStub : ServiceBase, IReportLancame
 
         return ret;
     }
-
+   
     public Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro)
     {
         var lancs = MockList();
@@ -151,5 +151,12 @@ public class ReportLancamentosCategoriaServiceStub : ServiceBase, IReportLancame
         }
 
         return list;
+    }
+
+    public Task<Result<decimal>> ObterDetalheSomatorio(ReportLancamentoDetalheFilterDto filtro)
+    {
+        decimal val = -345.87M;
+
+        return TaskSuccess(val);
     }
 }

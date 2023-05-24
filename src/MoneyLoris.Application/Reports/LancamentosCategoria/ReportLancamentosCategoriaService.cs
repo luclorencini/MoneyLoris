@@ -1,12 +1,13 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
+using MoneyLoris.Application.Common.Base;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Application.Utils;
 
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
-public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaService
+public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentosCategoriaService
 {
     private readonly IReportLancamentosCategoriaRepository _reportRepo;
     private readonly IAuthenticationManager _authenticationManager;
@@ -18,7 +19,7 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
     }
 
     #region Consolidado
-    
+
     public Result<ICollection<CategoriaReportItemDto>> LancamentosPorCategoriaConsolidado(ReportLancamentoFilterDto filtro)
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
@@ -145,9 +146,30 @@ public class ReportLancamentosCategoriaService : IReportLancamentosCategoriaServ
 
     #endregion
 
-    public Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro)
+    public async Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro)
     {
-        throw new NotImplementedException();
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        //pega o total
+        var total = await _reportRepo.DetalheTotalRegistros(filtro, userInfo.Id);
+
+        //faz a consulta paginada
+        var lancamentos = await _reportRepo.DetalhePaginado(filtro, userInfo.Id);
+
+        //transforma no tipo de retorno
+        ICollection<LancamentoListItemDto> ret =
+            lancamentos.Select(l => new LancamentoListItemDto(l)).ToList();
+
+        return Pagination(pagedData: ret, total: total);
+    }
+
+    public async Task<Result<decimal>> ObterDetalheSomatorio(ReportLancamentoDetalheFilterDto filtro)
+    {
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        var somatorio = await _reportRepo.DetalheSomatorio(filtro, userInfo.Id);
+
+        return somatorio;
     }
 
 }

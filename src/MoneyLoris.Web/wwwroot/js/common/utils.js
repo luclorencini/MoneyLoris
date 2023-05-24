@@ -192,6 +192,24 @@
         return u;
     },
 
+    //jan - 1 / dez - 12 - retorna nome do mes (ex: Maio)
+    mesPorExtenso(m) {
+        let d = new Date(); //pega o dia de hoje
+        d.setMonth(m - 1);
+        d.setDate(1);
+        return d.toLocaleString('pt-BR', { month: 'long' });
+    },
+
+    //jan - 1 / dez - 12 - retorna tres letras: (ex: JAN)
+    mesAbreviado(m) {
+        let d = new Date(); //pega o dia de hoje
+        d.setMonth(m - 1);
+        d.setDate(1);
+        let mes = d.toLocaleString('pt-BR', { month: 'short' });
+        return mes.substring(0, 3).toUpperCase();
+    },
+    
+
     /*
      * Validação de Documentos
      */

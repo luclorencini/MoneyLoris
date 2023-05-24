@@ -27,16 +27,17 @@ public class RelatorioController : BaseController
         return Ok(ret);
     }
 
-    //[HttpPost]
-    //public IActionResult ObterDetalheInfo([FromBody] ReportLancamentoDetalheFilterDto filtro)
-    //{
-
-    //}
-
     [HttpPost]
     public async Task<IActionResult> DetalheListagem([FromBody] ReportLancamentoDetalheFilterDto filtro)
     {
         var ret = await _reportService.PesquisarDetalhe(filtro);
+        return Ok(ret);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DetalheSomatorio([FromBody] ReportLancamentoDetalheFilterDto filtro)
+    {
+        var ret = await _reportService.ObterDetalheSomatorio(filtro);
         return Ok(ret);
     }
 

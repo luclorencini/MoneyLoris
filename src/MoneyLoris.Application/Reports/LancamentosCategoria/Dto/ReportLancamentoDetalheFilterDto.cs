@@ -7,4 +7,5 @@ public class ReportLancamentoDetalheFilterDto : PaginationFilter
     public int? IdSubcategoria { get; set; }
     public int Ano { get; set; }
     public int Mes { get; set; }
+    public bool TodosDaCategoria { get; set; }
 }

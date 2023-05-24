@@ -45,4 +45,18 @@ public class CommonController : BaseController
         var ret = await _categoriaService.ObterCategoriasUsuario(tipo);
         return Ok(ret);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Categoria(int id)
+    {
+        var ret = await _categoriaService.ObterCategoria(id);
+        return Ok(ret);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Subcategoria(int id)
+    {
+        var ret = await _categoriaService.ObterSubcategoria(id);
+        return Ok(ret);
+    }
 }

@@ -8,4 +8,5 @@ public interface IReportLancamentosCategoriaService
     Result<ICollection<CategoriaReportItemDto>> LancamentosPorCategoriaConsolidado(ReportLancamentoFilterDto filtro);
 
     Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> PesquisarDetalhe(ReportLancamentoDetalheFilterDto filtro);
+    Task<Result<decimal>> ObterDetalheSomatorio(ReportLancamentoDetalheFilterDto filtro);
 }

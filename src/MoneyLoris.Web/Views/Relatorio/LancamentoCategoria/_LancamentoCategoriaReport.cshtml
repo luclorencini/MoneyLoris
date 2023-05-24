@@ -1,6 +1,6 @@
 ﻿<partial name="_Moeda" />
 
-<partial name="/Views/Relatorio/LancamentoCategoria/_CategoriaAgrupadorDetalheModal.cshtml" />
+<partial name="/Views/Relatorio/LancamentoCategoria/_CategoriaAgrupadorDetalhe.cshtml" />
 
 @using (Html.VueTemplate())
 {
@@ -18,7 +18,7 @@
             <!-- filtro mobile -->
             <div class="barra-filtro-periodo">
                 <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
-                <span class="text-capitalize">{{mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
+                <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
                 <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
             </div>
 
@@ -70,7 +70,7 @@
 
             <div class="list-group list-group-flush" v-for="n1 in dados">
                 <div class="list-group-item p-0">
-                    <div class="rep-linha" v-bind:class="[n1.valor01 > 0 ? 'rep-linha-receita' : 'rep-linha-despesa']">
+                    <div class="rep-linha nivel-1" v-bind:class="[n1.valor01 > 0 ? 'rep-linha-receita' : 'rep-linha-despesa']">
 
                         <div class="item item-g1">
                             <i class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n1.closed, 'fa-solid fa-square-plus': n1.closed}" v-on:click="collapse(n1)"></i>
@@ -86,7 +86,7 @@
                     <template v-if="!n1.closed && n1.items">
                         <div class="list-group list-group-flush" v-for="n2 in n1.items">
                             <div class="list-group-item p-0">
-                                <div class="rep-linha">
+                                <div class="rep-linha nivel-2">
 
                                     <div class="item item-g2">
                                         <i v-if="!n2.items" class="sys-fg-dark-4 fa-regular fa-square-minus me-2"></i>
@@ -94,8 +94,8 @@
                                         <span>{{n2.descricao}}</span>
                                     </div>
 
-                                    <div class="mes valor-g2" v-for="n in filtro.quantidade">
-                                        <Moeda :valor="n2[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                    <div class="mes valor-g2" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n2, index, true)">
+                                        <Moeda :valor="n2[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                                     </div>
 
                                 </div>
@@ -103,13 +103,13 @@
                                 <template v-if="!n2.closed && n2.items">
                                     <div class="list-group list-group-flush" v-for="n3 in n2.items">
                                         <div class="list-group-item p-0">
-                                            <div class="rep-linha">
+                                            <div class="rep-linha nivel-3">
 
                                                 <div class="item item-g3" v-bind:class="{ 'fst-italic' : !  n3.descricao}">
                                                     <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
                                                 </div>
 
-                                                <div class="mes valor-g3 sys-clicavel" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n3, index)">
+                                                <div class="mes valor-g3" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n3, index, false)">
                                                     <Moeda :valor="n3[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
                                                 </div>
 
@@ -127,7 +127,7 @@
 
         </section>
 
-        <CategoriaAgrupadorDetalheModal ref="detalheModal"></CategoriaAgrupadorDetalheModal>
+        <CategoriaAgrupadorDetalhe ref="detalheOffset"></CategoriaAgrupadorDetalhe>
 
     </script>
 }
@@ -141,7 +141,7 @@
             name: 'LancamentoCategoriaReport',
             template: '#template-report-lanc-cat',
             mixins: [BaseMixin],
-            components: { Moeda, CategoriaAgrupadorDetalheModal },
+            components: { Moeda, CategoriaAgrupadorDetalhe },
 
             data: () => ({
                 filtro: {},
@@ -162,7 +162,7 @@
 
                             let item = {
                                 mes: mes,
-                                mesAbreviado: this.mesAbreviado(mes),
+                                mesAbreviado: utils.mesAbreviado(mes),
                                 ano: ano
                             };
 
@@ -302,28 +302,20 @@
                     return 'valor' + (n + '').padStart(2, '0');
                 },
 
-                mesAbreviado(n) {
-                    const d = new Date(this.filtro.ano, n - 1, 1);
-                    return utils.dataMesShort(d);
-                },
-
-                mesPorExtenso(n) {
-                    const d = new Date(this.filtro.ano, n - 1, 1);
-                    return `${d.toLocaleString('pt-BR', { month: 'long' })}`;
-                },
 
                 //métodos do detalhe
 
-                verDetalhamento(node, index) {
+                verDetalhamento(node, index, todosDaCategoria) {
 
                     let filtro = {
                         idCategoria: node.idCategoria,
                         idSubcategoria: node.idSubcategoria,
                         ano: this.cabecalhoItens[index - 1].ano,
-                        mes: this.cabecalhoItens[index - 1].mes
+                        mes: this.cabecalhoItens[index - 1].mes,
+                        todosDaCategoria
                     };
 
-                    this.$refs.detalheModal.carregar(filtro);
+                    this.$refs.detalheOffset.carregar(filtro);
                 }
             }
         }
@@ -338,7 +330,6 @@
         .filtro-rapido-opcao {
             margin: 0 0.25rem;
             padding: 0.25rem 0.75rem;
-            /*min-width: 6rem;*/
             border: 1px solid var(--sys-color-dark-4);
             border-radius: 5px;
             color: var(--sys-color-dark-4);
@@ -406,8 +397,8 @@
             border: 1px solid var(--sys-color-light-2);
         }
 
-        .rep-linha:not(.rep-linha-titulo):hover {
-            background-color: #fffde7;
+        .rep-linha.nivel-2:hover, .rep-linha.nivel-3:hover {
+            background-color: #fffde7; /* MDC YELLOW 50 */
         }
 
         .rep-linha-titulo {
@@ -486,6 +477,13 @@
             font-size: 1rem;
             font-weight: 500;
         }
+
+            .valor-g2:hover, .valor-g3:hover {
+                cursor: pointer;
+                background-color: #fff9c4; /* MDC YELLOW 100 */
+                border-color: #fdd835; /* MDC YELLOW 600 */
+                font-style: italic;
+            }
 
     </style>
 }

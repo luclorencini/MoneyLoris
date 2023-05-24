@@ -1,0 +1,187 @@
+﻿<partial name="_Pagination" />
+<partial name="/Views/Lancamento/_LancamentoTable.cshtml"></partial>
+
+@using (Html.VueTemplate())
+{
+    <script type="text/html" id="template-report-lanc-agr-det">
+
+        <div class="offcanvas offcanvas-end offcanvas-detalhe" tabindex="-1" ref="offcanvasDetalhe">
+            <div class="offcanvas-header sys-bg-light-4">
+
+                <div class="container px-0">
+                        <div class="row g-2">
+
+                            <div class="col col-12 col-lg-4">
+                                <label class="form-label d-none d-lg-block">Mês</label>
+                                <div class="lh-sm fw-bold fs-5 text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</div>
+                            </div>
+                            <div class="col col-12 col-lg-6">
+                                <label class="form-label d-none d-lg-block">Categoria</label>
+                                <div class="lh-sm fs-6 text-capitalize">
+                                    <span class="fw-bold">{{categoria.nome}}</span>
+                                    <template v-if="!filtro.todosDaCategoria">
+                                        <span> / </span>
+                                        <span v-if="subcategoria" class="fw-bold">{{subcategoria.nome}}</span>
+                                        <span v-else class="fst-italic">sem subcategoria</span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="col col-12 col-lg-2">
+                                <label class="form-label d-none d-lg-block">Total</label>
+                                <div class="lh-sm fs-4 fw-bold"><Moeda :valor="somatorio"></Moeda></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                <button type="button" class="btn-close" v-on:click="fechar()"></button>
+            </div>
+
+            <div class="offcanvas-body pt-0" v-ext-loading="loading">
+
+                <div class="list-group mt-2 mb-5">
+
+                    <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+
+                    <div class="list-group-item">
+                        <Pagination v-if="totalResults > 0"
+                    v-bind:currentPage="filtro.currentPage"
+                    v-bind:resultsPerPage="filtro.resultsPerPage"
+                    v-bind:totalResults="totalResults"
+                    v-on:pagination-change="paginar($event)">
+                        </Pagination>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </script>
+}
+
+@using (Html.VueScript())
+{
+    <script type="text/javascript">
+
+        const CategoriaAgrupadorDetalhe = {
+
+            name: 'CategoriaAgrupadorDetalhe',
+            template: '#template-report-lanc-agr-det',
+            mixins: [BaseMixin],
+            components: { LancamentoTable, Pagination, Moeda },
+
+            data: () => ({
+                filtro: {},
+                totalResults: 0,
+                lista: [],
+
+                somatorio: 0,
+                categoria: {},
+                subcategoria: {},
+
+                offCanvas: null
+            }),
+
+            methods: {
+
+                fechar() {
+                    bootstrapHelper.closeOffcanvas(this.offCanvas);
+                },
+
+                /*
+                campos esperados no filtro:
+                    idCategoria: o id da categoria
+                    idSubcategoria: o id da subcategoria, ou null se não tiver
+                    ano: o ano selecionado (ex: 2023)
+                    mes: o mes selecionado, entre 1 e 12
+                    todosDaCategoria: se true, traz todos daquela categoria, e não leva em consideração as subcategorias
+                */
+                async carregar(filtro) {
+
+                    this.filtro = filtro;
+
+                    //reseta paginacao
+                    this.filtro.currentPage = 1;
+
+                    this.obterInfo();
+                    await this.obterListagem();
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasDetalhe);
+                },
+
+                async obterInfo() {
+
+                    try {
+
+                        //clean-up
+                        this.categoria = {};
+                        this.subcategoria = null;
+                        this.somatorio = 0;
+
+                        //categoria
+                        let retc = await fetchData.fetchGetJson(`/common/categoria/${this.filtro.idCategoria}`);
+                        this.categoria = retc.value;
+
+                        //subcategoria, se existir
+                        if (this.filtro.idSubcategoria) {
+                            let rets = await fetchData.fetchGetJson(`/common/subcategoria/${this.filtro.idSubcategoria}`);
+                            this.subcategoria = rets.value;
+                        }
+
+                        //somatorio
+                        let retb = await fetchData.fetchPostJson(`/relatorio/detalheSomatorio`, this.filtro);
+                        this.somatorio = retb.value;
+
+                    }
+                    catch (e) {
+                        mensagemSistema.showMensagemErro(e);
+                    }
+                },
+
+                async paginar(paginacao) {
+
+                    this.filtro.currentPage = paginacao.currentPage;
+                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
+                    await this.obterListagem();
+                },
+
+                async obterListagem() {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson(`/relatorio/detalheListagem`, this.filtro);
+
+                        if (ret.ok) {
+                            this.totalResults = ret.value.total;
+                            this.lista = ret.value.dataPage;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                },
+            }
+        }
+
+    </script>
+}
+
+@using (Html.VueStyle())
+{
+    <style type="text/css">
+
+        .offcanvas-detalhe {
+            width: 75rem !important;
+        }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .offcanvas-detalhe .offcanvas-body {
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+        }
+
+    </style>
+}
