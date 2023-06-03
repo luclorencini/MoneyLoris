@@ -14,7 +14,7 @@
         </div>
 
         <template v-if="totalResults > 0">
-            <div v-for="l in lista" class="list-group-item sys-clicavel" v-on:click="editarLancamento(l)">
+            <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : isDataFutura(l.data) }" v-on:click="editarLancamento(l)">
                 <div class="lancamento-container">
                     <div class="data">
                         <div class="d-none d-lg-block">{{utils.dataCurta(l.data)}}</div>
@@ -64,6 +64,16 @@
 
                 editarLancamento(l) {
                     this.$emit('editar-lancamento', l);
+                },
+
+                isDataFutura(s) {
+
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let d = new Date(s);
+
+                    return d > today;
                 }
             }
         }
@@ -170,6 +180,20 @@
                     display: none;
                 }
         }
+
+
+        .lancamento-futuro {
+            background-color: #f0f5fa;
+        }
+
+            .lancamento-futuro:hover {
+                background-color: #e3f2fd; /* MDC BLUE 50 */
+            }
+
+            .lancamento-futuro .descricao {
+                color: #1976d2; /* MDC BLUE 700 */
+                font-weight: 500;
+            }
 
     </style>
 }
