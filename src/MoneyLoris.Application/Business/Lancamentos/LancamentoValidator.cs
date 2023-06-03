@@ -135,6 +135,19 @@ public class LancamentoValidator : ILancamentoValidator
             throw new BusinessException(
                 code: ErrorCodes.Lancamento_CamposObrigatorios,
                 message: "Lançamento que compõe transferência precisa definir o tipo da transferência");
+
+        //parcelas
+        if ((lancamento.ParcelaAtual is null && lancamento.ParcelaTotal is not null) ||
+            (lancamento.ParcelaAtual is not null && lancamento.ParcelaTotal is null))
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Parcela atual e o Total de parcelas precisam estar preenchidas");
+
+        if (lancamento.ParcelaAtual is not null && lancamento.ParcelaTotal is not null &&
+            lancamento.ParcelaAtual > lancamento.ParcelaTotal)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Parcela atual não pode ser maior que o total de parcelas");
     }
 
 

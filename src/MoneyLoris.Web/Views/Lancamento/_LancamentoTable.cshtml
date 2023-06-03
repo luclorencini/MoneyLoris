@@ -14,7 +14,7 @@
         </div>
 
         <template v-if="totalResults > 0">
-            <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : isDataFutura(l.data) }" v-on:click="editarLancamento(l)">
+            <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : isDataFutura(l.data)}" v-on:click="editarLancamento(l)">
                 <div class="lancamento-container">
                     <div class="data">
                         <div class="d-none d-lg-block">{{utils.dataCurta(l.data)}}</div>
@@ -28,7 +28,10 @@
                         <span>{{l.meioPagamentoNome}}</span>
                     </div>
                     <div class="categoria"><span>{{l.categoria}}</span><span v-if="l.subcategoria"> / {{l.subcategoria}}</span></div>
-                    <div class="descricao">{{l.descricao}}</div>
+                    <div class="descricao">
+                        <span v-if="l.parcelaAtual" class="parcela-hint" v-bind:class="{'ultima' : l.parcelaAtual == l.parcelaTotal}">{{l.parcelaAtual}}/{{l.parcelaTotal}}</span>
+                        <span>{{l.descricao}}</span>
+                    </div>
                     <div class="valor"><Moeda :valor="l.valor"></Moeda></div>
                     <div class="opcoes">
                         <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
@@ -193,6 +196,24 @@
             .lancamento-futuro .descricao {
                 color: #1976d2; /* MDC BLUE 700 */
                 font-weight: 500;
+            }
+
+
+        .parcela-hint {
+            margin-right: 0.25rem;
+            padding: 0 0.25rem;
+            font-size: 1em;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #424242; /* MDC GREY 800 */
+            background-color: #fff9c4; /* MDC YELLOW 100 */
+            border: 1px solid #fbc02d; /* MDC YELLOW 700 */
+            border-radius: 5px;
+        }
+
+            .parcela-hint.ultima {
+                background-color: #c8e6c9; /* MDC GREEN 100 */
+                border: 1px solid #81c784; /* MDC GREEN 300 */
             }
 
     </style>

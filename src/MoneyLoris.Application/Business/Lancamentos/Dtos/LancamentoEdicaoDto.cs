@@ -1,5 +1,5 @@
 ﻿namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
-public class LancamentoCadastroDto
+public class LancamentoEdicaoDto
 {
     public int Id { get; set; }
     public DateTime Data { get; set; }
@@ -9,9 +9,6 @@ public class LancamentoCadastroDto
     public int? IdSubcategoria { get; set; }
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
-    public short? Parcelas { get; set; }
-
-    public LancamentoCadastroDto()
-    {
-    }
+    public short? ParcelaAtual { get; set; }
+    public short? ParcelaTotal { get; set; }
 }

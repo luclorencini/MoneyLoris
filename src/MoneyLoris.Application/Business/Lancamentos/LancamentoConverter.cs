@@ -19,7 +19,8 @@ public class LancamentoConverter : ILancamentoConverter
     }
 
     public Lancamento Converter(LancamentoCadastroDto dto, TipoLancamento tipo,
-        DateTime? data = null, string descricao = null!, decimal? valor = null)
+        DateTime? data = null, string descricao = null!, decimal? valor = null, 
+        short? parcelaAtual = null, short? parcelaTotal = null)
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
@@ -47,6 +48,9 @@ public class LancamentoConverter : ILancamentoConverter
 
             Realizado = true,
             IdLancamentoTransferencia = null,
+
+            ParcelaAtual = parcelaAtual,
+            ParcelaTotal = parcelaTotal
         };
 
         _lancamentoValidator.EstaConsistente(lancamento);

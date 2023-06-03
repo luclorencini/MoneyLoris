@@ -33,7 +33,7 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
         return await TaskSuccess(ret);
     }
 
-    public async Task<Result<int>> Alterar(LancamentoCadastroDto lancamento)
+    public async Task<Result<int>> Alterar(LancamentoEdicaoDto lancamento)
     {
         return await TaskSuccess((123, "Lançamento alterado com sucesso."));
     }

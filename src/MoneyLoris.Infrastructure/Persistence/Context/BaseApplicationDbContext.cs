@@ -26,7 +26,8 @@ public class BaseApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.UseCollation("utf8mb4_unicode_ci")
+        modelBuilder
+            .UseCollation("utf8mb4_unicode_ci")
             .HasCharSet("utf8mb4");
 
         modelBuilder.Entity<Categoria>(entity =>
@@ -94,6 +95,10 @@ public class BaseApplicationDbContext : DbContext
             entity.Property(e => e.TipoTransferencia).HasColumnType("tinyint(4)");
 
             entity.Property(e => e.Valor).HasPrecision(8, 2);
+
+            entity.Property(e => e.ParcelaAtual).HasColumnType("smallint(7)");
+
+            entity.Property(e => e.ParcelaTotal).HasColumnType("smallint(7)");
 
             entity.HasOne(d => d.Categoria)
                 .WithMany(p => p.Lancamentos)

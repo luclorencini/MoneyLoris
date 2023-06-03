@@ -7,6 +7,6 @@ public interface ILancamentoService
     Task<Result<LancamentoInfoDto>> Obter(int id);
     Task<Result<int>> InserirReceita(LancamentoCadastroDto dto);
     Task<Result<int>> InserirDespesa(LancamentoCadastroDto dto);
-    Task<Result<int>> Alterar(LancamentoCadastroDto dto);
+    Task<Result<int>> Alterar(LancamentoEdicaoDto dto);
     Task<Result<int>> Excluir(int id);
 }

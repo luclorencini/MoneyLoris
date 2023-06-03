@@ -47,6 +47,15 @@
                                     </div>
                                 </div>
 
+                                <div class="col-4 offset-2">
+                                    <label class="form-label">Parcela</label>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaAtual">
+                                        <div class="mx-2">de</div>
+                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaTotal">
+                                    </div>
+                                </div>
+
                             </div>
                         </form>
                     </div>
@@ -156,6 +165,8 @@
 
                                 //conversões
                                 fieldConverter.stringToMoney(this.lancamento, 'valor');
+                                fieldConverter.stringToInt(this.lancamento, 'parcelaAtual');
+                                fieldConverter.stringToInt(this.lancamento, 'parcelaTotal');
 
                                 let catIds = utils.parseCatSub(this.lancamento.idCatSub);
                                 this.lancamento.idCategoria = catIds[0];

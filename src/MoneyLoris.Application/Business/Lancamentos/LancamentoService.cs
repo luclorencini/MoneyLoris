@@ -159,13 +159,15 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         var parcelas = _parcelaCalculator.CalculaParcelas(dto.Valor, dto.Parcelas!.Value, dto.Data);
 
-        int index = 1;
+        short index = 1;
 
         foreach (var p in parcelas)
         {
             var lanc = _lancamentoConverter.Converter(dto, tipo,
                 data: p.data, valor: p.valor,
-                descricao: $"{dto.Descricao} - {index}/{parcelas.Count}"
+                descricao: dto.Descricao,
+                parcelaAtual: index,
+                parcelaTotal: (short?)parcelas.Count
             );
 
             index++;
@@ -177,7 +179,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
     }
 
 
-    public async Task<Result<int>> Alterar(LancamentoCadastroDto dto)
+    public async Task<Result<int>> Alterar(LancamentoEdicaoDto dto)
     {
         _lancamentoValidator.NaoEhAdmin();
 
@@ -212,6 +214,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
         lancamento.Data = dto.Data;
         lancamento.IdCategoria = dto.IdCategoria;
         lancamento.IdSubcategoria = dto.IdSubcategoria;
+        
+        lancamento.ParcelaAtual = dto.ParcelaAtual;
+        lancamento.ParcelaTotal= dto.ParcelaTotal;
 
         //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
 

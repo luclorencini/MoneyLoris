@@ -85,7 +85,7 @@ public class LancamentoController : BaseController
     }
 
     [HttpPost()]
-    public async Task<IActionResult> Alterar([FromBody] LancamentoCadastroDto lancamento)
+    public async Task<IActionResult> Alterar([FromBody] LancamentoEdicaoDto lancamento)
     {
         var ret = await _lancamentoService.Alterar(lancamento);
         return Ok(ret);

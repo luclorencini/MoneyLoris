@@ -21,6 +21,10 @@ public class LancamentoListItemDto
 
     public int? IdLancamentoOrigemTransferencia { get; set; }
 
+    public short? ParcelaAtual { get; set; }
+    public short? ParcelaTotal { get; set; }
+
+
     public LancamentoListItemDto()
     {
     }
@@ -38,6 +42,9 @@ public class LancamentoListItemDto
 
         Descricao = lancamento.Descricao;
         Valor = lancamento.Valor;
+
+        ParcelaAtual = lancamento.ParcelaAtual;
+        ParcelaTotal = lancamento.ParcelaTotal;
 
         if (Operacao == OperacaoLancamento.LancamentoSimples)
         {

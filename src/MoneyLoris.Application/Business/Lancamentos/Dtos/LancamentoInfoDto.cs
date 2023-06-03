@@ -13,7 +13,8 @@ public class LancamentoInfoDto
     public int? IdSubcategoria { get; set; }
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
-    public short? Parcelas { get; set; }
+    public short? ParcelaAtual { get; set; }
+    public short? ParcelaTotal { get; set; }
 
     public LancamentoInfoDto()
     {
@@ -29,5 +30,7 @@ public class LancamentoInfoDto
         IdSubcategoria = lancamento.IdSubcategoria;
         Descricao = lancamento.Descricao;
         Valor = lancamento.Valor;
+        ParcelaAtual = lancamento.ParcelaAtual;
+        ParcelaTotal = lancamento.ParcelaTotal;
     }
 }

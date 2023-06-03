@@ -76,7 +76,9 @@ CREATE TABLE `Lancamento` (
   `IdCategoria` int NULL,
   `IdSubcategoria` int NULL,
   `Realizado` boolean NULL DEFAULT true,
-  `IdLancamentoTransferencia` int NULL
+  `IdLancamentoTransferencia` int NULL,
+  `ParcelaAtual` smallint NULL,
+  `ParcelaTotal` smallint NULL,
 );
 
 ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);

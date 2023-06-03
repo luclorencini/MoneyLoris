@@ -22,6 +22,9 @@ public partial class Lancamento : EntityBase
     public int? IdSubcategoria { get; set; }
     public bool? Realizado { get; set; }
     public int? IdLancamentoTransferencia { get; set; }
+    public short? ParcelaAtual { get; set; }
+    public short? ParcelaTotal { get; set; }
+
 
     public virtual Usuario Usuario { get; set; } = null!;
     public virtual MeioPagamento MeioPagamento { get; set; } = null!;

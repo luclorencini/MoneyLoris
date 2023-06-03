@@ -296,6 +296,8 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.Null(lanc.IdSubcategoria);
         Assert.True(lanc.Realizado);
         Assert.Null(lanc.IdLancamentoTransferencia);
+        Assert.Null(lanc.ParcelaAtual);
+        Assert.Null(lanc.ParcelaTotal);
 
         var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
 
@@ -349,6 +351,8 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.Equal(dto.IdSubcategoria, lanc.IdSubcategoria);
         Assert.True(lanc.Realizado);
         Assert.Null(lanc.IdLancamentoTransferencia);
+        Assert.Null(lanc.ParcelaAtual);
+        Assert.Null(lanc.ParcelaTotal);
 
         var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
 
@@ -405,12 +409,14 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc1.Operacao);
         Assert.Null(lanc1.TipoTransferencia);
         Assert.Equal(dataLanc1, lanc1!.Data);
-        Assert.Equal("Compras parceladas - 1/2", lanc1.Descricao);
+        Assert.Equal("Compras parceladas", lanc1.Descricao);
         Assert.Equal(-15, lanc1.Valor);
         Assert.Equal(dto.IdCategoria, lanc1.IdCategoria);
         Assert.Equal(dto.IdSubcategoria, lanc1.IdSubcategoria);
         Assert.True(lanc1.Realizado);
         Assert.Null(lanc1.IdLancamentoTransferencia);
+        Assert.Equal((short)1, lanc1.ParcelaAtual);
+        Assert.Equal((short)2, lanc1.ParcelaTotal);
 
 
         var lanc2 = lancs.Last();
@@ -422,12 +428,14 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc2.Operacao);
         Assert.Null(lanc2.TipoTransferencia);
         Assert.Equal(dataLanc2, lanc2!.Data);
-        Assert.Equal("Compras parceladas - 2/2", lanc2.Descricao);
+        Assert.Equal("Compras parceladas", lanc2.Descricao);
         Assert.Equal(-15, lanc2.Valor);
         Assert.Equal(dto.IdCategoria, lanc2.IdCategoria);
         Assert.Equal(dto.IdSubcategoria, lanc2.IdSubcategoria);
         Assert.True(lanc2.Realizado);
         Assert.Null(lanc2.IdLancamentoTransferencia);
+        Assert.Equal((short)2, lanc2.ParcelaAtual);
+        Assert.Equal((short)2, lanc2.ParcelaTotal);
 
 
         var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
