@@ -1,11 +1,12 @@
 ﻿<partial name="_Pagination" />
 <partial name="/Views/Lancamento/_LancamentoTable.cshtml"></partial>
+<partial name="/Views/Lancamento/_LancamentoModal.cshtml"></partial>
 
 @using (Html.VueTemplate())
 {
     <script type="text/html" id="template-report-lanc-agr-det">
 
-        <div class="offcanvas offcanvas-end offcanvas-detalhe" tabindex="-1" ref="offcanvasDetalhe">
+        <div class="offcanvas offcanvas-end offcanvas-detalhe" data-bs-backdrop="static" tabindex="-1" ref="offcanvasDetalhe">
             <div class="offcanvas-header sys-bg-light-4">
 
                 <div class="container px-0">
@@ -45,10 +46,10 @@
 
                     <div class="list-group-item">
                         <Pagination v-if="totalResults > 0"
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
+                        v-bind:currentPage="filtro.currentPage"
+                        v-bind:resultsPerPage="filtro.resultsPerPage"
+                        v-bind:totalResults="totalResults"
+                        v-on:pagination-change="paginar($event)">
                         </Pagination>
                     </div>
 
@@ -56,6 +57,8 @@
 
             </div>
         </div>
+
+        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="registrarAlteracao()"></LancamentoModal>
 
     </script>
 }
@@ -69,7 +72,8 @@
             name: 'CategoriaAgrupadorDetalhe',
             template: '#template-report-lanc-agr-det',
             mixins: [BaseMixin],
-            components: { LancamentoTable, Pagination, Moeda },
+            components: { LancamentoTable, LancamentoModal, Pagination, Moeda },
+            emits: ['lancamento-atualizado'],
 
             data: () => ({
                 filtro: {},
@@ -80,12 +84,19 @@
                 categoria: {},
                 subcategoria: {},
 
+                houveAlteracao: false,
+
                 offCanvas: null
             }),
 
             methods: {
 
                 fechar() {
+
+                    if (this.houveAlteracao) {
+                        this.$emit('lancamento-atualizado');
+                    }
+
                     bootstrapHelper.closeOffcanvas(this.offCanvas);
                 },
 
@@ -104,10 +115,14 @@
                     //reseta paginacao
                     this.filtro.currentPage = 1;
 
-                    this.obterInfo();
-                    await this.obterListagem();
+                    await this.obterDadosDetalhe();
 
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasDetalhe);
+                },
+
+                async obterDadosDetalhe() {
+                    await this.obterInfo();
+                    await this.obterListagem();
                 },
 
                 async obterInfo() {
@@ -161,6 +176,15 @@
                         }
                     });
                 },
+
+                editarLancamento(l) {
+                    this.$refs.lancModal.carregar(l.id);
+                },
+
+                async registrarAlteracao() {
+                    this.houveAlteracao = true;
+                    await this.obterDadosDetalhe();
+                }
             }
         }
 
