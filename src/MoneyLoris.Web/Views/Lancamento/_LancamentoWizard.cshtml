@@ -39,7 +39,7 @@
 
                                 <div class="col col-12">
                                     <h5 class="my-2">Qual é o valor?</h5>
-                                    <div class="input-group mb-3">
+                                    <div class="input-group mb-2">
                                         <span class="input-group-text fw-bold fs-3">R$</span>
                                         <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
                                             type="text" inputmode="decimal" required maxlength="10"
@@ -49,16 +49,16 @@
 
                                 <div class="col col-12">
                                     <h5 class="my-2">Quando foi a {{labelTipo}}?</h5>
-                                    <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
+                                    <input class="form-control form-control-lg fw-bold fs-3 mb-2" type="date" required v-model="dados.data">
                                 </div>
 
-                                <div class="col col-12 mt-3" v-if="isCartaoCredito">
-                                    <h5 class="my-2">Quantas parcelas?</h5>
-                                    <input class="form-control form-control-lg fs-4 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
+                                <div class="col col-12" v-if="isCartaoCredito">
+                                    <h5 class="my-1">Quantas parcelas?</h5>
+                                    <input class="form-control fs-4 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
                                 </div>
 
-                                <div class="col col-12 mt-3 text-end">
-                                    <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso3()">
+                                <div class="col col-12 mt-2 text-end">
+                                    <button class="btn btn-primary" type="button" v-on:click="avancarPasso3()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </button>
@@ -83,7 +83,7 @@
                                 </div>
 
                                 <div class="col col-12 mt-3 text-end">
-                                    <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
+                                    <button class="btn btn-primary" type="button" v-on:click="avancarPasso4()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </button>

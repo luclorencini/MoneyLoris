@@ -103,6 +103,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
                 l.IdUsuario == idUsuario &&
                 l.Tipo == tipo &&
                 l.Operacao == OperacaoLancamento.LancamentoSimples &&
+                l.Data <= DateTime.Today &&
                 (termoBusca == null || l.Descricao.ToUpper().Contains(termoBusca.ToUpper())))
             .OrderByDescending(l => l.Data)
             .ThenByDescending(l => l.Id)
