@@ -134,7 +134,6 @@ main {
 }
 
     .sys-clicavel:hover {
-        /* filter: brightness(80%); */
         background-color: var(--sys-color-hover);
     }
 
@@ -530,5 +529,30 @@ main {
         margin-top: 1rem;
     }
 }
+
+/* #endregion */
+
+/* #region Filtros Rapidos */
+
+.filtro-rapido-opcao {
+    margin: 0 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--sys-color-dark-4);
+    border-radius: 5px;
+    color: var(--sys-color-dark-4);
+    background-color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+    .filtro-rapido-opcao:hover {
+        filter: brightness(90%);
+        cursor: pointer;
+    }
+
+    .filtro-rapido-opcao:active {
+        transition-duration: 0.1s;
+        transform: scale(0.9);
+    }
 
 /* #endregion */

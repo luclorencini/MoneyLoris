@@ -4,6 +4,8 @@ using MoneyLoris.Application.Business.Auth;
 using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
+using MoneyLoris.Application.Business.Faturas;
+using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento;
@@ -60,6 +62,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITransferenciaService, TransferenciaService>();
         services.AddScoped<ITransferenciaValidator, TransferenciaValidator>();
 
+        services.AddScoped<IFaturaService, FaturaService>();
+
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();
         services.AddScoped<IReportLancamentosCategoriaRepository, ReportLancamentosCategoriaRepository>();
     }
@@ -75,6 +79,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ILancamentoService, LancamentoServiceStub>();
         services.AddScoped<ILancamentoConsultaService, LancamentoConsultaServiceStub>();
         services.AddScoped<ITransferenciaService, TransferenciaServiceStub>();
+        services.AddScoped<IFaturaService, FaturaServiceStub>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaServiceStub>();
     }

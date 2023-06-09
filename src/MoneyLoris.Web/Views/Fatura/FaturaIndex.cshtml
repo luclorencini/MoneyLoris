@@ -1,0 +1,10 @@
+﻿<partial name="_FaturaListagem" />
+
+@using (Html.VueScript())
+{
+    <script>
+        VueFactory.createAndMountApp(FaturaListagem, '#app');
+    </script>
+}
+
+<FaturaListagem></FaturaListagem>

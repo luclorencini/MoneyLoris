@@ -29,7 +29,7 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
             Id = m.Id,
             Nome = m.Nome,
             Tipo = m.Tipo,
-            TipoDescricao = ((TipoMeioPagamento)m.Tipo).ObterDescricao(),
+            TipoDescricao = m.Tipo.ObterDescricao(),
             Cor = m.Cor
         })
         .ToList();
@@ -41,7 +41,7 @@ public class MeioPagamentoServiceStub : ServiceBase, IMeioPagamentoService
         var ret = _meios;
 
         foreach (var c in ret)
-            c.TipoDescricao = ((TipoMeioPagamento)c.Tipo).ObterDescricao();
+            c.TipoDescricao = c.Tipo.ObterDescricao();
 
         ret = ret.OrderByDescending(x => x.Ativo)
             .ThenByDescending(x => x.Ordem.HasValue)
