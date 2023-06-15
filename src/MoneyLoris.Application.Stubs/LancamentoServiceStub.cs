@@ -24,12 +24,25 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             Id = 502,
             Data = SystemTime.Today().AddDays(-1),
             Tipo = TipoLancamento.Despesa,
+
             IdMeioPagamento = 302,  //nubank
+            MeioPagamentoNome = "Nubank",
+            MeioPagamentoTipo = TipoMeioPagamento.CartaoCredito,
+            MeioPagamentoCor = "820AD1",
+
             IdCategoria = 101,  //Alimentação
             IdSubcategoria = 213,  //Lanche
+            
             Descricao = "Mc Donald's",
-            Valor = 49.50M  //Importante: tem que voltar sempre positivo
+            Valor = 49.50M,  //Importante: tem que voltar sempre positivo
+
+            ParcelaAtual = 2,
+            ParcelaTotal = 6,
+
+            FaturaMes = DateTime.Today.Month,
+            FaturaAno = DateTime.Today.Year
         };
+
         return await TaskSuccess(ret);
     }
 

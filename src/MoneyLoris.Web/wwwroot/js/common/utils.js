@@ -297,7 +297,7 @@
 
     /* region Categoria e Subcategoria */
 
-    //transforma idCategoria e idSubcategoria numa unica string separada por traço.
+    //transforma idCategoria e idSubcategoria em uma unica string separada por traço.
     //se subcategoria for nula, ela vira zero
     catSubToString(idCat, idSub) {
         if (!idSub) idSub = 0;
@@ -313,6 +313,30 @@
         let idSub = (arr[1] == '0' ? null : parseInt(arr[1]));
 
         return [idCat, idSub];
+    },
+
+    /* endregion */
+
+    /* region Fatura */
+
+    //transforma mes e ano em uma unica string separada por traço.
+    mesAnoToString(mes, ano) {
+        return `${mes}-${ano}`;
+    },
+
+    //recebe uma string concatenada de mes e ano e retorna um array de 2 posições
+    // arr[0]: mes, arr[1]: ano
+    parseMesAno(str) {
+
+        if (str == null)
+            return [null, null];
+
+        let arr = str.split('-');
+
+        let mes = parseInt(arr[0]);
+        let ano = parseInt(arr[1]);
+
+        return [mes, ano];
     },
 
     /* endregion */

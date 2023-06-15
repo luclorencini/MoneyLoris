@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
+using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Web.Controllers.Base;
@@ -11,11 +12,17 @@ public class CommonController : BaseController
 {
     private readonly IMeioPagamentoService _meioPagamentoService;
     private readonly ICategoriaService _categoriaService;
+    private readonly IFaturaService _faturaService;
 
-    public CommonController(IMeioPagamentoService meioPagamentoService, ICategoriaService categoriaService)
+    public CommonController(
+        IMeioPagamentoService meioPagamentoService,
+        ICategoriaService categoriaService,
+        IFaturaService faturaService
+    )
     {
         _meioPagamentoService = meioPagamentoService;
         _categoriaService = categoriaService;
+        _faturaService = faturaService;
     }
 
     [HttpGet()]
@@ -57,6 +64,20 @@ public class CommonController : BaseController
     public async Task<IActionResult> Subcategoria(int id)
     {
         var ret = await _categoriaService.ObterSubcategoria(id);
+        return Ok(ret);
+    }
+
+    [HttpGet("{idCartao}")]
+    public async Task<IActionResult> Faturas(int idCartao)
+    {
+        var ret = await _faturaService.ObterFaturasSelecao(idCartao);
+        return Ok(ret);
+    }
+
+    [HttpGet("{idCartao}")]
+    public async Task<IActionResult> FaturaAtual(int idCartao)
+    {
+        var ret = await _faturaService.ObterFaturaAtual(idCartao);
         return Ok(ret);
     }
 }

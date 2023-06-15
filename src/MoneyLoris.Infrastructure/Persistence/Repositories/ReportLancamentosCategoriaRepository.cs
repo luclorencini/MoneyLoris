@@ -26,8 +26,6 @@ public class ReportLancamentosCategoriaRepository : IReportLancamentosCategoriaR
     {
         var t = Convert.ToInt32(tipo);
 
-        //todo - query tá com datas fixas para todos os meses de 2023. Parametrizar no futuro
-
         var query = @$"
 select c.Id as catId, c.Nome as catNome, c.Ordem as catOrdem, s.Id as subId, s.Nome as subNome, s.Ordem as subOrdem,
 {GeraSubqueriesLancamentosComSubcategoria(mes, ano, quantidade)}
@@ -91,7 +89,6 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
     private string GeraSubqueriesLancamentosComSubcategoria(int mes, int ano, int quantidade)
     {
         var ret = "";
-        //var pos = 1;
         var dataInicial = new DateTime(ano, mes, 1);
         for (int i = 1; i <= quantidade; i++)
         {
@@ -101,7 +98,6 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
                 ret += ",";
 
             dataInicial = dataInicial.AddMonths(1);
-            //pos++;
         }
 
         return ret;
@@ -110,7 +106,6 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
     private string GeraSubqueriesLancamentosSemSubcategoria(int mes, int ano, int quantidade)
     {
         var ret = "";
-        //var pos = 1;
         var dataInicial = new DateTime(ano, mes, 1);
         for (int i = 1; i <= quantidade; i++)
         {
@@ -120,7 +115,6 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
                 ret += ",";
 
             dataInicial = dataInicial.AddMonths(1);
-            //pos++;
         }
 
         return ret;

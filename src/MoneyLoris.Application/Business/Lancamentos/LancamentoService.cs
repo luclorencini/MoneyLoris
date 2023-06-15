@@ -53,7 +53,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<LancamentoInfoDto>> Obter(int id)
     {
-        var lancamento = await _lancamentoRepo.GetById(id);
+        var lancamento = await _lancamentoRepo.ObterInfo(id);
 
         _lancamentoValidator.Existe(lancamento);
         _lancamentoValidator.PertenceAoUsuario(lancamento);
@@ -87,6 +87,8 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     internal async Task<(int, decimal?)> Inserir(LancamentoCadastroDto dto, TipoLancamento tipo)
     {
+        //TODO - Lorencini - implementar lógica de fatura e escrever testes
+
         //validações
 
         _lancamentoValidator.NaoEhAdmin();
@@ -104,6 +106,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _lancamentoValidator.TipoLancamentoIgualTipoCategoria(tipo, categoria);
 
         _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.Parcelas);
+
+        //todo - lorencini - implementar validator
+        //_lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, idFatura);
 
         //preparar lançamentos
 
@@ -181,6 +186,8 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<int>> Alterar(LancamentoEdicaoDto dto)
     {
+        //TODO - Lorencini - implementar lógica de fatura e escrever testes
+
         _lancamentoValidator.NaoEhAdmin();
 
         var lancamento = await _lancamentoRepo.GetById(dto.Id);

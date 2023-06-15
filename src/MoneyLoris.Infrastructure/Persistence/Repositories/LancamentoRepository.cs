@@ -12,6 +12,16 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
 {
     public LancamentoRepository(BaseApplicationDbContext context) : base(context) { }
 
+    public async Task<Lancamento> ObterInfo(int id)
+    {
+        var ent = await _dbset
+            .Include(l => l.MeioPagamento)
+            .Where(l => l.Id == id)
+            .SingleOrDefaultAsync();
+
+        return ent!;
+    }
+
     public async Task<ICollection<Lancamento>> PesquisaPaginada(LancamentoFiltroDto filtro, int idUsuario)
     {
         var query = _dbset

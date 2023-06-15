@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.Faturas.Dtos;
+﻿using System.Collections.Generic;
+using MoneyLoris.Application.Business.Faturas.Dtos;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Common.Base;
@@ -7,7 +8,7 @@ using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
 public class FaturaServiceStub : ServiceBase, IFaturaService
-{
+{  
     public Task<Result<FaturaInfoDto>> ObterInfo(FaturaFiltroDto filtro)
     {
         var info = new FaturaInfoDto
@@ -132,5 +133,38 @@ public class FaturaServiceStub : ServiceBase, IFaturaService
         }
 
         return list;
+    }
+
+
+    public Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao)
+    {
+        var fat = new FaturaSelecaoDto {
+            Mes = DateTime.Today.Month,
+            Ano = DateTime.Today.Year
+        };
+
+        return TaskSuccess(fat);
+    }
+
+    public Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao)
+    {
+        ICollection<FaturaSelecaoDto> list = new List<FaturaSelecaoDto>();
+
+        var d = DateTime.Today.AddMonths(-1);
+
+        for (int i = 0; i < 12; i++)
+        {
+            var f = new FaturaSelecaoDto
+            {
+                Mes = d.Month,
+                Ano = d.Year
+            };
+
+            list.Add(f);
+
+            d = d.AddMonths(1);
+        }
+
+        return TaskSuccess(list);
     }
 }

@@ -42,8 +42,8 @@
                                     <div class="input-group mb-2">
                                         <span class="input-group-text fw-bold fs-3">R$</span>
                                         <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
-                                            type="text" inputmode="decimal" required maxlength="10"
-                                            v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso3()">
+                                        type="text" inputmode="decimal" required maxlength="10"
+                                        v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso3()">
                                     </div>
                                 </div>
 
@@ -52,10 +52,23 @@
                                     <input class="form-control form-control-lg fw-bold fs-3 mb-2" type="date" required v-model="dados.data">
                                 </div>
 
-                                <div class="col col-12" v-if="isCartaoCredito">
-                                    <h5 class="my-1">Quantas parcelas?</h5>
-                                    <input class="form-control fs-4 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
-                                </div>
+                                <template v-if="isCartaoCredito">
+
+                                    <div class="col col-6">
+                                        <h5 class="my-1">Quantas parcelas?</h5>
+                                        <input class="form-control fs-5" type="number" min="1" max="36" v-model="dados.parcelas">
+                                    </div>
+
+                                    <div class="col col-6">
+                                        <h5 class="my-1">Qual fatura?</h5>
+                                        <select class="form-select fs-5" v-model="dados.faturaSelecionada">
+                                            <option v-for="f in faturas" :value="utils.mesAnoToString(f.mes, f.ano)">
+                                                {{utils.mesAbreviado(f.mes)}} / {{f.ano}}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                </template>
 
                                 <div class="col col-12 mt-2 text-end">
                                     <button class="btn btn-primary" type="button" v-on:click="avancarPasso3()">
@@ -79,7 +92,7 @@
                                 <div class="col col-12">
                                     <h5 class="my-2">Informe uma curta descrição:</h5>
                                     <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
-                                        v-model="dados.descricao" v-on:input="buscarDigitacao()" v-on:keyup.enter="avancarPasso4()">
+                                    v-model="dados.descricao" v-on:input="buscarDigitacao()" v-on:keyup.enter="avancarPasso4()">
                                 </div>
 
                                 <div class="col col-12 mt-3 text-end">
@@ -184,7 +197,7 @@
                                     </div>
                                 </div>
 
-                                
+
                             </div>
                         </div>
 
@@ -224,6 +237,9 @@
 
                 meios: [],
                 meioPagamentoSelecionado: {},
+
+                faturas: [],
+
                 sugestoes: [],
                 categorias: [],
 
@@ -232,7 +248,7 @@
 
             computed: {
 
-                isCartaoCredito(){
+                isCartaoCredito() {
                     return (this.meioPagamentoSelecionado.tipo == 3);
                 },
 
@@ -276,6 +292,10 @@
                     this.dados = {};
                     this.meios = [];
                     this.meioPagamentoSelecionado = {};
+
+                    this.faturas = [];
+                    this.faturaSelecionada = '';
+
                     this.sugestoes = [];
                     this.categorias = [];
 
@@ -303,7 +323,7 @@
 
                     await this.setLoadingAndExecute(async () => {
                         let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
-                        if (ret.ok){
+                        if (ret.ok) {
                             this.meios = ret.value;
                         }
                         else {
@@ -320,15 +340,53 @@
 
                 // passo 2
 
-                avancarPasso2() {
+                async avancarPasso2() {
                     this.passo = 2;
                     this.dados.data = utils.dateToInput(new Date());
 
-                    if (this.isCartaoCredito && !this.dados.parcelas) {
-                        this.dados.parcelas = 1;
+                    if (this.isCartaoCredito) {
+
+                        //inicializa numero de parcela
+                        if (!this.dados.parcelas) {
+                            this.dados.parcelas = 1;
+                        }
+
+                        await this.carregarDadosFatura();
+                    }
+                    else {
+                        //reseta eventuais valores selecionados
+                        this.dados.parcelas = null;
+                        this.faturas = [];
+                        this.dados.faturaSelecionada = null;
                     }
 
                     this.setFocus('campoValor');
+                },
+
+                async carregarDadosFatura() {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        let retf = await fetchData.fetchGetJson(`/common/faturas/{this.dados.idMeioPagamento}`);
+                        if (retf.ok) {
+                            this.faturas = retf.value;
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(retf.message);
+                            return;
+                        }
+
+                        let reta = await fetchData.fetchGetJson(`/common/faturaAtual/{this.dados.idMeioPagamento}`);
+                        if (reta.ok) {
+                            let fat = reta.value;
+                            this.dados.faturaSelecionada = utils.mesAnoToString(fat.mes, fat.ano);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(reta.message);
+                            return;
+                        }
+                    });
+
                 },
 
                 // passo 3
@@ -367,7 +425,7 @@
                     await this.setLoadingAndExecute(async () => {
                         const url = (this.tipo == 1 ? '/lancamento/sugestoes/receitas' : '/lancamento/sugestoes/despesas');
                         let ret = await fetchData.fetchPostJson(url, termo);
-                        if (ret.ok){
+                        if (ret.ok) {
                             this.sugestoes = ret.value;
                         }
                         else {
@@ -431,6 +489,11 @@
                             //conversoes
                             fieldConverter.stringToMoney(this.dados, 'valor');
 
+                            let fat = utils.parseMesAno(this.dados.faturaSelecionada);
+                            this.dados.faturaMes = fat[0];
+                            this.dados.faturaAno = fat[1];
+
+
                             const url = (this.tipo == 1 ? '/lancamento/lancar/receita' : '/lancamento/lancar/despesa');
 
                             let ret = await fetchData.fetchPostJson(url, this.dados);
@@ -448,7 +511,19 @@
                             mensagemSistema.showMensagemErro(e);
                         }
                     });
-                }
+                },
+
+                //converterDadosFatura() {
+                //    if (this.isCartaoCredito) {
+                //        let fat = utils.parseMesAno(this.dados.faturaSelecionada);
+                //        this.dados.faturaMes = fat[0];
+                //        this.dados.faturaAno = fat[1];
+                //    }
+                //    else{
+                //        this.dados.faturaMes = null;
+                //        this.dados.faturaAno = null;
+                //    }
+                //}
 
             }
         }

@@ -148,6 +148,8 @@ public class LancamentoValidator : ILancamentoValidator
             throw new BusinessException(
                 code: ErrorCodes.Lancamento_CamposObrigatorios,
                 message: "Parcela atual não pode ser maior que o total de parcelas");
+
+        //TODO - fatura
     }
 
 
@@ -175,4 +177,8 @@ public class LancamentoValidator : ILancamentoValidator
                 message: "Não é possível trocar o meio de pagamento na alteração");
     }
 
+    public void LancamentoCartaoCreditoTemQueTerFatura(MeioPagamento meio, int? idFatura)
+    {
+        throw new NotImplementedException();
+    }
 }

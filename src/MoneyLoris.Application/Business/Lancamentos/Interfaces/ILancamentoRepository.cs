@@ -6,6 +6,7 @@ using MoneyLoris.Application.Domain.Enums;
 namespace MoneyLoris.Application.Business.Lancamentos.Interfaces;
 public interface ILancamentoRepository : IRepositoryBase<Lancamento>
 {
+    Task<Lancamento> ObterInfo(int id);
     Task<ICollection<Lancamento>> PesquisaPaginada(LancamentoFiltroDto filtro, int idUsuario);
     Task<int> PesquisaTotalRegistros(LancamentoFiltroDto filtro, int idUsuario);
     Task<decimal> SomatorioReceitasFiltro(LancamentoFiltroDto filtro, int idUsuario);

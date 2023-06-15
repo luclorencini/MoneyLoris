@@ -9,8 +9,12 @@ public class LancamentoCadastroDto
     public int? IdSubcategoria { get; set; }
     public string Descricao { get; set; } = default!;
     public decimal Valor { get; set; }
-    public short? Parcelas { get; set; }
 
+    //campos para cartão de crédito
+    public short? Parcelas { get; set; }
+    public int? FaturaMes { get; set; }
+    public int? FaturaAno { get; set; }
+    
     public LancamentoCadastroDto()
     {
     }
