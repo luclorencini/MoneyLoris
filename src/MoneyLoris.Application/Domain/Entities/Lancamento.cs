@@ -24,6 +24,7 @@ public partial class Lancamento : EntityBase
     public int? IdLancamentoTransferencia { get; set; }
     public short? ParcelaAtual { get; set; }
     public short? ParcelaTotal { get; set; }
+    public int? IdFatura { get; set; }
 
 
     public virtual Usuario Usuario { get; set; } = null!;
@@ -31,6 +32,7 @@ public partial class Lancamento : EntityBase
     public virtual Categoria? Categoria { get; set; }
     public virtual Subcategoria? Subcategoria { get; set; }
     public virtual Lancamento? LancamentoTransferencia { get; set; }
+    public virtual Fatura? Fatura { get; set; }
 
     //TODO - preciso mesmo dessa navegação?
     public virtual ICollection<Lancamento> LancamentoTransferenciaRelacionado { get; set; }

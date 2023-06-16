@@ -18,6 +18,7 @@ public class BaseApplicationDbContext : DbContext
 
 
     public virtual DbSet<Categoria> Categorias { get; set; } = null!;
+    public virtual DbSet<Fatura> Faturas { get; set; } = null!;
     public virtual DbSet<Lancamento> Lancamentos { get; set; } = null!;
     public virtual DbSet<MeioPagamento> MeiosPagamento { get; set; } = null!;
     public virtual DbSet<Subcategoria> Subcategorias { get; set; } = null!;
@@ -56,11 +57,43 @@ public class BaseApplicationDbContext : DbContext
                 .HasConstraintName("FK_Categoria_Usuario");
         });
 
+        modelBuilder.Entity<Fatura>(entity =>
+        {
+            entity.ToTable("fatura");
+
+            entity.HasIndex(e => new { e.IdMeioPagamento, e.Mes, e.Ano }, "UI_Fatura_MeioPagamentoMesAno")
+                .IsUnique();
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+
+            entity.Property(e => e.Ano).HasColumnType("int(11)");
+
+            entity.Property(e => e.DataFim).HasColumnType("datetime");
+
+            entity.Property(e => e.DataInicio).HasColumnType("datetime");
+
+            entity.Property(e => e.DataVencimento).HasColumnType("datetime");
+
+            entity.Property(e => e.IdMeioPagamento).HasColumnType("int(11)");
+
+            entity.Property(e => e.Mes).HasColumnType("int(11)");
+
+            entity.Property(e => e.ValorPago).HasPrecision(8, 2);
+
+            entity.HasOne(d => d.MeioPagamento)
+                .WithMany(p => p.Faturas)
+                .HasForeignKey(d => d.IdMeioPagamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Fatura_MeioPagamento");
+        });
+
         modelBuilder.Entity<Lancamento>(entity =>
         {
             entity.ToTable("lancamento");
 
             entity.HasIndex(e => e.IdCategoria, "IX_Lancamento_Categoria");
+
+            entity.HasIndex(e => e.IdFatura, "FK_Lancamento_Fatura");
 
             entity.HasIndex(e => e.IdLancamentoTransferencia, "IX_Lancamento_LancamentoTransferencia");
 
@@ -88,6 +121,10 @@ public class BaseApplicationDbContext : DbContext
 
             entity.Property(e => e.Operacao).HasColumnType("tinyint(4)");
 
+            entity.Property(e => e.ParcelaAtual).HasColumnType("smallint(6)");
+
+            entity.Property(e => e.ParcelaTotal).HasColumnType("smallint(6)");
+
             entity.Property(e => e.Realizado).HasDefaultValueSql("'1'");
 
             entity.Property(e => e.Tipo).HasColumnType("tinyint(4)");
@@ -96,14 +133,15 @@ public class BaseApplicationDbContext : DbContext
 
             entity.Property(e => e.Valor).HasPrecision(8, 2);
 
-            entity.Property(e => e.ParcelaAtual).HasColumnType("smallint(7)");
-
-            entity.Property(e => e.ParcelaTotal).HasColumnType("smallint(7)");
-
             entity.HasOne(d => d.Categoria)
                 .WithMany(p => p.Lancamentos)
                 .HasForeignKey(d => d.IdCategoria)
                 .HasConstraintName("FK_Lancamento_Categoria");
+
+            entity.HasOne(d => d.Fatura)
+                    .WithMany(p => p.Lancamentos)
+                    .HasForeignKey(d => d.IdFatura)
+                    .HasConstraintName("FK_Lancamento_Fatura");
 
             entity.HasOne(d => d.LancamentoTransferencia)
                 .WithMany(p => p.LancamentoTransferenciaRelacionado)

@@ -63,6 +63,21 @@ ALTER TABLE `Subcategoria` ADD INDEX `IX_Subcategoria_Categoria` (`IdCategoria`)
 ALTER TABLE `Subcategoria` ADD CONSTRAINT `UI_Subcategoria_Nome` UNIQUE (`IdCategoria`, `Nome`);
 
 
+CREATE TABLE `Fatura` (
+  `Id` int PRIMARY KEY AUTO_INCREMENT,
+  `IdMeioPagamento` int NOT NULL,
+  `Mes` int NOT NULL,
+  `Ano` int NOT NULL,
+  `DataInicio` datetime NOT NULL,
+  `DataFim` datetime NOT NULL,
+  `DataVencimento` datetime NOT NULL,
+  `ValorPago` decimal(8,2)
+);
+
+ALTER TABLE `Fatura` ADD CONSTRAINT `FK_Fatura_MeioPagamento` FOREIGN KEY (`IdMeioPagamento`) REFERENCES `MeioPagamento` (`Id`);
+ALTER TABLE `Fatura` ADD CONSTRAINT `UI_Fatura_MeioPagamentoMesAno` UNIQUE (`IdMeioPagamento`, `Mes`, `Ano`);
+
+
 CREATE TABLE `Lancamento` (
   `Id` int PRIMARY KEY AUTO_INCREMENT,
   `IdUsuario` int NOT NULL,
@@ -79,6 +94,7 @@ CREATE TABLE `Lancamento` (
   `IdLancamentoTransferencia` int NULL,
   `ParcelaAtual` smallint NULL,
   `ParcelaTotal` smallint NULL,
+  `IdFatura` int
 );
 
 ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Usuario` FOREIGN KEY (`IdUsuario`) REFERENCES `Usuario` (`Id`);
@@ -95,6 +111,9 @@ ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_Subcategoria` (`IdSubcategoria
 
 ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_LancamentoTransferencia` FOREIGN KEY (`IdLancamentoTransferencia`) REFERENCES `Lancamento` (`Id`);
 ALTER TABLE `Lancamento` ADD INDEX `IX_Lancamento_LancamentoTransferencia` (`IdLancamentoTransferencia`);
+
+ALTER TABLE `Lancamento` ADD CONSTRAINT `FK_Lancamento_Fatura` FOREIGN KEY (`IdFatura`) REFERENCES `Fatura` (`Id`);
+
 
 --
 
