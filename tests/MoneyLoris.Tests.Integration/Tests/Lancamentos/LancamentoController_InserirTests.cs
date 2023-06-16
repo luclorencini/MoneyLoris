@@ -5,6 +5,7 @@ using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
+using Org.BouncyCastle.Utilities;
 
 namespace MoneyLoris.Tests.Integration.Tests.Lancamentos;
 public class LancamentoController_InserirTests : IntegrationTestsBase
@@ -307,7 +308,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
     }
 
     [Fact]
-    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_LancamentoRealizado_SaldoMeioNaoAtualiza()
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_SemFatura_LancamentoRealizado_SaldoMeioNaoAtualiza_FaturaCriada()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -315,7 +316,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito, fecha: 5, vence: 15);
 
         //Act
         var dto = new LancamentoCadastroDto
@@ -326,7 +327,9 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
             IdSubcategoria = sub.Id,
             IdMeioPagamento = mei.Id,
             Valor = 10,
-            Parcelas = 1
+            Parcelas = 1,
+            FaturaMes = 5,
+            FaturaAno = 2023
         };
 
         var response = await HttpClient.PostAsJsonAsync("/lancamento/lancar/despesa", dto);
@@ -359,10 +362,20 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
         Assert.Equal(0, conta.Saldo);
+
+        var faturas = await Context.Faturas.ToListAsync();
+        Assert.NotNull(faturas);
+        Assert.True(faturas.Count == 1);
+
+        var fatura = faturas.First();
+        Assert.Equal(lanc.IdFatura, fatura.Id);
+        Assert.Equal(mei.Id, fatura.IdMeioPagamento);
+        Assert.Equal(dto.FaturaMes, fatura.Mes);
+        Assert.Equal(dto.FaturaAno, fatura.Ano);
     }
 
     [Fact]
-    public async Task LancarDespesa_DadosCertos_MeioEhCartao_DuasParcelas_LancamentosRealizados_SaldoMeioNaoAtualiza()
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_FaturaJaExiste_LancamentoRealizado_SaldoMeioNaoAtualiza()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -371,6 +384,76 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var fat = await DbSeeder.InserirFatura(mei.Id, mes: 6, ano: 2023);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Data = SystemTime.Today(),
+            Descricao = "Compras",
+            IdCategoria = cat.Id,
+            IdSubcategoria = sub.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 25,
+            Parcelas = 1,
+            FaturaMes = 6,
+            FaturaAno = 2023
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/lancar/despesa", dto);
+
+        //Assert
+        var idLancamento = await response.ConverteResultOk<int>();
+
+        Assert.True(idLancamento > 0);
+
+        var lanc = await Context.Lancamentos.FindAsync(idLancamento);
+
+        Assert.NotNull(lanc);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, lanc!.IdUsuario);
+        Assert.Equal(dto.IdMeioPagamento, lanc.IdMeioPagamento);
+        Assert.Equal(TipoLancamento.Despesa, lanc.Tipo);
+        Assert.Equal(OperacaoLancamento.LancamentoSimples, lanc.Operacao);
+        Assert.Null(lanc.TipoTransferencia);
+        Assert.Equal(dto.Data, lanc!.Data);
+        Assert.Equal(dto.Descricao, lanc.Descricao);
+        Assert.Equal(-25, lanc.Valor);
+        Assert.Equal(dto.IdCategoria, lanc.IdCategoria);
+        Assert.Equal(dto.IdSubcategoria, lanc.IdSubcategoria);
+        Assert.True(lanc.Realizado);
+        Assert.Null(lanc.IdLancamentoTransferencia);
+        Assert.Null(lanc.ParcelaAtual);
+        Assert.Null(lanc.ParcelaTotal);
+
+        var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
+
+        Assert.NotNull(conta);
+        Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
+        Assert.Equal(0, conta.Saldo);
+
+        var faturas = await Context.Faturas.ToListAsync();
+        Assert.NotNull(faturas);
+        Assert.True(faturas.Count == 1);
+
+        var fatura = faturas.First();
+        Assert.Equal(mei.Id, fatura.IdMeioPagamento);
+        Assert.Equal(fat.Mes, fatura.Mes);
+        Assert.Equal(fat.Ano, fatura.Ano);
+        Assert.Equal(fat.Id, fatura.Id);
+        Assert.Equal(lanc.IdFatura, fatura.Id);
+    }
+
+    [Fact]
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_DuasParcelas_SoPrimeiraFaturaExiste_LancamentosRealizados_SaldoMeioNaoAtualiza_UmaFaturaCriada()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var fat = await DbSeeder.InserirFatura(mei.Id, mes: 8, ano: 2023);
 
         var dataLanc1 = new DateTime(2023, 4, 28);
         var dataLanc2 = new DateTime(2023, 5, 28);
@@ -384,7 +467,9 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
             IdSubcategoria = sub.Id,
             IdMeioPagamento = mei.Id,
             Valor = 30,
-            Parcelas = 2
+            Parcelas = 2,
+            FaturaMes = 8,
+            FaturaAno = 2023
         };
 
         var response = await HttpClient.PostAsJsonAsync("/lancamento/lancar/despesa", dto);
@@ -443,5 +528,22 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
         Assert.Equal(0, conta.Saldo);
+
+        var faturas = await Context.Faturas.ToListAsync();
+        Assert.NotNull(faturas);
+        Assert.True(faturas.Count == 2);
+
+        var fat1 = faturas.First();
+        Assert.Equal(mei.Id, fat1.IdMeioPagamento);
+        Assert.Equal(8, fat1.Mes);
+        Assert.Equal(2023, fat1.Ano);
+        Assert.Equal(fat.Id, fat1.Id);
+        Assert.Equal(lanc1.IdFatura, fat1.Id);
+
+        var fat2 = faturas.Last();
+        Assert.Equal(lanc2.IdFatura, fat2.Id);
+        Assert.Equal(mei.Id, fat2.IdMeioPagamento);
+        Assert.Equal(9, fat2.Mes);
+        Assert.Equal(2023, fat2.Ano);
     }
 }

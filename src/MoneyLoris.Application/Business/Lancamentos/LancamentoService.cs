@@ -1,5 +1,6 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Categorias.Interfaces;
+using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -23,6 +24,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
     private readonly IAuthenticationManager _authenticationManager;
     private readonly ILancamentoConverter _lancamentoConverter;
     private readonly IParcelaCalculator _parcelaCalculator;
+    private readonly IFaturaService _faturaService;
 
     public LancamentoService(
         ILancamentoValidator lancamentoValidator,
@@ -35,7 +37,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
         ISubcategoriaRepository subcategoriaRepo,
         IAuthenticationManager authenticationManager,
         ILancamentoConverter lancamentoConverter,
-        IParcelaCalculator parcelaCalculator)
+        IParcelaCalculator parcelaCalculator,
+        IFaturaService faturaService
+    )
     {
         _lancamentoValidator = lancamentoValidator;
         _lancamentoRepo = lancamentoRepo;
@@ -48,6 +52,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _authenticationManager = authenticationManager;
         _lancamentoConverter = lancamentoConverter;
         _parcelaCalculator = parcelaCalculator;
+        _faturaService = faturaService;
     }
 
 
@@ -87,8 +92,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     internal async Task<(int, decimal?)> Inserir(LancamentoCadastroDto dto, TipoLancamento tipo)
     {
-        //TODO - Lorencini - implementar lógica de fatura e escrever testes
-
         //validações
 
         _lancamentoValidator.NaoEhAdmin();
@@ -106,16 +109,15 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _lancamentoValidator.TipoLancamentoIgualTipoCategoria(tipo, categoria);
 
         _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.Parcelas);
-
-        //todo - lorencini - implementar validator
-        //_lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, idFatura);
+        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
 
         //preparar lançamentos
 
         ICollection<Lancamento> lancamentos = null!;
 
         //se for despesa no cartão de crédito com mais de uma parcela, prepara o parcelamento
-        if (tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
+        //if (tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
+        if (tipo == TipoLancamento.Despesa && meio.IsCartao() && dto.Parcelas > 1)
         {
             lancamentos = PrepararLancamentosParcelados(dto, tipo);
         }
@@ -123,6 +125,32 @@ public class LancamentoService : ServiceBase, ILancamentoService
         {
             var lanc = _lancamentoConverter.Converter(dto, tipo);
             lancamentos = new List<Lancamento> { lanc };
+        }
+
+        //preparar faturas para os lançamentos, caso seja cartão de crédito
+
+        if (meio.IsCartao())
+        {
+            var mesF = dto.FaturaMes!.Value;
+            var anoF = dto.FaturaAno!.Value;
+
+            foreach (var l in lancamentos)
+            {
+                //obtem fatura e seta no lançamento
+                var fatura = await _faturaService.ObterOuCriarFatura(meio, mesF, anoF);
+
+                l.IdFatura = fatura.Id;
+
+                //define próxima fatura (mês/ano)
+                if (mesF == 12)
+                {
+                    //dezembro: proximo mes é ano novo
+                    mesF = 1;
+                    anoF++;
+                }
+                else
+                    mesF++; //só incrementa o mês
+            }
         }
 
 
@@ -221,9 +249,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
         lancamento.Data = dto.Data;
         lancamento.IdCategoria = dto.IdCategoria;
         lancamento.IdSubcategoria = dto.IdSubcategoria;
-        
+
         lancamento.ParcelaAtual = dto.ParcelaAtual;
-        lancamento.ParcelaTotal= dto.ParcelaTotal;
+        lancamento.ParcelaTotal = dto.ParcelaTotal;
 
         //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
 

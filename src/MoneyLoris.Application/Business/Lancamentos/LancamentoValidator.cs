@@ -161,6 +161,15 @@ public class LancamentoValidator : ILancamentoValidator
                 message: "Não é possível lançar uma despesa de Cartão de Crédito sem informar número de parcelas");
     }
 
+    public void LancamentoCartaoCreditoTemQueTerFatura(MeioPagamento meio, int? mesFatura, int? anoFatura)
+    {
+        if (meio.Tipo == TipoMeioPagamento.CartaoCredito && 
+            (mesFatura is null || anoFatura is null))
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CartaoCreditoSemFatura,
+                message: "Não é possível lançar uma despesa de Cartão de Crédito sem informar mês e ano da fatura");
+    }
+
     public void TipoLancamentoIgualTipoCategoria(TipoLancamento tipo, Categoria categoria)
     {
         if (categoria.Tipo != tipo)
@@ -175,10 +184,5 @@ public class LancamentoValidator : ILancamentoValidator
             throw new BusinessException(
                 code: ErrorCodes.MeioPagamento_TipoDiferenteAlteracao,
                 message: "Não é possível trocar o meio de pagamento na alteração");
-    }
-
-    public void LancamentoCartaoCreditoTemQueTerFatura(MeioPagamento meio, int? idFatura)
-    {
-        throw new NotImplementedException();
-    }
+    }   
 }

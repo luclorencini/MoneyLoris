@@ -17,6 +17,8 @@ public interface IMeioPagamentoValidator
     void Ativo(MeioPagamento meio);
     void EstaConsistente(MeioPagamento meio);
 
+    void EhCartaoCredito(MeioPagamento meio);
+
     void NaoPodeMudarDeContaPraCartaoOuViceVersa(MeioPagamento meio, MeioPagamentoCadastroDto dto);
     Task NaoPossuiLancamentos(MeioPagamento meio);
 }

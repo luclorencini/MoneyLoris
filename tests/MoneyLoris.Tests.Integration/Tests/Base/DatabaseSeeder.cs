@@ -76,7 +76,9 @@ public class DatabaseSeeder
         string nome = "Conta",
         byte? ordem = null,
         decimal? saldo = 100,
-        bool ativo = true
+        bool ativo = true,
+        byte? fecha = 1,
+        byte? vence = 10
     )
     {
         var ent = await Context.MeiosPagamento.AddAsync(
@@ -91,8 +93,37 @@ public class DatabaseSeeder
                 Ordem = ordem,
 
                 Limite = (tipo == TipoMeioPagamento.CartaoCredito ? 5000 : null),
-                DiaFechamento = (tipo == TipoMeioPagamento.CartaoCredito ? 1 : null),
-                DiaVencimento = (tipo == TipoMeioPagamento.CartaoCredito ? 10 : null)
+                DiaFechamento = (tipo == TipoMeioPagamento.CartaoCredito ? fecha : null),
+                DiaVencimento = (tipo == TipoMeioPagamento.CartaoCredito ? vence : null)
+            });
+
+        await Context.SaveChangesAsync();
+
+        return ent.Entity;
+    }
+
+    public async Task<Fatura> InserirFatura(
+        int idCartao,
+        int mes = 6,
+        int ano = 2023,
+        DateTime? dataIni = null,
+        DateTime? dataFim = null,
+        DateTime? dataVen = null
+    )
+    {
+        if (dataIni is null) dataIni = new DateTime(2023, 5, 3);
+        if (dataFim is null) dataFim = new DateTime(2023, 6, 2);
+        if (dataVen is null) dataVen = new DateTime(2023, 6, 10);
+
+        var ent = await Context.Faturas.AddAsync(
+            new Fatura
+            {
+                IdMeioPagamento = idCartao,
+                Mes = mes,
+                Ano = ano,
+                DataInicio = dataIni.Value,
+                DataFim = dataFim.Value,
+                DataVencimento = dataVen.Value
             });
 
         await Context.SaveChangesAsync();

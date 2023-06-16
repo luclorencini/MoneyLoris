@@ -24,4 +24,10 @@ public partial class MeioPagamento : EntityBase
     public virtual Usuario Usuario { get; set; } = null!;
     public virtual ICollection<Lancamento> Lancamentos { get; set; }
     public virtual ICollection<Fatura> Faturas { get; set; }
+
+
+    public bool IsCartao()
+    {
+        return Tipo == TipoMeioPagamento.CartaoCredito;
+    }
 }

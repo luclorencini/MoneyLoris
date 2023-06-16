@@ -137,9 +137,12 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
         }
     }
 
-    private bool IsCartao(TipoMeioPagamento tipo)
+    public void EhCartaoCredito(MeioPagamento meio)
     {
-        return tipo == TipoMeioPagamento.CartaoCredito;
+        if (meio.Tipo != TipoMeioPagamento.CartaoCredito)
+            throw new BusinessException(
+                code: ErrorCodes.MeioPagamento_NaoEhCartaoCredito,
+                message: "Meio de pagamento informado não é cartão de crédito");
     }
 
     public void NaoPodeMudarDeContaPraCartaoOuViceVersa(MeioPagamento meio, MeioPagamentoCadastroDto dto)
@@ -165,4 +168,9 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 message: "Conta/Cartão possui lançamentos");
     }
 
+
+    private bool IsCartao(TipoMeioPagamento tipo)
+    {
+        return tipo == TipoMeioPagamento.CartaoCredito;
+    }
 }

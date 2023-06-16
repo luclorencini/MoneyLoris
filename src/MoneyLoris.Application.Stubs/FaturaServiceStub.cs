@@ -3,6 +3,7 @@ using MoneyLoris.Application.Business.Faturas.Dtos;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 
@@ -166,5 +167,22 @@ public class FaturaServiceStub : ServiceBase, IFaturaService
         }
 
         return TaskSuccess(list);
+    }
+
+    public async Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano)
+    {
+        var fatura = new Fatura
+        {
+            Id = 123,
+            IdMeioPagamento = cartao.Id,
+            Mes = mes,
+            Ano = ano,
+            DataInicio = new DateTime(2023, 5, 3),
+            DataFim = new DateTime(2023, 6, 2),
+            DataVencimento = new DateTime(2023, 6, 10),
+            ValorPago = null
+        };
+
+        return fatura;
     }
 }
