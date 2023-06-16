@@ -151,7 +151,7 @@ public class FaturaServiceStub : ServiceBase, IFaturaService
     {
         ICollection<FaturaSelecaoDto> list = new List<FaturaSelecaoDto>();
 
-        var d = DateTime.Today.AddMonths(-1);
+        var d = DateTime.Today.AddMonths(-6);
 
         for (int i = 0; i < 12; i++)
         {

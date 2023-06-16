@@ -12,19 +12,19 @@ public class FaturaService : ServiceBase, IFaturaService
     private readonly IFaturaFactory _faturaFactory;
     private readonly IFaturaRepository _faturaRepo;
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
-    //private readonly IMeioPagamentoRepository _meioPagamentoRepo;
+    private readonly IMeioPagamentoRepository _meioPagamentoRepo;
 
     public FaturaService(
         IFaturaFactory faturaFactory,
         IFaturaRepository faturaRepo,
-        //IMeioPagamentoRepository meioPagamentoRepo,
+        IMeioPagamentoRepository meioPagamentoRepo,
         IMeioPagamentoValidator meioPagamentoValidator
     )
     {
         _faturaFactory = faturaFactory;
         _faturaRepo = faturaRepo;
         _meioPagamentoValidator = meioPagamentoValidator;
-        //_meioPagamentoRepo = meioPagamentoRepo;
+        _meioPagamentoRepo = meioPagamentoRepo;
     }
 
     public Task<Result<FaturaInfoDto>> ObterInfo(FaturaFiltroDto filtro)
@@ -39,29 +39,61 @@ public class FaturaService : ServiceBase, IFaturaService
         throw new NotImplementedException();
     }
 
-    public Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao)
+    public async Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao)
     {
-        //TODO - Lorencini - implementar e escrever testes
-        throw new NotImplementedException();
+        var cartao = await _meioPagamentoRepo.GetById(IdCartao);
+
+        _meioPagamentoValidator.Existe(cartao);
+        _meioPagamentoValidator.PertenceAoUsuario(cartao);
+        _meioPagamentoValidator.Ativo(cartao);
+        _meioPagamentoValidator.EhCartaoCredito(cartao);
+
+        var dataBase = DateTime.Today;
+
+        if (dataBase.Day >= cartao.DiaFechamento)
+        {
+            //dia do fechamento ou depois: volta fatura do próximo mês
+            dataBase = dataBase.AddMonths(1);
+        }
+
+        var dto = new FaturaSelecaoDto
+        {
+            Mes = dataBase.Month,
+            Ano = dataBase.Year
+        };
+
+        return dto;
+
     }
 
     public Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao)
     {
-        //TODO - Lorencini - implementar e escrever testes
-        throw new NotImplementedException();
+
+        //a partir do mês/ano atual, lista os 6 meses anteriores e os 6 posteriores
+
+        ICollection<FaturaSelecaoDto> list = new List<FaturaSelecaoDto>();
+
+        var d = DateTime.Today.AddMonths(-6);
+
+        for (int i = 0; i < 12; i++)
+        {
+            var f = new FaturaSelecaoDto
+            {
+                Mes = d.Month,
+                Ano = d.Year
+            };
+
+            list.Add(f);
+
+            d = d.AddMonths(1);
+        }
+
+        return TaskSuccess(list);
     }
-
-    //public async Task<Fatura> ObterOuCriarFatura(int idCartao, int mes, int ano)
-    //{
-
-    //}
 
     public async Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano)
     {
-        //_meioPagamentoValidator.Existe(cartao);
-        //_meioPagamentoValidator.PertenceAoUsuario(cartao);
         _meioPagamentoValidator.EhCartaoCredito(cartao);
-        //_meioPagamentoValidator.Ativo(cartao);
 
         //busca fatura pelos campos informados
 

@@ -367,7 +367,7 @@
 
                     await this.setLoadingAndExecute(async () => {
 
-                        let retf = await fetchData.fetchGetJson(`/common/faturas/{this.dados.idMeioPagamento}`);
+                        let retf = await fetchData.fetchGetJson(`/common/faturas/${this.dados.idMeioPagamento}`);
                         if (retf.ok) {
                             this.faturas = retf.value;
                         }
@@ -376,7 +376,7 @@
                             return;
                         }
 
-                        let reta = await fetchData.fetchGetJson(`/common/faturaAtual/{this.dados.idMeioPagamento}`);
+                        let reta = await fetchData.fetchGetJson(`/common/faturaAtual/${this.dados.idMeioPagamento}`);
                         if (reta.ok) {
                             let fat = reta.value;
                             this.dados.faturaSelecionada = utils.mesAnoToString(fat.mes, fat.ano);

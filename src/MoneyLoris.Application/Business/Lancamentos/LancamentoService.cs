@@ -116,7 +116,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
         ICollection<Lancamento> lancamentos = null!;
 
         //se for despesa no cartão de crédito com mais de uma parcela, prepara o parcelamento
-        //if (tipo == TipoLancamento.Despesa && meio.Tipo == TipoMeioPagamento.CartaoCredito && dto.Parcelas > 1)
         if (tipo == TipoLancamento.Despesa && meio.IsCartao() && dto.Parcelas > 1)
         {
             lancamentos = PrepararLancamentosParcelados(dto, tipo);
