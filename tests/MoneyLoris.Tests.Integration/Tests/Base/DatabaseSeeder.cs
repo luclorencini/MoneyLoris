@@ -140,7 +140,8 @@ public class DatabaseSeeder
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
         TipoLancamento tipo = TipoLancamento.Despesa,
         string descricao = "Compras",
-        DateTime? data = null
+        DateTime? data = null,
+        int? idFatura = null
     )
     {
         return await _inserirLancamento(
@@ -153,7 +154,8 @@ public class DatabaseSeeder
             tipo,
             descricao,
             data,
-            tipoTransferencia: null
+            tipoTransferencia: null,
+            idFatura
         );
     }
 
@@ -191,7 +193,8 @@ public class DatabaseSeeder
         TipoLancamento tipo,
         string descricao,
         DateTime? data,
-        TipoTransferencia? tipoTransferencia
+        TipoTransferencia? tipoTransferencia,
+        int? idFatura = null
     )
     {
         var ent = await Context.Lancamentos.AddAsync(
@@ -207,7 +210,8 @@ public class DatabaseSeeder
                 Data = (data.HasValue ? data.Value : SystemTime.Today()),
                 Operacao = operacao,
                 Realizado = true,
-                TipoTransferencia = tipoTransferencia
+                TipoTransferencia = tipoTransferencia,
+                IdFatura = idFatura
             });
 
         await Context.SaveChangesAsync();

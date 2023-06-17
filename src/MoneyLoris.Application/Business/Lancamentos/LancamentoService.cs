@@ -152,6 +152,13 @@ public class LancamentoService : ServiceBase, ILancamentoService
             }
         }
 
+        //checagem final
+
+        foreach (var l in lancamentos)
+        {
+            _lancamentoValidator.EstaConsistente(l);
+        }
+
 
         //inicia transação
 
@@ -227,8 +234,11 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         _lancamentoValidator.NaoPodeTrocarMeioPagamento(lancamento, dto.IdMeioPagamento);
 
-        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.ParcelaAtual, dto.ParcelaTotal);
-        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
+        //TODO - lorencini - avaliar no futuro se precisará informar fatura na receita de cartão (pagamento de fatura)
+        if (lancamento.Tipo == TipoLancamento.Despesa)
+        {
+            _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
+        }
 
         var categoria = await _categoriaRepo.GetById(dto.IdCategoria);
 
@@ -257,8 +267,9 @@ public class LancamentoService : ServiceBase, ILancamentoService
         //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
 
 
+        //TODO - lorencini - avaliar no futuro se precisará informar fatura na receita de cartão (pagamento de fatura)
         //fatura
-        if (meio.IsCartao())
+        if (meio.IsCartao() && lancamento.Tipo == TipoLancamento.Despesa)
         {
             var fatura = await _faturaService.ObterOuCriarFatura(meio, dto.FaturaMes!.Value, dto.FaturaAno!.Value);
             lancamento.IdFatura = fatura.Id;

@@ -53,8 +53,6 @@ public class LancamentoConverter : ILancamentoConverter
             ParcelaTotal = parcelaTotal
         };
 
-        _lancamentoValidator.EstaConsistente(lancamento);
-
         return lancamento;
     }
 

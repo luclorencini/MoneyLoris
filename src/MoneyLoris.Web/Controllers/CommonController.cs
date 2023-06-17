@@ -75,9 +75,9 @@ public class CommonController : BaseController
     }
 
     [HttpGet("{idCartao}")]
-    public async Task<IActionResult> FaturaAtual(int idCartao)
+    public async Task<IActionResult> FaturaEmAberto(int idCartao)
     {
-        var ret = await _faturaService.ObterFaturaAtual(idCartao);
+        var ret = await _faturaService.ObterFaturaEmAberto(idCartao);
         return Ok(ret);
     }
 }

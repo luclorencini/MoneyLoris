@@ -9,7 +9,7 @@ public interface IFaturaService
     Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> Pesquisar(FaturaFiltroDto filtro);
     Task<Result<FaturaInfoDto>> ObterInfo(FaturaFiltroDto filtro);
 
-    Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao);
+    Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao);
     Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao);
 
     Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano);

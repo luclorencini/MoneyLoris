@@ -286,6 +286,40 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
             ErrorCodes.Subcategoria_NaoPertenceACategoria);
     }
 
+    [Fact]
+    public async Task Alterar_CartaoCredito_DadadosFaturaNaoInformados_RetornaErro()
+    {
+        //Arrange
+        SubirAplicacao(perfil: PerfilUsuario.Usuario);
+        await DbSeeder.InserirUsuarios();
+
+        var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
+        var sub = await DbSeeder.InserirSubcategoria(cat.Id);
+        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa);
+
+        var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
+        var subB = await DbSeeder.InserirSubcategoria(catB.Id);
+
+        //Act
+        var dto = new LancamentoCadastroDto
+        {
+            Id = lanc.Id,
+            Data = SystemTime.Today().AddDays(1),
+            Descricao = "Gastos",
+            IdCategoria = catB.Id,
+            IdSubcategoria = subB.Id,
+            IdMeioPagamento = mei.Id,
+            Valor = 60
+        };
+
+        var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
+
+        //Assert
+        await response.AssertResultNotOk(
+            ErrorCodes.Lancamento_CartaoCreditoSemFatura);
+    }
+
     #endregion
 
     [Fact]
@@ -472,7 +506,8 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
         var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
-        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa);
+        var fat = await DbSeeder.InserirFatura(mei.Id, mes: 6, ano: 2023);
+        var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa, idFatura: fat.Id);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
         var subB = await DbSeeder.InserirSubcategoria(catB.Id);
@@ -486,7 +521,9 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
             IdCategoria = catB.Id,
             IdSubcategoria = subB.Id,
             IdMeioPagamento = mei.Id,
-            Valor = 60
+            Valor = 60,
+            FaturaMes = 6,
+            FaturaAno = 2023
         };
 
         var response = await HttpClient.PostAsJsonAsync("/lancamento/alterar", dto);
@@ -512,6 +549,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
         Assert.Null(ldb.IdLancamentoTransferencia);
         Assert.True(ldb.Valor < 0);  //lançamento de Despesa é sempre negativo
         Assert.Equal(-60, ldb.Valor);  //valor mudou
+        Assert.Equal(fat.Id, ldb!.IdFatura);
 
         var conta = await Context.MeiosPagamento.FindAsync(mei.Id);
 

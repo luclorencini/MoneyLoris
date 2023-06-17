@@ -137,7 +137,7 @@ public class FaturaServiceStub : ServiceBase, IFaturaService
     }
 
 
-    public Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao)
+    public Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao)
     {
         var fat = new FaturaSelecaoDto {
             Mes = DateTime.Today.Month,

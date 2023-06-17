@@ -39,7 +39,7 @@ public class FaturaService : ServiceBase, IFaturaService
         throw new NotImplementedException();
     }
 
-    public async Task<Result<FaturaSelecaoDto>> ObterFaturaAtual(int IdCartao)
+    public async Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao)
     {
         var cartao = await _meioPagamentoRepo.GetById(IdCartao);
 
@@ -69,13 +69,13 @@ public class FaturaService : ServiceBase, IFaturaService
     public Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao)
     {
 
-        //a partir do mês/ano atual, lista os 6 meses anteriores e os 6 posteriores
+        //a partir do mês/ano atual, lista os 6 meses anteriores e os 10 posteriores
 
         ICollection<FaturaSelecaoDto> list = new List<FaturaSelecaoDto>();
 
         var d = DateTime.Today.AddMonths(-6);
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 16; i++)
         {
             var f = new FaturaSelecaoDto
             {
