@@ -16,6 +16,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
     {
         var ent = await _dbset
             .Include(l => l.MeioPagamento)
+            .Include(l => l.Fatura)
             .Where(l => l.Id == id)
             .SingleOrDefaultAsync();
 

@@ -149,7 +149,11 @@ public class LancamentoValidator : ILancamentoValidator
                 code: ErrorCodes.Lancamento_CamposObrigatorios,
                 message: "Parcela atual não pode ser maior que o total de parcelas");
 
-        //TODO - fatura
+        //fatura
+        if (lancamento.ParcelaAtual is not null && lancamento.IdFatura is null)
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CamposObrigatorios,
+                message: "Fatura não informada");
     }
 
 
@@ -159,6 +163,14 @@ public class LancamentoValidator : ILancamentoValidator
             throw new BusinessException(
                 code: ErrorCodes.Lancamento_CartaoCreditoSemParcela,
                 message: "Não é possível lançar uma despesa de Cartão de Crédito sem informar número de parcelas");
+    }
+
+    public void LancamentoCartaoCreditoTemQueTerParcela(MeioPagamento meio, short? parcelaAtual, short? parcelaTotal)
+    {
+        if (meio.Tipo == TipoMeioPagamento.CartaoCredito && (parcelaAtual is null || parcelaTotal is null))
+            throw new BusinessException(
+                code: ErrorCodes.Lancamento_CartaoCreditoSemParcela,
+                message: "Não é possível alterar uma despesa de Cartão de Crédito sem informar parcela atual e total");
     }
 
     public void LancamentoCartaoCreditoTemQueTerFatura(MeioPagamento meio, int? mesFatura, int? anoFatura)

@@ -47,8 +47,7 @@ public class LancamentoInfoDto
         ParcelaAtual = lancamento.ParcelaAtual;
         ParcelaTotal = lancamento.ParcelaTotal;
 
-        //TODO - lorencini - acertar isso quando tiver fatura
-        //FaturaMes = lancamento.Fatura.Mes;
-        //FaturaAno = lancamento.Fatura.Ano;
+        FaturaMes = lancamento.Fatura.Mes;
+        FaturaAno = lancamento.Fatura.Ano;
     }
 }

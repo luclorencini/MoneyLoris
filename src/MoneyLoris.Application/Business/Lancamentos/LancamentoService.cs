@@ -102,14 +102,14 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _meioPagamentoValidator.PertenceAoUsuario(meio);
         _meioPagamentoValidator.Ativo(meio);
 
+        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.Parcelas);
+        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
+
         var categoria = await _categoriaRepo.GetById(dto.IdCategoria);
 
         _categoriaValidator.Existe(categoria);
         _categoriaValidator.PertenceAoUsuario(categoria);
         _lancamentoValidator.TipoLancamentoIgualTipoCategoria(tipo, categoria);
-
-        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.Parcelas);
-        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
 
         //preparar lançamentos
 
@@ -213,8 +213,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
     public async Task<Result<int>> Alterar(LancamentoEdicaoDto dto)
     {
-        //TODO - Lorencini - implementar lógica de fatura e escrever testes
-
         _lancamentoValidator.NaoEhAdmin();
 
         var lancamento = await _lancamentoRepo.GetById(dto.Id);
@@ -229,10 +227,14 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         _lancamentoValidator.NaoPodeTrocarMeioPagamento(lancamento, dto.IdMeioPagamento);
 
+        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerParcela(meio, dto.ParcelaAtual, dto.ParcelaTotal);
+        _lancamentoValidator.LancamentoCartaoCreditoTemQueTerFatura(meio, dto.FaturaMes, dto.FaturaAno);
+
         var categoria = await _categoriaRepo.GetById(dto.IdCategoria);
 
         _categoriaValidator.Existe(categoria);
         _categoriaValidator.PertenceAoUsuario(categoria);
+        _lancamentoValidator.TipoLancamentoIgualTipoCategoria(lancamento.Tipo, categoria);
 
         if (dto.IdSubcategoria != null)
         {
@@ -254,6 +256,13 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         //TODO - futuro: permitir alterar a conta selecionada, e recalcular o saldo de ambas as contas (a antiga e a nova)
 
+
+        //fatura
+        if (meio.IsCartao())
+        {
+            var fatura = await _faturaService.ObterOuCriarFatura(meio, dto.FaturaMes!.Value, dto.FaturaAno!.Value);
+            lancamento.IdFatura = fatura.Id;
+        }
 
         //SALDO: se o valor do lançamento mudar, recalcula o saldo baseado na diferença (exceto para cartões de crédito)
 

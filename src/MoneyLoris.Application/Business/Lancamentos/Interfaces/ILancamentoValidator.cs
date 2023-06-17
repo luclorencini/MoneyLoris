@@ -17,6 +17,7 @@ public interface ILancamentoValidator
     void EstaConsistente(Lancamento lancamento);
 
     void LancamentoCartaoCreditoTemQueTerParcela(MeioPagamento meio, short? parcelas);
+    void LancamentoCartaoCreditoTemQueTerParcela(MeioPagamento meio, short? parcelaAtual, short? parcelaTotal);
     void LancamentoCartaoCreditoTemQueTerFatura(MeioPagamento meio, int? mesFatura, int? anoFatura);
 
     void TipoLancamentoIgualTipoCategoria(TipoLancamento tipo, Categoria categoria);
