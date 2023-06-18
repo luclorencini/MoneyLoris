@@ -60,9 +60,9 @@
                         <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
                     </div>
 
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAnterior()">{{labelMesAnterior}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">{{labelMesAtual}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesProximo()">{{labelMesProximo}}</div>
+                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAnterior()">{{labelMesFaturaAnterior}}</div>
+                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAtual()">{{labelMesFaturaAtual}}</div>
+                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaProxima()">{{labelMesFaturaProxima}}</div>
 
                     <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
                         <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
@@ -80,14 +80,18 @@
                 <div class="card-body p-2">
                     <div class="row g-0">
 
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label">Fatura</label>
                             <div class="fs-4 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
                         </div>
 
-                        <div class="col-md-2">
-                            <label class="form-label">Fecha em</label>
-                            <div class="fs-5 fw-bold text-capitalize">{{formatarDataLabel(info.dataFechamento)}}</div>
+                        <div class="col-md-3">
+                            <label class="form-label lh-lg">Vigência</label>
+                            <div class="d-flex">
+                                <div class="fs-6 fw-bold text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div> 
+                                <div class="mx-2">a</div>
+                                <div class="fs-6 fw-bold text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
+                            </div>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Vence em</label>
@@ -153,8 +157,6 @@
 
             data: () => ({
 
-                
-
                 cartoes: [],
                 cartaoSelecionado: {},
 
@@ -170,20 +172,20 @@
                     return (this.cartaoSelecionado && this.cartaoSelecionado.id);
                 },
 
-                labelMesAtual() {
-                    let d = new Date();
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesAnterior() {
-                    let d = new Date();
-                    d.setMonth(d.getMonth() - 1);
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesProximo() {
+                labelMesFaturaAtual() {
                     let d = new Date();
                     d.setMonth(d.getMonth() + 1);
+                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+                },
+
+                labelMesFaturaAnterior() {
+                    let d = new Date();
+                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+                },
+
+                labelMesFaturaProxima() {
+                    let d = new Date();
+                    d.setMonth(d.getMonth() + 2);
                     return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
                 }
             },
@@ -210,7 +212,7 @@
                     if (ret.ok) {
                         this.cartoes = ret.value;
                         this.cartaoSelecionado = ret.value[0];
-                        this.filtro.idCartao = this.cartaoSelecionado.Id;
+                        this.filtro.idCartao = this.cartaoSelecionado.id;
                     }
                 },
 
@@ -227,7 +229,7 @@
                 inicializarFiltro() {
 
                     this.filtro.ano = new Date().getFullYear(); //ano atual
-                    this.filtro.mes = new Date().getMonth() + 1;  //mes atual
+                    this.filtro.mes = new Date().getMonth() + 2;  //mes atual + 1
                 },
 
                 async avancarMes() {
@@ -254,23 +256,24 @@
                     await this.pesquisar();
                 },
 
-                async filtrarMesAtual() {
+                async filtrarMesFaturaAtual() {
 
                     let d = new Date();
+                    d.setMonth(d.getMonth() + 2);
                     await this.filtrarMes(d.getFullYear(), d.getMonth());
                 },
 
-                async filtrarMesAnterior() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() - 1);
-                    await this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                async filtrarMesProximo() {
+                async filtrarMesFaturaAnterior() {
 
                     let d = new Date();
                     d.setMonth(d.getMonth() + 1);
+                    await this.filtrarMes(d.getFullYear(), d.getMonth());
+                },
+
+                async filtrarMesFaturaProxima() {
+
+                    let d = new Date();
+                    d.setMonth(d.getMonth() + 3);
                     await this.filtrarMes(d.getFullYear(), d.getMonth());
                 },
 
@@ -290,8 +293,8 @@
                     //reseta paginacao
                     this.filtro.currentPage = 1;
 
-                    this.obterInfoFatura();
-                    this.obterListagem();
+                    await this.obterInfoFatura();
+                    await this.obterListagem();
                 },
 
                 async obterInfoFatura() {
@@ -302,6 +305,7 @@
 
                     if (ret.ok) {
                         this.info = ret.value;
+                        this.filtro.idFatura = this.info.id;
                     }
                     else {
                         mensagemSistema.showMensagemErro(ret.message);

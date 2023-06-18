@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MoneyLoris.Application.Business.Faturas.Dtos;
+﻿using MoneyLoris.Application.Business.Faturas.Dtos;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Common.Base;
@@ -9,15 +8,17 @@ using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Stubs;
 public class FaturaServiceStub : ServiceBase, IFaturaService
-{  
-    public Task<Result<FaturaInfoDto>> ObterInfo(FaturaFiltroDto filtro)
+{
+    public Task<Result<FaturaInfoDto>> ObterInfo(FaturaAnoMesFiltroDto filtro)
     {
         var info = new FaturaInfoDto
         {
+            Id = 123,
             Mes = 6,
             Ano = 2023,
-            DataFechamento = new DateTime(2023, 7, 3),
-            DataVencimento = new DateTime(2023, 7, 1),
+            DataInicio = new DateTime(2023, 6, 3),
+            DataFim = new DateTime(2023, 7, 2),
+            DataVencimento = new DateTime(2023, 7, 10),
             ValorFatura = -4318.00M, //garantir que sempre volte negativo
             ValorPago = 4318.00M, //garantir que sempre volte positivo
         };
@@ -139,7 +140,8 @@ public class FaturaServiceStub : ServiceBase, IFaturaService
 
     public Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao)
     {
-        var fat = new FaturaSelecaoDto {
+        var fat = new FaturaSelecaoDto
+        {
             Mes = DateTime.Today.Month,
             Ano = DateTime.Today.Year
         };

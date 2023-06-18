@@ -47,7 +47,7 @@ public class LancamentoInfoDto
         ParcelaAtual = lancamento.ParcelaAtual;
         ParcelaTotal = lancamento.ParcelaTotal;
 
-        FaturaMes = lancamento.Fatura.Mes;
-        FaturaAno = lancamento.Fatura.Ano;
+        FaturaMes = lancamento.Fatura?.Mes;
+        FaturaAno = lancamento.Fatura?.Ano;
     }
 }

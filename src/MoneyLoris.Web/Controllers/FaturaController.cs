@@ -20,7 +20,7 @@ public class FaturaController : Controller
     }
 
     [HttpPost()]
-    public async Task<IActionResult> Info([FromBody] FaturaFiltroDto filtro)
+    public async Task<IActionResult> Info([FromBody] FaturaAnoMesFiltroDto filtro)
     {
         var ret = await _faturaService.ObterInfo(filtro);
         return Ok(ret);

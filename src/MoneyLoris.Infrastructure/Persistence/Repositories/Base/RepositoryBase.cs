@@ -9,7 +9,7 @@ using MoneyLoris.Infrastructure.Persistence.Context;
 namespace MoneyLoris.Infrastructure.Persistence.Repositories.Base;
 public class RepositoryBase<T> : IRepositoryBase<T> where T : EntityBase
 {
-    private readonly BaseApplicationDbContext _context;
+    protected readonly BaseApplicationDbContext _context;
     protected readonly DbSet<T> _dbset;
     private IDbContextTransaction _transaction = null!;
 

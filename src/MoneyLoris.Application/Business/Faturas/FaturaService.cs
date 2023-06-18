@@ -1,4 +1,5 @@
-﻿using MoneyLoris.Application.Business.Faturas.Dtos;
+﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Faturas.Dtos;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -13,30 +14,53 @@ public class FaturaService : ServiceBase, IFaturaService
     private readonly IFaturaRepository _faturaRepo;
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
+    private readonly IAuthenticationManager _authenticationManager;
 
     public FaturaService(
         IFaturaFactory faturaFactory,
         IFaturaRepository faturaRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
-        IMeioPagamentoValidator meioPagamentoValidator
+        IMeioPagamentoValidator meioPagamentoValidator,
+        IAuthenticationManager authenticationManager
     )
     {
         _faturaFactory = faturaFactory;
         _faturaRepo = faturaRepo;
         _meioPagamentoValidator = meioPagamentoValidator;
         _meioPagamentoRepo = meioPagamentoRepo;
+        _authenticationManager = authenticationManager;
     }
 
-    public Task<Result<FaturaInfoDto>> ObterInfo(FaturaFiltroDto filtro)
+    public async Task<Result<FaturaInfoDto>> ObterInfo(FaturaAnoMesFiltroDto filtro)
     {
-        //TODO - Lorencini - implementar e escrever testes
-        throw new NotImplementedException();
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        var cartao = await _meioPagamentoRepo.GetById(filtro.IdCartao);
+
+        var fatura = await ObterOuCriarFatura(cartao, filtro.Mes, filtro.Ano);
+
+        var dto = new FaturaInfoDto(fatura);
+
+        dto.ValorFatura = await _faturaRepo.ObterValorFatura(fatura.Id, userInfo.Id);
+
+        return dto;
     }
 
-    public Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> Pesquisar(FaturaFiltroDto filtro)
+    public async Task<Result<Pagination<ICollection<LancamentoListItemDto>>>> Pesquisar(FaturaFiltroDto filtro)
     {
-        //TODO - Lorencini - implementar e escrever testes
-        throw new NotImplementedException();
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        //pega o total
+        var total = await _faturaRepo.PesquisaTotalRegistros(filtro, userInfo.Id);
+
+        //faz a consulta paginada
+        var lancamentos = await _faturaRepo.PesquisaPaginada(filtro, userInfo.Id);
+
+        //transforma no tipo de retorno
+        ICollection<LancamentoListItemDto> ret =
+            lancamentos.Select(l => new LancamentoListItemDto(l)).ToList();
+
+        return Pagination(pagedData: ret, total: total);
     }
 
     public async Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao)
