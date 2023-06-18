@@ -12,7 +12,7 @@
 
                 <template v-if="passo == 1">
 
-                    <h5 class="my-2">Em qual conta ou cartão você vai lançar a {{labelTipo}}?</h5>
+                    <h5 class="my-2">Em qual {{isReceita ? 'conta' : 'conta ou cartão'}} você vai lançar a {{labelTipo}}?</h5>
 
                     <ul class="list-group">
                         <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamento }" v-on:click="selecionarMeioPagamento(m)">
@@ -252,6 +252,10 @@
                     return (this.meioPagamentoSelecionado.tipo == 3);
                 },
 
+                isReceita() {
+                    return (this.tipo == 1);
+                },
+
                 labelTipo() {
                     return (this.tipo == 1 ? "Receita" : "Despesa");
                 },
@@ -322,7 +326,11 @@
                 async obterMeiosPagamento() {
 
                     await this.setLoadingAndExecute(async () => {
-                        let ret = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+
+                        //receita é só pra contas (cartão não); despesa é pra qualquer meio
+                        let url = (this.isReceita ? `/common/contas` : `/common/meiosPagamento`)
+
+                        let ret = await fetchData.fetchGetJson(url);
                         if (ret.ok) {
                             this.meios = ret.value;
                         }
