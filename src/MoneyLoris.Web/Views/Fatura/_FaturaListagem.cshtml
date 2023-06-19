@@ -28,7 +28,7 @@
         </div>
 
         <!-- filtro desktop -->
-        <section class="container-xxl">
+        <section class="container-xxl d-none d-lg-block">
 
             <div class="row g-0 g-lg-2">
 
@@ -52,7 +52,7 @@
 
             </div>
 
-            <div class="row g-1 mt-2">
+            <div class="row g-1 my-2">
                 <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
                     <label class="me-3 fw-bold">Filtros rápidos:</label>
 
@@ -76,39 +76,33 @@
 
         <section class="container-xxl" v-if="temCartaoSelecionado">
 
-            <div class="card mt-2">
-                <div class="card-body p-2">
-                    <div class="row g-0">
+            <div class="card">
+                <div class="card-body">
+                    <div class="fatura-info-container">
 
-                        <div class="col-3">
+                        <div class="mes">
                             <label class="form-label">Fatura</label>
-                            <div class="fs-4 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
+                            <div class="lh-1 fs-5 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
                         </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label lh-lg">Vigência</label>
-                            <div class="d-flex">
-                                <div class="fs-6 fw-bold text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div> 
-                                <div class="mx-2">a</div>
-                                <div class="fs-6 fw-bold text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
+                        <div class="valor-fatura">
+                            <label class="form-label">Valor da Fatura</label>
+                            <div class="fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
+                        </div>
+                        <div class="valor-pago">
+                            <label class="form-label">Valor Pago</label>
+                            <div class="fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
+                        </div>
+                        <div class="vigencia">
+                            <label class="form-label">Vigência</label>
+                            <div class="d-flex flex-wrap">
+                                <div class="text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div>
+                                <div class="mx-1">-</div>
+                                <div class="text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="vencimento">
                             <label class="form-label">Vence em</label>
-                            <div class="fs-5 fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="text-center">
-                                <label class="form-label">Valor da Fatura</label>
-                                <div class="fs-5 fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center">
-                                <label class="form-label">Valor Pago</label>
-                                <div class="fs-5 fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
-                            </div>
+                            <div class="fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
                         </div>
 
                     </div>
@@ -121,10 +115,10 @@
 
                 <div class="list-group-item">
                     <Pagination v-if="totalResults > 0"
-                        v-bind:currentPage="filtro.currentPage"
-                        v-bind:resultsPerPage="filtro.resultsPerPage"
-                        v-bind:totalResults="totalResults"
-                        v-on:pagination-change="paginar($event)">
+                v-bind:currentPage="filtro.currentPage"
+                v-bind:resultsPerPage="filtro.resultsPerPage"
+                v-bind:totalResults="totalResults"
+                v-on:pagination-change="paginar($event)">
                     </Pagination>
                 </div>
 
@@ -191,15 +185,7 @@
             },
 
             async mounted() {
-
                 await this.obterCartaoInicial();
-
-                if (this.temCartaoSelecionado) {
-
-                    this.inicializarFiltro();
-
-                    await this.pesquisar();
-                }
             },
 
             methods: {
@@ -211,26 +197,27 @@
                     let ret = await fetchData.fetchGetJson(`/common/cartoes`);
                     if (ret.ok) {
                         this.cartoes = ret.value;
-                        this.cartaoSelecionado = ret.value[0];
-                        this.filtro.idCartao = this.cartaoSelecionado.id;
+                        await this.carregarDadosCartaoSelecionado(ret.value[0]);
                     }
                 },
 
                 async selecionarCartao() {
                     let c = await this.$refs.cartaoSelecao.aguardarSelecao(this.cartoes);
                     if (c) {
-                        this.cartaoSelecionado = c;
-                        this.filtro.idCartao = c.Id;
+                        await this.carregarDadosCartaoSelecionado(c);
                     }
                 },
 
-                // métodos de filtro
-
-                inicializarFiltro() {
-
+                async carregarDadosCartaoSelecionado(c) {
+                    this.cartaoSelecionado = c;
+                    this.filtro.idCartao = c.id;
                     this.filtro.ano = new Date().getFullYear(); //ano atual
                     this.filtro.mes = new Date().getMonth() + 2;  //mes atual + 1
+
+                    await this.pesquisar();
                 },
+
+                // métodos de filtro
 
                 async avancarMes() {
                     if (this.filtro.mes == 12) {
@@ -387,6 +374,69 @@
             .card-selecao-cartao .icone i {
                 font-size: 2.5rem;
             }
+
+        .fatura-info-container {
+            display: grid;
+            grid-template-columns: auto 20rem 9.5rem 9.5rem 9.5rem;
+            grid-template-areas:
+                "ga-mes ga-vigencia ga-vencimento ga-valor-fatura ga-valor-pago";
+            align-items: end;
+        }
+
+            .fatura-info-container .mes {
+                grid-area: ga-mes;
+            }
+
+            .fatura-info-container .valor-fatura {
+                grid-area: ga-valor-fatura;
+                font-size: 1.5rem;
+                line-height: 1;
+                text-align: end;
+            }
+
+            .fatura-info-container .valor-pago {
+                grid-area: ga-valor-pago;
+                font-size: 1.25rem;
+                line-height: 1;
+                text-align: end;
+            }
+
+            .fatura-info-container .vigencia {
+                grid-area: ga-vigencia;
+                line-height: 1;
+            }
+
+            .fatura-info-container .vencimento {
+                grid-area: ga-vencimento;
+                line-height: 1;
+            }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .fatura-info-container {
+                grid-template-columns: auto 1rem 8rem;
+                grid-template-areas:
+                    "ga-valor-fatura ga-valor-fatura ga-valor-pago"
+                    "ga-vigencia ga-vencimento ga-vencimento";
+                row-gap: 0.75rem;
+            }
+
+                .fatura-info-container .mes {
+                    display: none;
+                }
+
+                .fatura-info-container .valor-fatura {
+                    text-align: start;
+                }
+
+                .fatura-info-container .vigencia {
+                    font-size: 0.9rem;
+                }
+
+                .fatura-info-container .vencimento {
+                    text-align: end;
+                }
+        }
 
     </style>
 }

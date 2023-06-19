@@ -131,7 +131,7 @@
 
     ////
 
-    // recebe objeto Date, retorna string no formato DD mmm YYYY: (ex: '2 Fev 2023')
+    // recebe objeto Date, retorna string no formato DD mmm YYYY: (ex: 'qui, 2 Fev 2023')
     dataExtenso(d) {
 
         if (!d) return '';
