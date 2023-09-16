@@ -1,18 +1,30 @@
 ﻿/*#region Variáveis*/
 :root {
     --sys-color-base: #f5f5f5;
-    --sys-color-dark-1: #5C5C5C; /*cinza*/
-    --sys-color-dark-2: #2E7D32; /*verde escuro*/
-    --sys-color-dark-3: #FFFF00; /*amarelo*/
-    --sys-color-dark-4: #4CAF50; /*verde claro*/
-    --sys-color-light-1: #FFFFFF; /*branco*/
-    --sys-color-light-2: #f5f5f5; /*cinza claro*/
-    --sys-color-light-3: #FFFDE7; /*amarelo claro*/
-    --sys-color-light-4: #E8F5E9; /*verde*/
-    --sys-color-light-5: #FCE4EC; /*rosa*/
+    --sys-color-menubar: #2E7D32; /* MDC GREEN 800 - verde escuro */
+    --sys-color-dark-1: #5C5C5C; /* cinza */
+    --sys-color-dark-2: #2E7D32; /* MDC GREEN 800 - verde escuro */
+    --sys-color-dark-3: #FFFF00; /* MDC YELLOW A200 - amarelo */
+    --sys-color-dark-4: #4CAF50; /* MDC GREEN 500 - verde claro */
+    --sys-color-light-1: #FFFFFF; /* branco */
+    --sys-color-light-2: #f5f5f5; /* MDC GRAY 100 - cinza claro */
+    --sys-color-light-3: #FFFDE7; /* MDC YELLOW 100 - amarelo clarinho */
+    --sys-color-light-4: #E8F5E9; /* MDC GREEN 50 - verde clarinho */
+    --sys-color-light-5: #FCE4EC; /* MDC PINK 50 - rosa clarinho */
+    --sys-color-hover: #F8F9FA;
     --sys-container-max-width: 1860px;
-    --sys-color-hover: #F9F9F9;
 }
+
+[data-bs-theme=dark] {
+    --sys-color-base: #1d1f21; /* #212529*/
+    --sys-color-dark-1: #dee2e6;
+    --sys-color-dark-2: #4caf50; /* MDC GREEN 500 */
+    --sys-color-dark-4: #212121; /* MDC GRAY 900 */
+    --sys-color-light-1: #212529;
+    --sys-color-light-2: #424242;
+    --sys-color-hover: #2B3035;
+}
+
 /*#endregion*/
 
 html {
@@ -540,7 +552,7 @@ main {
     border: 1px solid var(--sys-color-dark-4);
     border-radius: 5px;
     color: var(--sys-color-dark-4);
-    background-color: white;
+    background-color: var(--sys-color-light-1);
     font-weight: bold;
     text-align: center;
 }

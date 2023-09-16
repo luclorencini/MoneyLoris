@@ -1,6 +1,6 @@
 ﻿
 .navbar.bg-dark {
-    background-color: var(--sys-color-dark-2) !important;
+    background-color: var(--sys-color-menubar) !important;
 }
 
 .navbar .navbar-brand {
@@ -27,7 +27,7 @@
 
 .navbar .dropdown-menu {
     color: #fff;
-    background-color: var(--sys-color-dark-2) !important;
+    background-color: var(--sys-color-menubar) !important;
     margin-top: 0.8rem;
     border-radius: 0;
     border: 0;
@@ -71,7 +71,7 @@
 
 .btn-outline-primary {
     color: var(--sys-color-dark-2) !important;
-    background-color: #fff !important;
+    background-color: var(--sys-color-light-1) !important;
     border-color: var(--sys-color-dark-2) !important;
 }
 

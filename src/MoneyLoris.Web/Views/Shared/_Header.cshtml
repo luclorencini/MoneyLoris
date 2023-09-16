@@ -21,7 +21,7 @@
                 {
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            
+
                             @if (User.IsInRole("Usuario"))
                             {
                                 <li class="nav-item">
@@ -53,12 +53,41 @@
 
                         </ul>
 
-                        <div class="d-inline-flex align-items-center">
-                            <a class="nav-link me-3" href="#">
+                        <div class="d-flex align-items-center justify-content-end">
+
+                            <a class="nav-link me-3 d-flex flex-no-wrap align-items-center justify-content-end" href="#">
                                 <i class="fa-solid fa-user fa-lg sys-fg-dark-3"></i>
-                                <span class="ms-1">@User.UsuarioNome().PrimeiroNome()</span>
+                                <span class="ms-2">@User.UsuarioNome().PrimeiroNome()</span>
                             </a>
+
+                            <div class="nav-item dropdown me-3">
+                                <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                    <i class="fa-solid fa-circle-half-stroke"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-lg-end" style="min-width: 7rem;">
+                                    <li>
+                                        <button class="dropdown-item btn-link nav-link py-2 px-0 px-lg-2" type="button" data-bs-theme-value="light">
+                                            <i class="fa-regular fa-sun mx-2"></i>
+                                            <span>Claro</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item btn-link nav-link py-2 px-0 px-lg-2" type="button" data-bs-theme-value="dark">
+                                            <i class="fa-solid fa-moon mx-2"></i>
+                                            <span>Escuro</span>
+                                        </button>
+                                        </li>
+                                    <li>
+                                        <button class="dropdown-item btn-link nav-link py-2 px-0 px-lg-2" type="button" data-bs-theme-value="auto">
+                                            <i class="fa-regular fa-circle mx-2"></i>
+                                            <span>Auto</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
                             <a class="btn sys-bg-dark-3 sys-fg-dark-2 fw-bold" href="/Logout">Sair</a>
+
                         </div>
                     </div>
                 }
