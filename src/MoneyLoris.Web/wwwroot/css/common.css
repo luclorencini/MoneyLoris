@@ -2,26 +2,32 @@
 :root {
     --sys-color-base: #f5f5f5;
     --sys-color-menubar: #2E7D32; /* MDC GREEN 800 - verde escuro */
+    --sys-color-menu-2: #4CAF50; /* MDC GREEN 500 - verde claro */
     --sys-color-dark-1: #5C5C5C; /* cinza */
     --sys-color-dark-2: #2E7D32; /* MDC GREEN 800 - verde escuro */
     --sys-color-dark-3: #FFFF00; /* MDC YELLOW A200 - amarelo */
     --sys-color-dark-4: #4CAF50; /* MDC GREEN 500 - verde claro */
     --sys-color-light-1: #FFFFFF; /* branco */
     --sys-color-light-2: #f5f5f5; /* MDC GRAY 100 - cinza claro */
-    --sys-color-light-3: #FFFDE7; /* MDC YELLOW 100 - amarelo clarinho */
+    --sys-color-light-3: #FFFDE7; /* MDC YELLOW 50 - amarelo clarinho */
     --sys-color-light-4: #E8F5E9; /* MDC GREEN 50 - verde clarinho */
     --sys-color-light-5: #FCE4EC; /* MDC PINK 50 - rosa clarinho */
     --sys-color-hover: #F8F9FA;
     --sys-container-max-width: 1860px;
+    --sys-loading-bg: #5C5C5C; /* cinza */
+    --sys-loading-fg: #FFFFFF; /* branco */
 }
 
 [data-bs-theme=dark] {
     --sys-color-base: #1d1f21; /* #212529*/
+    --sys-color-menu-2: #1d1f21;
     --sys-color-dark-1: #dee2e6;
-    --sys-color-dark-2: #4caf50; /* MDC GREEN 500 */
-    --sys-color-dark-4: #212121; /* MDC GRAY 900 */
+    --sys-color-dark-2: #388e3c; /* MDC GREEN 700 */
+    --sys-color-light-3: #333323;
+    --sys-color-dark-4: #1b5e20; /* MDC GREEN 900 */
     --sys-color-light-1: #212529;
     --sys-color-light-2: #424242;
+    --sys-color-light-4: #091f0a;
     --sys-color-hover: #2B3035;
 }
 
@@ -120,7 +126,7 @@ main {
     .container-titulo {
         padding-top: 0.75rem !important;
         padding-bottom: 0.75rem !important;
-        background-color: var(--sys-color-dark-4);
+        background-color: var(--sys-color-menu-2);
         align-items: baseline;
     }
 
@@ -368,7 +374,7 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--sys-color-dark-1);
+    background-color: var(--sys-loading-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -384,13 +390,13 @@ main {
 
         #loading-splash .container i {
             font-size: 4rem !important;
-            color: var(--sys-color-light-1);
+            color: var(--sys-loading-fg);
             animation: adm-spin360 2s linear infinite;
         }
 
         #loading-splash .container .message {
             font-size: 1.5rem;
-            color: var(--sys-color-light-1);
+            color: var(--sys-loading-fg);
             margin-top: 1rem;
         }
 
@@ -430,53 +436,6 @@ main {
     }
 
 /* #endregion */
-
-
-/* #region receita e despesa */
-
-.din-receita {
-    color: #1565C0; /*MDC BLUE 800*/
-}
-
-.din-despesa {
-    color: #E53935; /*MDC RED 600*/
-}
-
-
-.fg-lanc-despesa {
-    color: #E53935; /*MDC RED 600*/
-}
-
-.bg-lanc-despesa {
-    background-color: #FFEBEE; /*MDC RED 50*/
-}
-
-.fg-lanc-receita {
-    color: #1565C0; /*MDC BLUE 800*/
-}
-
-.bg-lanc-receita {
-    background-color: #E3F2FD; /*MDC BLUE 50*/
-}
-
-.fg-lanc-transferencia {
-    color: #2E7D32; /*MDC GREEN 800*/
-}
-
-.bg-lanc-transferencia {
-    background-color: #E8F5E9; /*MDC GREEN 50*/
-}
-
-.fg-lanc-pag-fatura {
-    color: #EF6C00; /*MDC ORANGE 800*/
-}
-
-.bg-lanc-pag-fatura {
-    background-color: #FFF3E0; /*MDC ORANGE 50*/
-}
-
-/* #endregion */
-
 
 /* #region SPLASH Message */
 
@@ -541,30 +500,5 @@ main {
         margin-top: 1rem;
     }
 }
-
-/* #endregion */
-
-/* #region Filtros Rapidos */
-
-.filtro-rapido-opcao {
-    margin: 0 0.25rem;
-    padding: 0.25rem 0.75rem;
-    border: 1px solid var(--sys-color-dark-4);
-    border-radius: 5px;
-    color: var(--sys-color-dark-4);
-    background-color: var(--sys-color-light-1);
-    font-weight: bold;
-    text-align: center;
-}
-
-    .filtro-rapido-opcao:hover {
-        filter: brightness(90%);
-        cursor: pointer;
-    }
-
-    .filtro-rapido-opcao:active {
-        transition-duration: 0.1s;
-        transform: scale(0.9);
-    }
 
 /* #endregion */

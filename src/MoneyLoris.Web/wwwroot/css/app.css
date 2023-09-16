@@ -1,0 +1,126 @@
+﻿/* #region dinheiro */
+
+:root {
+    --din-receita-fg: #1565C0; /* MDC BLUE 800 */
+    --din-receita-bg: #e1f5fe; /* MDC LIGHT BLUE 50 */
+    --din-despesa-fg: #E53935; /* MDC RED 600 */
+    --din-despesa-bg: #ffebee; /* MDC RED 50 */
+}
+
+[data-bs-theme=dark] {
+    --din-receita-fg: #64b5f6; /* MDC BLUE 300 */
+    --din-receita-bg: #000030;
+    --din-despesa-fg: #e57373; /* MDC RED 300 */
+    --din-despesa-bg: #250000;
+}
+
+.din-receita {
+    color: var(--din-receita-fg);
+}
+
+.din-despesa {
+    color: var(--din-despesa-fg);
+}
+
+/* #endregion */
+
+/* lançamentos */
+
+:root {
+    --lanc-futuro-bg: #f6faff; /* azul bebe */
+    --lanc-futuro-bg-hover: #e3f2fd; /* MDC BLUE 50 */
+    --lanc-futuro-fg: #01579b; /* MDC BLUE 900 */
+}
+
+[data-bs-theme=dark] {
+    --lanc-futuro-bg: #001020; /* preto azulado */
+    --lanc-futuro-bg-hover: #001c35;
+    --lanc-futuro-fg: #81d4fa; /* MDC BLUE 200 */
+}
+
+/* #endregion */
+
+/* lançamento launcher mobile */
+
+:root {
+    --ll-fg-despesa: #E53935; /* MDC RED 600 */
+    --ll-bg-despesa: #FFEBEE; /* MDC RED 50 */
+    --ll-fg-receita: #1565C0; /* MDC BLUE 800 */
+    --ll-bg-receita: #E3F2FD; /* MDC BLUE 50 */
+    --ll-fg-transferencia: #2E7D32; /* MDC GREEN 800 */
+    --ll-bg-transferencia: #E8F5E9; /* MDC GREEN 50 */
+    --ll-fg-pag-fatura: #EF6C00; /* MDC ORANGE 800 */
+    --ll-bg-pag-fatura: #FFF3E0; /* MDC ORANGE 50 */
+}
+
+[data-bs-theme=dark] {
+    --ll-fg-despesa: #e57373; /* MDC RED 300 */
+    --ll-bg-despesa: #250000;
+    --ll-fg-receita: #64b5f6; /* MDC BLUE 300 */
+    --ll-bg-receita: #000030; /* preto azulado */
+    --ll-fg-transferencia: #81c784; /* MDC GREEN 300 */
+    --ll-bg-transferencia: #002500;
+    --ll-fg-pag-fatura: #ffb74d; /* MDC ORANGE 300 */
+    --ll-bg-pag-fatura: #151505;
+}
+
+.fg-lanc-despesa {
+    color: var(--ll-fg-despesa);
+}
+
+.bg-lanc-despesa {
+    background-color: var(--ll-bg-despesa);
+}
+
+.fg-lanc-receita {
+    color: var(--ll-fg-receita);
+}
+
+.bg-lanc-receita {
+    background-color: var(--ll-bg-receita);
+}
+
+.fg-lanc-transferencia {
+    color: var(--ll-fg-transferencia);
+}
+
+.bg-lanc-transferencia {
+    background-color: var(--ll-bg-transferencia);
+}
+
+.fg-lanc-pag-fatura {
+    color: var(--ll-fg-pag-fatura);
+}
+
+.bg-lanc-pag-fatura {
+    background-color: var(--ll-bg-pag-fatura);
+}
+
+/* #endregion */
+
+/* #endregion */
+
+/* #region Filtros Rapidos */
+
+.filtro-rapido-opcao {
+    margin: 0 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--sys-color-dark-2);
+    border-radius: 5px;
+    color: var(--sys-color-dark-2);
+    background-color: var(--sys-color-light-1);
+    font-weight: bold;
+    text-align: center;
+}
+
+    .filtro-rapido-opcao:hover {
+        filter: brightness(90%);
+        cursor: pointer;
+    }
+
+    .filtro-rapido-opcao:active {
+        transition-duration: 0.1s;
+        transform: scale(0.9);
+    }
+
+/* #endregion */
