@@ -3,6 +3,7 @@
 
 <partial name="_CartaoSelecaoModal" />
 <partial name="/Views/Lancamento/_LancamentoTable.cshtml"></partial>
+<partial name="/Views/Lancamento/_LancamentoModal.cshtml"></partial>
 
 @using (Html.VueTemplate())
 {
@@ -132,8 +133,8 @@
 
         </section>
 
-
         <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
+        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="obterListagem()"></LancamentoModal>
 
     </script>
 }
@@ -147,7 +148,7 @@
             name: 'FaturaListagem',
             template: '#template-fatura-listagem',
             mixins: [BaseMixin],
-            components: { Moeda, Pagination, LancamentoTable, CartaoSelecaoModal },
+            components: { Moeda, Pagination, LancamentoTable, CartaoSelecaoModal, LancamentoModal },
 
             data: () => ({
 
@@ -332,6 +333,10 @@
                     }
 
                     return label;
+                },
+
+                editarLancamento(l) {
+                    this.$refs.lancModal.carregar(l.id);
                 }
             }
         }
