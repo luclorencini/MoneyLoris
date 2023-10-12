@@ -12,4 +12,10 @@ public class HomeController : Controller
     }
 
     // Futura tela pública. Por hora, redireciona pra tela de Lançamento (vai requerer login)
+
+    [HttpGet("/ping")]
+    public IActionResult Ping()
+    {
+        return Ok("Pong");
+    }
 }
