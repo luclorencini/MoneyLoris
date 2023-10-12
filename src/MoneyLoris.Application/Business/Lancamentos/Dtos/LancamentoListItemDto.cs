@@ -24,6 +24,9 @@ public class LancamentoListItemDto
     public short? ParcelaAtual { get; set; }
     public short? ParcelaTotal { get; set; }
 
+    public int? FaturaMes { get; set; }
+    public int? FaturaAno { get; set; }
+
 
     public LancamentoListItemDto()
     {
@@ -62,7 +65,11 @@ public class LancamentoListItemDto
                     lancamento.IdLancamentoTransferencia);
         }
 
-
+        if (lancamento.Fatura is not null)
+        {
+            FaturaMes = lancamento.Fatura.Mes;
+            FaturaAno = lancamento.Fatura.Ano;
+        }
 
     }
 }

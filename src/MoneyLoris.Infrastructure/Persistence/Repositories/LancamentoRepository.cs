@@ -29,6 +29,7 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
             .Include(l => l.Subcategoria)
+            .Include(l => l.Fatura)
             .Where(whereQueryListagem(filtro, idUsuario));
 
 

@@ -25,7 +25,8 @@
                     </div>
                     <div class="conta">
                         <i class="fa-solid fa-xl me-2 d-none d-lg-block" v-bind:class="utils.cssIconeByTipoConta(l.meioPagamentoTipo)" v-bind:style="{ 'color': '#' + l.meioPagamentoCor}"></i>
-                        <span>{{l.meioPagamentoNome}}</span>
+                        <div>{{l.meioPagamentoNome}}</div>
+                        <div v-if="l.faturaMes" class="fatura-hint">{{utils.mesAbreviado(l.faturaMes)}} {{l.faturaAno - 2000}}</div>
                     </div>
                     <div class="categoria"><span>{{l.categoria}}</span><span v-if="l.subcategoria"> / {{l.subcategoria}}</span></div>
                     <div class="descricao">
@@ -90,7 +91,7 @@
 
         .lancamento-container {
             display: grid;
-            grid-template-columns: 7rem 15rem 18rem auto 8rem 4rem;
+            grid-template-columns: 6.5rem 13rem 16rem auto 8rem 4rem;
             grid-template-areas:
                 "ga-data ga-conta ga-categoria ga-descricao ga-valor ga-opcoes";
             align-items: center;
@@ -103,7 +104,7 @@
             .lancamento-container .conta {
                 grid-area: ga-conta;
                 display: flex;
-                align-items: center;
+                align-items: baseline;
             }
 
             .lancamento-container .categoria {
@@ -131,7 +132,7 @@
         @@media (max-width: 991px) { /*lg*/
 
             .lancamento-container {
-                grid-template-columns: 3rem auto 8rem;
+                grid-template-columns: 2.5rem auto 7rem;
                 grid-template-areas:
                     "ga-data ga-descricao ga-valor"
                     "ga-data ga-categoria ga-conta"
@@ -173,7 +174,7 @@
                 }
 
                 .lancamento-container .conta {
-                    justify-content: end;
+                    flex-direction: row-reverse;
                     font-size: 0.75rem;
                     font-weight: 500;
                     color: var(--sys-color-dark-1);
@@ -214,6 +215,22 @@
                 background-color: #c8e6c9; /* MDC GREEN 100 */
                 border: 1px solid #81c784; /* MDC GREEN 300 */
             }
+
+        .fatura-hint {
+            margin: 0 0.25rem;
+            padding: 0 0.25rem;
+            font-size: 0.65em;
+            font-weight: 700;
+            line-height: 0.9rem;
+            background-color: var(--sys-color-light-4);
+        }
+
+        @@media (max-width: 991px) { /*lg*/
+
+            .fatura-hint {                
+                font-size: 0.75em;
+            }
+        }
 
     </style>
 }

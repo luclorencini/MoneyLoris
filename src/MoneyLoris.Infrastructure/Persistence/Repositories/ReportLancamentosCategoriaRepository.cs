@@ -140,6 +140,7 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
             .Include(l => l.Subcategoria)
+            .Include(l => l.Fatura)
             .Where(whereQueryDetalhe(filtro, idUsuario))
             .OrderBy(l => l.Data).ThenBy(l => l.Id)
             .IncluiPaginacao(filtro)

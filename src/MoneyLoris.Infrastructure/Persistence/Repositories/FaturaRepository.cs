@@ -43,6 +43,7 @@ public class FaturaRepository : RepositoryBase<Fatura>, IFaturaRepository
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
             .Include(l => l.Subcategoria)
+            .Include(l => l.Fatura)
             .Where(whereQueryListagem(filtro, idUsuario))
             .OrderByDescending(l => l.Data)
             .ThenByDescending(l => l.Id);
