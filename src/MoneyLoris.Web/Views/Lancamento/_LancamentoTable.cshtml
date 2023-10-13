@@ -35,6 +35,9 @@
                     </div>
                     <div class="valor"><Moeda :valor="l.valor"></Moeda></div>
                     <div class="opcoes">
+                        <div class="sinalizacao" title="Conferência" v-on:click.stop="sinalizar(l)">
+                            <i aria-hidden="true" class="fa-solid" v-bind:class="obterIconeSinalizacao(l)" v-bind:style="{ 'color': obterCorSinalizacao(l)}"></i>
+                        </div>
                         <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                     </div>
                 </div>
@@ -78,6 +81,34 @@
                     let d = new Date(s);
 
                     return d > today;
+                },
+
+                sinalizar(l) {
+
+                    if (l.sinal) {
+                        l.sinal++;
+                    }
+                    else {
+                        l.sinal = 1;
+                    }
+                },
+
+                obterIconeSinalizacao(l) {
+
+                    const icones = ['fa-minus', 'fa-check', 'fa-check', 'fa-question', 'fa-xmark'];
+
+                    if (!l.sinal) return icones[0];
+
+                    return icones[l.sinal % icones.length];
+                },
+
+                obterCorSinalizacao(l) {
+
+                    const cores = ['#9e9e9e', '#2196f3', '#ab47bc', '#f9a825', '#f44336'];  //gray, blue, purple, orange, red
+
+                    if (!l.sinal) return cores[0];
+
+                    return cores[l.sinal % cores.length];
                 }
             }
         }
@@ -91,7 +122,7 @@
 
         .lancamento-container {
             display: grid;
-            grid-template-columns: 6.5rem 13rem 16rem auto 8rem 4rem;
+            grid-template-columns: 6.5rem 13rem 16rem auto 8rem 6rem;
             grid-template-areas:
                 "ga-data ga-conta ga-categoria ga-descricao ga-valor ga-opcoes";
             align-items: center;
@@ -126,7 +157,9 @@
 
             .lancamento-container .opcoes {
                 grid-area: ga-opcoes;
-                text-align: end;
+                display: flex;
+                align-items: center;
+                justify-content: end;
             }
 
         @@media (max-width: 991px) { /*lg*/
@@ -227,10 +260,20 @@
 
         @@media (max-width: 991px) { /*lg*/
 
-            .fatura-hint {                
+            .fatura-hint {
                 font-size: 0.75em;
             }
         }
+
+        .sinalizacao {
+            width: 3rem;
+            text-align: center;
+            border-right: 1px solid var(--sys-color-dark-1);
+        }
+
+            .sinalizacao i {
+                font-size: 1.5rem;
+            }
 
     </style>
 }

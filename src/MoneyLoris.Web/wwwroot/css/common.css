@@ -14,6 +14,7 @@
     --sys-color-light-5: #FCE4EC; /* MDC PINK 50 - rosa clarinho */
     --sys-color-hover: #F8F9FA;
     --sys-container-max-width: 1860px;
+    --sys-color-btn-hover: #eceff1;
     --sys-loading-bg: #5C5C5C; /* cinza */
     --sys-loading-fg: #FFFFFF; /* branco */
 }
@@ -29,6 +30,7 @@
     --sys-color-light-2: #424242;
     --sys-color-light-4: #091f0a;
     --sys-color-hover: #2B3035;
+    --sys-color-btn-hover: #13100e;
 }
 
 /*#endregion*/
@@ -189,7 +191,7 @@ main {
 }
 
     .sys-icon-button:hover {
-        background-color: #eceff1;
+        background-color: var(--sys-color-btn-hover);
     }
 
 @media (max-width: 991px) { /*lg*/
