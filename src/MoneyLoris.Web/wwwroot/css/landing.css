@@ -1,0 +1,176 @@
+﻿html {
+    scroll-snap-type: y mandatory;
+}
+
+section {
+    border-top: 1px solid var(--sys-color-dark-2);
+    border-bottom: 1px solid var(--sys-color-dark-2);
+    padding: 1rem;
+    height: 100vh;
+    scroll-snap-align: start;
+    text-align: center;
+    position: relative;
+}
+
+
+.brand-mascot {
+    height: 4rem !important;
+    margin-bottom: -0.75rem;
+    margin-top: -0.25rem;
+}
+
+.ml-font {
+    font-family: 'Lovelo Black';
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+}
+
+/* #region HERO */
+
+.hero-container {
+    animation: scd-keyframe--fadein 1s;
+    display: flex;
+    align-items: center;
+}
+
+    .hero-container .hero-card {
+        margin-top: 5rem;
+        margin-left: 2rem;
+    }
+
+        .hero-container .hero-card .slogan {
+            font-size: 4rem;
+            font-weight: bold;
+            line-height: 4.75rem;
+            color: var(--sys-color-dark-2);
+            margin-bottom: 1rem;
+        }
+
+        .hero-container .hero-card .subtexto {
+            margin: 2rem 0;
+            font-size: 1.5rem;
+        }
+
+
+
+    .hero-container .hero-image {
+        width: 100%;
+        height: auto;
+    }
+
+@media (max-width: 1440px) {
+
+    .hero-container {
+        height: unset;
+    }
+
+        .hero-container .hero-card {
+        }
+
+            .hero-container .hero-card .slogan {
+                font-size: 2.5rem;
+                line-height: 3.25rem;
+            }
+
+            .hero-container .hero-card .subtexto {
+                margin: 1rem 0;
+                font-size: 1.1rem;
+            }
+}
+
+
+@media (max-width: 991px) { /*lg*/
+
+    .hero-container {
+        height: unset;
+    }
+
+        .hero-container .hero-card {
+            margin-top: unset;
+            margin-left: unset;
+        }
+
+            .hero-container .hero-card .slogan {
+                font-size: 2.25rem;
+                line-height: 2.75rem;
+            }
+
+            .hero-container .hero-card .subtexto {
+                margin: 1rem 0;
+                font-size: 1.1rem;
+            }
+}
+
+/* #endregion */
+
+/* #region Folders */
+
+.folder-container {
+    margin: 0rem 0;
+    height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+    .folder-container .folder-text {
+        position: absolute;
+        top: 3vw;
+        left: 2vw;
+        color: white;
+        background-color: rgba(0,0,0,0.7);
+        width: 30vw;
+        padding: 3rem;
+        text-align: left;
+        border: 1px solid var(--sys-color-dark-2);
+        border-top: 10px solid var(--sys-color-dark-2);
+    }
+
+    .folder-container:hover {
+        top: 0;
+    }
+
+@media (max-width: 991px) { /*lg*/
+    .folder-container .folder-text {
+        width: 95vw;
+        height: 90vh;
+    }
+}
+
+.folder-wizard {
+    background-image: url('/img/landing/moneyloris-pic-wizard.jpg');
+}
+
+.folder-contas {
+    background-image: url('/img/landing/moneyloris-pic-contas.jpg');
+}
+
+.folder-lancamento {
+    background-image: url('/img/landing/moneyloris-pic-lancamento.jpg');
+}
+
+.folder-relatorio {
+    background-image: url('/img/landing/moneyloris-pic-meeting.jpg');
+}
+
+/* #endregion */
+
+/* #region Utils */
+
+.letra-miuda {
+    font-size: 0.9rem;
+}
+
+
+@keyframes scd-keyframe--fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* #endregion */

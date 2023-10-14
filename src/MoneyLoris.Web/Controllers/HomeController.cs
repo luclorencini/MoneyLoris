@@ -8,10 +8,14 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
-        return Redirect("/Lancamento");
+        return View();
     }
 
-    // Futura tela pública. Por hora, redireciona pra tela de Lançamento (vai requerer login)
+    [HttpGet("/app")]
+    public IActionResult App()
+    {
+        return Redirect("/Lancamento");
+    }
 
     [HttpGet("/ping")]
     public IActionResult Ping()

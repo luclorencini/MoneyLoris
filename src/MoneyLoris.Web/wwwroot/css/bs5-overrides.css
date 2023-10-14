@@ -1,4 +1,8 @@
-﻿
+﻿:root {
+    --bs-primary: #2E7D32; /* MDC GREEN 800 - verde escuro */
+    --bs-primary-rgb: 46,125,50;
+}
+
 .navbar.bg-dark {
     background-color: var(--sys-color-menubar) !important;
 }

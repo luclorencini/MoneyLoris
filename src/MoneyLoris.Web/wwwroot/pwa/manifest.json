@@ -1,8 +1,8 @@
 {
   "name": "Money Loris",
   "short_name": "Money Loris",
-  "description": "Finanças Pessoas de Boas",
-  "start_url": "/Lancamento",
+  "description": "Você no comando das suas finanças",
+  "start_url": "/app",
   "id": "money-loris-pwa",
   "display": "standalone",
   "orientation": "portrait",
