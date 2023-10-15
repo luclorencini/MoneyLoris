@@ -31,20 +31,19 @@ section {
     animation: scd-keyframe--fadein 1s;
     height: 100vh;
     padding: 0;
-    /*background: linear-gradient(180deg, var(--sys-color-dark-2), var(--sys-color-dark-4), white, white, white);*/
-    /*background: linear-gradient(to bottom, var(--sys-color-dark-4) 25vh, white 25vh);*/
     background: linear-gradient(210deg, var(--sys-color-dark-4) 45vh, white 45vh);
 }
 
     .hero-container .hero-row {
         height: 100vh;
+        padding-top: 4rem;
+        max-width: 2300px;
+        margin: 0 auto;
     }
 
     .hero-container .hero-card {
-        /*margin-top: 3rem;*/
-        /*margin-left: 2rem;*/
-        margin: 4rem 2rem 0 2rem;
-        /*border: 1px solid red;*/
+        margin-left: 2rem;
+        margin-right: 2rem;
     }
 
         .hero-container .hero-card .slogan {
@@ -71,23 +70,15 @@ section {
 
 @media (max-width: 1440px) {
 
-    /*.hero-container {
-        height: unset;
-    }*/
-
-    .hero-container .hero-card {
-        margin-top: 4rem;
+    .hero-container .hero-card .slogan {
+        font-size: 3.25rem;
+        line-height: 4rem;
     }
 
-        .hero-container .hero-card .slogan {
-            font-size: 3.25rem;
-            line-height: 4rem;
-        }
-
-        .hero-container .hero-card .subtexto {
-            margin: 1rem 0;
-            font-size: 1.1rem;
-        }
+    .hero-container .hero-card .subtexto {
+        margin: 1rem 0;
+        font-size: 1.1rem;
+    }
 }
 
 
@@ -97,34 +88,44 @@ section {
         background: linear-gradient(to bottom, var(--sys-color-dark-4) 25vh, white 25vh);
     }
 
-    .hero-container .hero-row {
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
-        height: unset;
-    }
-
-    .hero-container .hero-card {
-        margin-top: unset;
-        /*margin-left: unset;*/
-    }
-
-        .hero-container .hero-card .slogan {
-            font-size: 2.25rem;
-            line-height: 2.75rem;
-            /*color: var(--sys-color-dark-4);*/
-            text-align: center;
+        .hero-container .hero-row {
+            padding-top: 1rem;
+            height: unset;
         }
 
-        .hero-container .hero-card .subtexto {
-            margin: 1.5rem 0;
-            font-size: 1.1rem;            
+        .hero-container .hero-card {
+            margin-top: unset;
         }
+
+            .hero-container .hero-card .slogan {
+                font-size: 2.25rem;
+                line-height: 2.75rem;
+                text-align: center;
+            }
+
+            .hero-container .hero-card .subtexto {
+                margin: 1.5rem 0;
+                font-size: 1.1rem;
+            }
+}
+
+/* #endregion */
+
+/* #region Carousel */
+
+#mlCarousel .carousel-item img {
+    margin-bottom: 5rem;
+}
+
+@media (max-width: 991px) { /*lg*/
+    #mlCarousel .carousel-item img {
+        margin-bottom: 1rem;
+    }
 }
 
 /* #endregion */
 
 /* #region Folders */
-
 .folder-container {
     margin: 0rem 0;
     height: 100vh;
@@ -143,7 +144,6 @@ section {
         width: 30vw;
         padding: 3rem;
         text-align: left;
-        /*border: 1px solid var(--sys-color-dark-2);*/
         border-top: 5px solid var(--sys-color-dark-2);
     }
 
