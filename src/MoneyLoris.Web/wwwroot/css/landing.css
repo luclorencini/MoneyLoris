@@ -29,26 +29,37 @@ section {
 
 .hero-container {
     animation: scd-keyframe--fadein 1s;
-    display: flex;
-    align-items: center;
+    height: 100vh;
+    padding: 0;
+    /*background: linear-gradient(180deg, var(--sys-color-dark-2), var(--sys-color-dark-4), white, white, white);*/
+    /*background: linear-gradient(to bottom, var(--sys-color-dark-4) 25vh, white 25vh);*/
+    background: linear-gradient(210deg, var(--sys-color-dark-4) 45vh, white 45vh);
 }
 
+    .hero-container .hero-row {
+        height: 100vh;
+    }
+
     .hero-container .hero-card {
-        margin-top: 5rem;
-        margin-left: 2rem;
+        /*margin-top: 3rem;*/
+        /*margin-left: 2rem;*/
+        margin: 4rem 2rem 0 2rem;
+        /*border: 1px solid red;*/
     }
 
         .hero-container .hero-card .slogan {
             font-size: 4rem;
             font-weight: bold;
             line-height: 4.75rem;
-            color: var(--sys-color-dark-2);
+            color: var(--sys-color-dark-4);
             margin-bottom: 1rem;
+            text-align: start;
         }
 
         .hero-container .hero-card .subtexto {
             margin: 2rem 0;
             font-size: 1.5rem;
+            text-align: justify;
         }
 
 
@@ -60,45 +71,54 @@ section {
 
 @media (max-width: 1440px) {
 
-    .hero-container {
+    /*.hero-container {
         height: unset;
+    }*/
+
+    .hero-container .hero-card {
+        margin-top: 4rem;
     }
 
-        .hero-container .hero-card {
+        .hero-container .hero-card .slogan {
+            font-size: 3.25rem;
+            line-height: 4rem;
         }
 
-            .hero-container .hero-card .slogan {
-                font-size: 2.5rem;
-                line-height: 3.25rem;
-            }
-
-            .hero-container .hero-card .subtexto {
-                margin: 1rem 0;
-                font-size: 1.1rem;
-            }
+        .hero-container .hero-card .subtexto {
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
 }
 
 
 @media (max-width: 991px) { /*lg*/
 
     .hero-container {
+        background: linear-gradient(to bottom, var(--sys-color-dark-4) 25vh, white 25vh);
+    }
+
+    .hero-container .hero-row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
         height: unset;
     }
 
-        .hero-container .hero-card {
-            margin-top: unset;
-            margin-left: unset;
+    .hero-container .hero-card {
+        margin-top: unset;
+        /*margin-left: unset;*/
+    }
+
+        .hero-container .hero-card .slogan {
+            font-size: 2.25rem;
+            line-height: 2.75rem;
+            /*color: var(--sys-color-dark-4);*/
+            text-align: center;
         }
 
-            .hero-container .hero-card .slogan {
-                font-size: 2.25rem;
-                line-height: 2.75rem;
-            }
-
-            .hero-container .hero-card .subtexto {
-                margin: 1rem 0;
-                font-size: 1.1rem;
-            }
+        .hero-container .hero-card .subtexto {
+            margin: 1.5rem 0;
+            font-size: 1.1rem;            
+        }
 }
 
 /* #endregion */
@@ -114,28 +134,87 @@ section {
     position: relative;
 }
 
-    .folder-container .folder-text {
+    .folder-container .folder-card {
         position: absolute;
-        top: 3vw;
+        bottom: 2vw;
         left: 2vw;
         color: white;
-        background-color: rgba(0,0,0,0.7);
+        background-color: rgba(0,0,0,0.75);
         width: 30vw;
         padding: 3rem;
         text-align: left;
-        border: 1px solid var(--sys-color-dark-2);
-        border-top: 10px solid var(--sys-color-dark-2);
+        /*border: 1px solid var(--sys-color-dark-2);*/
+        border-top: 5px solid var(--sys-color-dark-2);
     }
 
-    .folder-container:hover {
-        top: 0;
+        .folder-container .folder-card .title {
+            font-size: 2.5rem;
+            line-height: 2.75rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: var(--sys-color-dark-4);
+        }
+
+        .folder-container .folder-card .par {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .folder-container .folder-card .rolada-hint {
+            display: flex;
+            align-items: baseline;
+            justify-content: end;
+            color: white;
+            font-size: 1.5rem;
+            margin: 2rem -2rem -2rem 0;
+        }
+
+@media (max-width: 1440px) {
+
+    .folder-container .folder-card {
+        width: 33vw;
+        padding: 2rem;
     }
+
+        .folder-container .folder-card .title {
+            font-size: 2rem;
+            line-height: 2.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .folder-container .folder-card .par {
+            font-size: 1.1rem;
+        }
+
+        .folder-container .folder-card .rolada-hint {
+            font-size: 1.1rem;
+            margin: 1.5rem -1.5rem -1.5rem 0;
+        }
+}
 
 @media (max-width: 991px) { /*lg*/
-    .folder-container .folder-text {
-        width: 95vw;
-        height: 90vh;
+
+    .folder-container .folder-card {
+        width: 100vw;
+        padding: 0.75rem 1.25rem;
+        margin: -0.5rem;
+        border: 0;
+        background-size: unset;
     }
+
+        .folder-container .folder-card .title {
+            font-size: 1.5rem;
+            line-height: 2.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .folder-container .folder-card .par {
+            font-size: 1rem;
+        }
+
+        .folder-container .folder-card .rolada-hint {
+            margin: unset;
+        }
 }
 
 .folder-wizard {
@@ -151,7 +230,7 @@ section {
 }
 
 .folder-relatorio {
-    background-image: url('/img/landing/moneyloris-pic-meeting.jpg');
+    background-image: url('/img/landing/moneyloris-pic-relatorio.jpg');
 }
 
 /* #endregion */
