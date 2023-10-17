@@ -37,7 +37,7 @@ section {
     .hero-container .hero-row {
         height: 100vh;
         padding-top: 4rem;
-        max-width: 2300px;
+        max-width: 1800px;
         margin: 0 auto;
     }
 
@@ -47,7 +47,7 @@ section {
     }
 
         .hero-container .hero-card .slogan {
-            font-size: 4rem;
+            font-size: 3.75rem;
             font-weight: bold;
             line-height: 4.75rem;
             color: var(--sys-color-dark-4);
