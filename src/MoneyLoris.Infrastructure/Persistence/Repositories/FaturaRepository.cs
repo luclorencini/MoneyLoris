@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoneyLoris.Application.Business.Faturas.Dtos;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Domain.Entities;
+using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Infrastructure.Persistence.Context;
 using MoneyLoris.Infrastructure.Persistence.Repositories.Base;
 
@@ -71,6 +72,7 @@ public class FaturaRepository : RepositoryBase<Fatura>, IFaturaRepository
         Expression<Func<Lancamento, bool>> query =
             l => l.IdUsuario == idUsuario
             && l.IdFatura == filtro.IdFatura
+            && l.Operacao == OperacaoLancamento.LancamentoSimples
             ;
 
         return query;
