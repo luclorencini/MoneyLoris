@@ -169,23 +169,24 @@
 
                 labelMesFaturaAtual() {
                     let d = new Date();
-                    d.setMonth(d.getMonth() + 1);
                     return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
                 },
 
                 labelMesFaturaAnterior() {
                     let d = new Date();
+                    d.setMonth(d.getMonth() - 1);
                     return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
                 },
 
                 labelMesFaturaProxima() {
                     let d = new Date();
-                    d.setMonth(d.getMonth() + 2);
+                    d.setMonth(d.getMonth() + 1);
                     return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
                 }
             },
 
             async mounted() {
+                this.obterMesAnoAtual();
                 await this.obterCartaoInicial();
             },
 
@@ -212,12 +213,10 @@
                 async carregarDadosCartaoSelecionado(c) {
                     this.cartaoSelecionado = c;
                     this.filtro.idCartao = c.id;
-                    this.filtro.ano = new Date().getFullYear(); //ano atual
-                    this.filtro.mes = new Date().getMonth() + 2;  //mes atual + 1
 
                     await this.pesquisar();
                 },
-
+                
                 // métodos de filtro
 
                 async avancarMes() {
@@ -245,34 +244,24 @@
                 },
 
                 async filtrarMesFaturaAtual() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 2);
-                    await this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                async filtrarMesFaturaAnterior() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 1);
-                    await this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                async filtrarMesFaturaProxima() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 3);
-                    await this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                async filtrarMes(ano, mes) {
-
-                    this.filtro.ano = ano;
-                    this.filtro.mes = mes;
-
+                    this.obterMesAnoAtual();
                     await this.pesquisar();
                 },
 
+                async filtrarMesFaturaAnterior() {
+                    this.obterMesAnoAtual();
+                    await this.retrocederMes();
+                },
+
+                async filtrarMesFaturaProxima() {
+                    this.obterMesAnoAtual();
+                    await this.avancarMes();
+                },
+
+                obterMesAnoAtual() {
+                    this.filtro.ano = new Date().getFullYear(); //ano atual
+                    this.filtro.mes = new Date().getMonth() + 1;  //mes atual
+                },
 
                 //métodos de pesquisa
 
@@ -287,8 +276,6 @@
 
                 async obterInfoFatura() {
 
-                    //await this.setLoadingAndExecute(async () => {
-
                     let ret = await fetchData.fetchPostJson(`/fatura/info`, this.filtro);
 
                     if (ret.ok) {
@@ -298,7 +285,6 @@
                     else {
                         mensagemSistema.showMensagemErro(ret.message);
                     }
-                    //});
                 },
 
                 async paginar(paginacao) {
