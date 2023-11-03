@@ -31,7 +31,8 @@ public class FaturaRepository : RepositoryBase<Fatura>, IFaturaRepository
             .Where(
                 l => l.IdUsuario == idUsuario &&
                 l.IdFatura == idFatura &&
-                l.Tipo == Application.Domain.Enums.TipoLancamento.Despesa
+                l.Operacao == OperacaoLancamento.LancamentoSimples &&
+                l.Tipo == TipoLancamento.Despesa
             )
             .SumAsync(l => l.Valor);
 
