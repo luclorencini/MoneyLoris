@@ -13,11 +13,14 @@ public class TransferenciaUpdateDto
     public int IdMeioPagamentoDestino { get; set; }
     public decimal Valor { get; set; }
 
+    public int? FaturaMes { get; set; }
+    public int? FaturaAno { get; set; }
+
     public TransferenciaUpdateDto()
     {
     }
 
-    public TransferenciaUpdateDto(Lancamento lancamentoOrigem, Lancamento lancamentoDestino)
+    public TransferenciaUpdateDto(Lancamento lancamentoOrigem, Lancamento lancamentoDestino, Fatura? fatura)
     {
         IdLancamentoOrigem = lancamentoOrigem.Id;
         IdLancamentoDestino = lancamentoDestino.Id;
@@ -29,5 +32,11 @@ public class TransferenciaUpdateDto
         IdMeioPagamentoDestino = lancamentoDestino.IdMeioPagamento;
 
         Valor = Math.Abs(lancamentoOrigem.Valor); //garante que o valor vai sempre positivo pra interface
+
+        if (fatura is not null)
+        {
+            FaturaMes = fatura.Mes;
+            FaturaAno = fatura.Ano;
+        }
     }
 }

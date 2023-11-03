@@ -10,21 +10,21 @@ using MoneyLoris.Application.Shared;
 namespace MoneyLoris.Application.Business.Faturas;
 public class FaturaService : ServiceBase, IFaturaService
 {
-    private readonly IFaturaFactory _faturaFactory;
+    private readonly IFaturaHelper _faturaHelper;
     private readonly IFaturaRepository _faturaRepo;
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public FaturaService(
-        IFaturaFactory faturaFactory,
+        IFaturaHelper faturaHelper,
         IFaturaRepository faturaRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
         IMeioPagamentoValidator meioPagamentoValidator,
         IAuthenticationManager authenticationManager
     )
     {
-        _faturaFactory = faturaFactory;
+        _faturaHelper = faturaHelper;
         _faturaRepo = faturaRepo;
         _meioPagamentoValidator = meioPagamentoValidator;
         _meioPagamentoRepo = meioPagamentoRepo;
@@ -37,7 +37,7 @@ public class FaturaService : ServiceBase, IFaturaService
 
         var cartao = await _meioPagamentoRepo.GetById(filtro.IdCartao);
 
-        var fatura = await ObterOuCriarFatura(cartao, filtro.Mes, filtro.Ano);
+        var fatura = await _faturaHelper.ObterOuCriarFatura(cartao, filtro.Mes, filtro.Ano);
 
         var dto = new FaturaInfoDto(fatura);
 
@@ -113,26 +113,5 @@ public class FaturaService : ServiceBase, IFaturaService
         }
 
         return TaskSuccess(list);
-    }
-
-    public async Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano)
-    {
-        _meioPagamentoValidator.EhCartaoCredito(cartao);
-
-        //busca fatura pelos campos informados
-
-        var fatura = await _faturaRepo.ObterPorMesAno(cartao.Id, mes, ano);
-
-        if (fatura != null)
-            return fatura;
-
-        //se nao encontrou, cria uma nova fatura
-
-        var novaFatura = _faturaFactory.Criar(cartao, mes, ano);
-
-        await _faturaRepo.Insert(novaFatura);
-
-        return novaFatura;
-
     }
 }

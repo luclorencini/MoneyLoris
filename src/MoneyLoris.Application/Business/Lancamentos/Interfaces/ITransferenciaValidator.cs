@@ -13,4 +13,5 @@ public interface ITransferenciaValidator
     void OperacaoLancamentoOrigemTemQueSerTransferencia(Lancamento lancamentoOrigem);
     void OperacaoLancamentoDestinoTemQueSerTransferencia(Lancamento lancamentoDestino);
 
+    void SePagamentoFaturaMesAnoFaturaDevemSerInformados(TipoTransferencia tipoTransferencia, int? mesFatura, int? anoFatura);
 }

@@ -65,4 +65,13 @@ public class TransferenciaValidator : ITransferenciaValidator
                 code: ErrorCodes.Transferencia_OperacaoLancamentoDestinoNaoEhTransferencia,
                 message: "Lançamento destino não é uma transferência / pagamento de fatura");
     }
+
+    public void SePagamentoFaturaMesAnoFaturaDevemSerInformados(TipoTransferencia tipoTransferencia, int? mesFatura, int? anoFatura)
+    {
+        if (tipoTransferencia == TipoTransferencia.PagamentoFatura &&
+            (mesFatura is null || anoFatura is null))
+            throw new BusinessException(
+                code: ErrorCodes.Transferencia_PagamentoFaturaAnoMesFaturaDevemSerInformados,
+                message: "É necessário informar mês e ano da fatura a ser paga.");
+    }
 }

@@ -71,6 +71,7 @@ public static class ErrorCodes
     public static readonly string Transferencia_PagamentoFaturaDestinoTemQueSerCartao = "TPFDTC";
     public static readonly string Transferencia_OperacaoLancamentoOrigemNaoEhTransferencia = "TOLONT";
     public static readonly string Transferencia_OperacaoLancamentoDestinoNaoEhTransferencia = "TOLDNT";
+    public static readonly string Transferencia_PagamentoFaturaAnoMesFaturaDevemSerInformados = "TPFAMF";
     #endregion
 
     #region Fatura

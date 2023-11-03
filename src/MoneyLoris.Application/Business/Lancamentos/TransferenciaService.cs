@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -12,41 +13,38 @@ namespace MoneyLoris.Application.Business.Lancamentos;
 public class TransferenciaService : ServiceBase, ITransferenciaService
 {
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
-    private readonly ILancamentoValidator _lancamentoValidator;
-    private readonly ITransferenciaValidator _transferenciaValdator;
-    private readonly ILancamentoRepository _lancamentoRepo;
     private readonly IMeioPagamentoRepository _meioPagamentoRepo;
+    private readonly ILancamentoValidator _lancamentoValidator;
+    private readonly ILancamentoRepository _lancamentoRepo;
+    private readonly ITransferenciaValidator _transferenciaValidator;
+    private readonly IFaturaHelper _faturaHelper;
+    private readonly IFaturaRepository _faturaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
     public TransferenciaService(
         IMeioPagamentoValidator meioPagamentoValidator,
-        ILancamentoValidator lancamentoValidator,
-        ITransferenciaValidator transferenciaValdator,
-        ILancamentoRepository lancamentoRepo,
         IMeioPagamentoRepository meioPagamentoRepo,
-        IAuthenticationManager authenticationManager)
+        ILancamentoValidator lancamentoValidator,
+        ILancamentoRepository lancamentoRepo,
+        ITransferenciaValidator transferenciaValidator,
+        IFaturaHelper faturaHelper,
+        IFaturaRepository faturaRepo,
+        IAuthenticationManager authenticationManager
+    )
     {
-        _lancamentoValidator = lancamentoValidator;
         _meioPagamentoValidator = meioPagamentoValidator;
-        _transferenciaValdator = transferenciaValdator;
-        _lancamentoRepo = lancamentoRepo;
         _meioPagamentoRepo = meioPagamentoRepo;
+        _lancamentoValidator = lancamentoValidator;
+        _lancamentoRepo = lancamentoRepo;
+        _transferenciaValidator = transferenciaValidator;
+        _faturaHelper = faturaHelper;
+        _faturaRepo = faturaRepo;
         _authenticationManager = authenticationManager;
     }
 
     public async Task<Result<int>> InserirTransferenciaEntreContas(TransferenciaInsertDto dto)
     {
-        return await InserirTransferenciaTransactional(dto, TipoTransferencia.TransferenciaEntreContas);
-    }
-
-    public async Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto dto)
-    {
-        return await InserirTransferenciaTransactional(dto, TipoTransferencia.PagamentoFatura);
-    }
-
-    private async Task<Result<int>> InserirTransferenciaTransactional(TransferenciaInsertDto dto, TipoTransferencia tipoTransferencia)
-    {
-        _transferenciaValdator.NaoEhAdmin();
+        _transferenciaValidator.NaoEhAdmin();
 
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
@@ -54,30 +52,15 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
         _meioPagamentoValidator.OrigemExiste(meioOrigem);
         _meioPagamentoValidator.OrigemPertenceAoUsuario(meioOrigem);
-        _transferenciaValdator.MeioOrigemNaoPodeSerCartao(meioOrigem);
+        _transferenciaValidator.MeioOrigemNaoPodeSerCartao(meioOrigem);
 
         var meioDestino = await _meioPagamentoRepo.GetById(dto.IdMeioPagamentoDestino);
 
         _meioPagamentoValidator.DestinoExiste(meioDestino);
         _meioPagamentoValidator.DestinoPertenceAoUsuario(meioDestino);
-        _transferenciaValdator.SeTransferenciaEntreContasMeioDestinoNaoPodeSerCartao(tipoTransferencia, meioDestino);
-        _transferenciaValdator.SePagamentoFaturaMeioDestinoTemQueSerCartao(tipoTransferencia, meioDestino);
+        _transferenciaValidator.SeTransferenciaEntreContasMeioDestinoNaoPodeSerCartao(TipoTransferencia.TransferenciaEntreContas, meioDestino);
 
         // setup
-
-        string descricaoOrigem = null!;
-        string descricaoDestino = null!;
-
-        if (tipoTransferencia == TipoTransferencia.TransferenciaEntreContas)
-        {
-            descricaoOrigem = $"Transferência para {meioDestino.Nome}";
-            descricaoDestino = $"Transferência de {meioOrigem.Nome}";
-        }
-        else
-        {
-            descricaoOrigem = $"Pagamento Fatura {meioDestino.Nome}";
-            descricaoDestino = $"Pagamento Fatura via {meioOrigem.Nome}";
-        }
 
         var lancamentoOrigem = new Lancamento
         {
@@ -85,9 +68,9 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             IdMeioPagamento = dto.IdMeioPagamentoOrigem,
             Tipo = TipoLancamento.Despesa,
             Operacao = OperacaoLancamento.Transferencia,
-            TipoTransferencia = tipoTransferencia,
+            TipoTransferencia = TipoTransferencia.TransferenciaEntreContas,
             Data = dto.Data,
-            Descricao = descricaoOrigem,
+            Descricao = $"Transferência para {meioDestino.Nome}",
 
             Valor = dto.Valor * -1,  //despesa, tem que tornar negativo
 
@@ -100,9 +83,9 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             IdMeioPagamento = dto.IdMeioPagamentoDestino,
             Tipo = TipoLancamento.Receita,
             Operacao = OperacaoLancamento.Transferencia,
-            TipoTransferencia = tipoTransferencia,
+            TipoTransferencia = TipoTransferencia.TransferenciaEntreContas,
             Data = dto.Data,
-            Descricao = descricaoDestino,
+            Descricao = $"Transferência de {meioOrigem.Nome}",
 
             Valor = dto.Valor,
 
@@ -128,10 +111,104 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             await _lancamentoRepo.Update(lancamentoOrigem);
             await _lancamentoRepo.Update(lancamentoDestino);
 
-            //atualiza o saldo das contas   
+            //atualiza o saldo das contas
 
             await RecalcularSaldoConta(meioOrigem, lancamentoOrigem.Valor);
             await RecalcularSaldoConta(meioDestino, lancamentoDestino.Valor);
+
+            await _lancamentoRepo.CommitTransaction();
+
+            return lancamentoOrigem.Id;
+        }
+        catch (Exception)
+        {
+            await _lancamentoRepo.RollbackTransaction();
+            throw;
+        }
+    }
+
+    public async Task<Result<int>> InserirPagamentoFatura(TransferenciaInsertDto dto)
+    {
+        _transferenciaValidator.NaoEhAdmin();
+
+        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
+
+        var meioOrigem = await _meioPagamentoRepo.GetById(dto.IdMeioPagamentoOrigem);
+
+        _meioPagamentoValidator.OrigemExiste(meioOrigem);
+        _meioPagamentoValidator.OrigemPertenceAoUsuario(meioOrigem);
+        _transferenciaValidator.MeioOrigemNaoPodeSerCartao(meioOrigem);
+
+        var meioDestino = await _meioPagamentoRepo.GetById(dto.IdMeioPagamentoDestino);
+
+        _meioPagamentoValidator.DestinoExiste(meioDestino);
+        _meioPagamentoValidator.DestinoPertenceAoUsuario(meioDestino);
+        _transferenciaValidator.SePagamentoFaturaMeioDestinoTemQueSerCartao(TipoTransferencia.PagamentoFatura, meioDestino);
+        _transferenciaValidator.SePagamentoFaturaMesAnoFaturaDevemSerInformados(TipoTransferencia.PagamentoFatura, dto.FaturaMes, dto.FaturaAno);
+
+        // setup
+
+        var lancamentoOrigem = new Lancamento
+        {
+            IdUsuario = userInfo.Id,
+            IdMeioPagamento = dto.IdMeioPagamentoOrigem,
+            Tipo = TipoLancamento.Despesa,
+            Operacao = OperacaoLancamento.Transferencia,
+            TipoTransferencia = TipoTransferencia.PagamentoFatura,
+            Data = dto.Data,
+            Descricao = $"Pagamento Fatura {meioDestino.Nome}",
+
+            Valor = dto.Valor * -1,  //despesa, tem que tornar negativo
+
+            Realizado = true
+        };
+
+        var lancamentoDestino = new Lancamento
+        {
+            IdUsuario = userInfo.Id,
+            IdMeioPagamento = dto.IdMeioPagamentoDestino,
+            Tipo = TipoLancamento.Receita,
+            Operacao = OperacaoLancamento.Transferencia,
+            TipoTransferencia = TipoTransferencia.PagamentoFatura,
+            Data = dto.Data,
+            Descricao = $"Pagamento Fatura via {meioOrigem.Nome}",
+
+            Valor = dto.Valor,
+
+            Realizado = true
+        };
+
+        // transação
+
+        try
+        {
+            await _lancamentoRepo.BeginTransaction();
+
+            //obtem a fatura informada
+
+            var fatura = await _faturaHelper.ObterOuCriarFatura(meioDestino, dto.FaturaMes!.Value, dto.FaturaAno!.Value);
+
+            //persiste os lançamentos no banco
+
+            await _lancamentoRepo.Insert(lancamentoOrigem);
+            await _lancamentoRepo.Insert(lancamentoDestino);
+
+            //pega os ids, salva as referencias e atualiza
+
+            lancamentoOrigem.IdLancamentoTransferencia = lancamentoDestino.Id;
+            lancamentoOrigem.IdFatura = fatura.Id;
+
+            lancamentoDestino.IdLancamentoTransferencia = lancamentoOrigem.Id;
+            lancamentoDestino.IdFatura = fatura.Id;
+
+            await _lancamentoRepo.Update(lancamentoOrigem);
+            await _lancamentoRepo.Update(lancamentoDestino);
+
+            //atualiza o saldo da conta origem
+
+            await RecalcularSaldoConta(meioOrigem, lancamentoOrigem.Valor);
+
+            await _faturaHelper.LancarValorPagoFatura(fatura, dto.Valor);
 
             await _lancamentoRepo.CommitTransaction();
 
@@ -161,17 +238,20 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
         return novoSaldo;
     }
 
-
-
     public async Task<Result<TransferenciaUpdateDto>> Obter(int idLancamentoOrigem)
     {
-        var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
-
         var lancamentoOrigem = await _lancamentoRepo.GetById(idLancamentoOrigem);
 
         var lancamentoDestino = await _lancamentoRepo.GetById(lancamentoOrigem.IdLancamentoTransferencia!.Value);
 
-        var dto = new TransferenciaUpdateDto(lancamentoOrigem, lancamentoDestino);
+        Fatura? fatura = default!;
+
+        if (lancamentoDestino.IdFatura is not null)
+        {
+            fatura = await _faturaRepo.GetById(lancamentoDestino.IdFatura.Value);
+        }
+                
+        var dto = new TransferenciaUpdateDto(lancamentoOrigem, lancamentoDestino, fatura);
 
         return dto;
     }
@@ -183,19 +263,19 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
     public async Task<Result<int>> Excluir(int idLancamentoOrigem)
     {
-        _transferenciaValdator.NaoEhAdmin();
+        _transferenciaValidator.NaoEhAdmin();
 
         var lancamentoOrigem = await _lancamentoRepo.GetById(idLancamentoOrigem);
 
         _lancamentoValidator.OrigemExiste(lancamentoOrigem);
         _lancamentoValidator.OrigemPertenceAoUsuario(lancamentoOrigem);
-        _transferenciaValdator.OperacaoLancamentoOrigemTemQueSerTransferencia(lancamentoOrigem);
+        _transferenciaValidator.OperacaoLancamentoOrigemTemQueSerTransferencia(lancamentoOrigem);
 
         var lancamentoDestino = await _lancamentoRepo.GetById(lancamentoOrigem.IdLancamentoTransferencia!.Value);
 
         _lancamentoValidator.DestinoExiste(lancamentoDestino);
         _lancamentoValidator.DestinoPertenceAoUsuario(lancamentoDestino);
-        _transferenciaValdator.OperacaoLancamentoDestinoTemQueSerTransferencia(lancamentoDestino);
+        _transferenciaValidator.OperacaoLancamentoDestinoTemQueSerTransferencia(lancamentoDestino);
 
         var meioOrigem = await _meioPagamentoRepo.GetById(lancamentoOrigem.IdMeioPagamento);
 

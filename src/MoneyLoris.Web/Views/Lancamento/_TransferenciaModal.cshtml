@@ -40,6 +40,11 @@
                                     </div>
                                 </div>
 
+                                <div class="col-6" v-if="hasFatura">
+                                    <label class="form-label">Fatura</label>
+                                    <div class="form-control">{{utils.mesAbreviado(transferencia.faturaMes)}} / {{transferencia.faturaAno}}</div>
+                                </div>
+
                             </div>
                         </form>
                     </div>
@@ -90,7 +95,11 @@
 
                 labelContaCartao() {
                     return (this.transferencia.tipo == 1 ? "Conta" : "Cartão");
-                }
+                },
+
+                hasFatura() {
+                    return (this.transferencia.faturaMes != null);
+                },
             },
 
             mounted() {

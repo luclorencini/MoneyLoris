@@ -24,7 +24,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
     private readonly IAuthenticationManager _authenticationManager;
     private readonly ILancamentoConverter _lancamentoConverter;
     private readonly IParcelaCalculator _parcelaCalculator;
-    private readonly IFaturaService _faturaService;
+    private readonly IFaturaHelper _faturaHelper;
 
     public LancamentoService(
         ILancamentoValidator lancamentoValidator,
@@ -38,7 +38,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         IAuthenticationManager authenticationManager,
         ILancamentoConverter lancamentoConverter,
         IParcelaCalculator parcelaCalculator,
-        IFaturaService faturaService
+        IFaturaHelper faturaHelper
     )
     {
         _lancamentoValidator = lancamentoValidator;
@@ -52,7 +52,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _authenticationManager = authenticationManager;
         _lancamentoConverter = lancamentoConverter;
         _parcelaCalculator = parcelaCalculator;
-        _faturaService = faturaService;
+        _faturaHelper = faturaHelper;
     }
 
 
@@ -136,7 +136,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
             foreach (var l in lancamentos)
             {
                 //obtem fatura e seta no lançamento
-                var fatura = await _faturaService.ObterOuCriarFatura(meio, mesF, anoF);
+                var fatura = await _faturaHelper.ObterOuCriarFatura(meio, mesF, anoF);
 
                 l.IdFatura = fatura.Id;
 
@@ -271,7 +271,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         //fatura
         if (meio.IsCartao() && lancamento.Tipo == TipoLancamento.Despesa)
         {
-            var fatura = await _faturaService.ObterOuCriarFatura(meio, dto.FaturaMes!.Value, dto.FaturaAno!.Value);
+            var fatura = await _faturaHelper.ObterOuCriarFatura(meio, dto.FaturaMes!.Value, dto.FaturaAno!.Value);
             lancamento.IdFatura = fatura.Id;
         }
 

@@ -12,5 +12,5 @@ public interface IFaturaService
     Task<Result<FaturaSelecaoDto>> ObterFaturaEmAberto(int IdCartao);
     Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao);
 
-    Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano);
+    //Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano);
 }
