@@ -49,13 +49,25 @@
 
                                 <template v-if="isCartaoCredito">
 
-                                    <div class="col-6">
+                                    <div class="col col6">
                                         <label class="form-label required-asterisk">Fatura</label>
-                                        <select class="form-select" v-model="lancamento.faturaSelecionada">
-                                            <option v-for="f in faturas" :value="utils.mesAnoToString(f.mes, f.ano)">
-                                                {{utils.mesAbreviado(f.mes)}} / {{f.ano}}
-                                            </option>
-                                        </select>
+                                        <div class="input-group">
+                                            <select class="form-select" v-model="lancamento.faturaMes">
+                                                <option value="1">JAN</option>
+                                                <option value="2">FEV</option>
+                                                <option value="3">MAR</option>
+                                                <option value="4">ABR</option>
+                                                <option value="5">MAI</option>
+                                                <option value="6">JUN</option>
+                                                <option value="7">JUL</option>
+                                                <option value="8">AGO</option>
+                                                <option value="9">SET</option>
+                                                <option value="10">OUT</option>
+                                                <option value="11">NOV</option>
+                                                <option value="12">DEZ</option>
+                                            </select>
+                                            <input class="form-control" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="lancamento.faturaAno">
+                                        </div>
                                     </div>
 
                                     <div class="col-5 offset-1">
@@ -162,8 +174,6 @@
                             if (this.isCartaoCredito) {
                                 let rf = await fetchData.fetchGetJson(`/common/faturas/{this.lancamento.idMeioPagamento}`);
                                 this.faturas = rf.value;
-
-                                this.lancamento.faturaSelecionada = utils.mesAnoToString(this.lancamento.faturaMes, this.lancamento.faturaAno);
                             }
 
                         });
@@ -199,10 +209,6 @@
                                 let catIds = utils.parseCatSub(this.lancamento.idCatSub);
                                 this.lancamento.idCategoria = catIds[0];
                                 this.lancamento.idSubcategoria = catIds[1];
-
-                                let fat = utils.parseMesAno(this.lancamento.faturaSelecionada);
-                                this.lancamento.faturaMes = fat[0];
-                                this.lancamento.faturaAno = fat[1];
 
                                 ret = await fetchData.fetchPostJson('/lancamento/alterar', this.lancamento);
 

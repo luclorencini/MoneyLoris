@@ -35,7 +35,7 @@
 
                     <form ref="formPasso2" onsubmit="return false;">
                         <div class="container">
-                            <div class="row">
+                            <div class="row g-2">
 
                                 <div class="col col-12">
                                     <h5 class="my-2">Qual é o valor?</h5>
@@ -54,23 +54,35 @@
 
                                 <template v-if="isCartaoCredito">
 
-                                    <div class="col col-6">
+                                    <div class="col col-12 col-lg-6">
                                         <h5 class="my-1">Quantas parcelas?</h5>
-                                        <input class="form-control fs-5" type="number" min="1" max="36" v-model="dados.parcelas">
+                                        <input class="form-control fs-5 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
                                     </div>
 
-                                    <div class="col col-6">
+                                    <div class="col col-12 col-lg-6">
                                         <h5 class="my-1">Qual fatura?</h5>
-                                        <select class="form-select fs-5" v-model="dados.faturaSelecionada">
-                                            <option v-for="f in faturas" :value="utils.mesAnoToString(f.mes, f.ano)">
-                                                {{utils.mesAbreviado(f.mes)}} / {{f.ano}}
-                                            </option>
-                                        </select>
+                                        <div class="input-group">
+                                            <select class="form-select fs-5" v-model="dados.faturaMes">
+                                                <option value="1">JAN</option>
+                                                <option value="2">FEV</option>
+                                                <option value="3">MAR</option>
+                                                <option value="4">ABR</option>
+                                                <option value="5">MAI</option>
+                                                <option value="6">JUN</option>
+                                                <option value="7">JUL</option>
+                                                <option value="8">AGO</option>
+                                                <option value="9">SET</option>
+                                                <option value="10">OUT</option>
+                                                <option value="11">NOV</option>
+                                                <option value="12">DEZ</option>
+                                            </select>
+                                            <input class="form-control fs-5" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="dados.faturaAno">
+                                        </div>
                                     </div>
 
                                 </template>
 
-                                <div class="col col-12 mt-2 text-end">
+                                <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-primary" type="button" v-on:click="avancarPasso3()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>
@@ -192,8 +204,11 @@
                                     <div>{{meioPagamentoSelecionado.tipoDescricao}}</div>
                                     <div class="" v-if="isCartaoCredito">
                                         <span class="mx-1">-</span>
+                                        
                                         <span v-if="dados.parcelas == 1">Á vista</span>
                                         <span class="fw-bold" v-else>{{dados.parcelas}} vezes</span>
+                                        
+                                        <div class="fs-6 fw-bold text-capitalize">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
                                     </div>
                                 </div>
 
@@ -302,9 +317,9 @@
                     this.sugestoes = [];
                     this.categorias = [];
 
-                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
-
                     await this.iniciarPasso1();
+
+                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
                 },
 
                 retornarPasso() {
@@ -364,7 +379,6 @@
                         //reseta eventuais valores selecionados
                         this.dados.parcelas = null;
                         this.faturas = [];
-                        this.dados.faturaSelecionada = null;
                     }
 
                     this.setFocus('campoValor');
@@ -375,23 +389,23 @@
                     await this.setLoadingAndExecute(async () => {
 
                         let retf = await fetchData.fetchGetJson(`/common/faturas/${this.dados.idMeioPagamento}`);
-                        if (retf.ok) {
-                            this.faturas = retf.value;
-                        }
-                        else {
+                        if (!retf.ok) {
                             mensagemSistema.showMensagemErro(retf.message);
                             return;
                         }
 
+                        this.faturas = retf.value;
+                        
+
                         let reta = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamento}`);
-                        if (reta.ok) {
-                            let fat = reta.value;
-                            this.dados.faturaSelecionada = utils.mesAnoToString(fat.mes, fat.ano);
-                        }
-                        else {
+                        if (!reta.ok) {
                             mensagemSistema.showMensagemErro(reta.message);
                             return;
                         }
+
+                        let fat = reta.value;
+                        this.dados.faturaMes = fat.mes;
+                        this.dados.faturaAno = fat.ano;
                     });
 
                 },
@@ -495,11 +509,6 @@
 
                             //conversoes
                             fieldConverter.stringToMoney(this.dados, 'valor');
-
-                            let fat = utils.parseMesAno(this.dados.faturaSelecionada);
-                            this.dados.faturaMes = fat[0];
-                            this.dados.faturaAno = fat[1];
-
 
                             const url = (this.tipo == 1 ? '/lancamento/lancar/receita' : '/lancamento/lancar/despesa');
 

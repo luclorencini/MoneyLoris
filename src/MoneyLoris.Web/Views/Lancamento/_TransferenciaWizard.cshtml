@@ -75,19 +75,30 @@
                                 </div>
 
                                 <template v-if="isPagamentoFatura">
-
-                                    <div class="col col-6">
+                                    <div class="col col-8">
                                         <h5 class="my-2 mt-3">Qual fatura?</h5>
-                                        <select class="form-select fs-5" v-model="dados.faturaSelecionada">
-                                            <option v-for="f in faturas" :value="utils.mesAnoToString(f.mes, f.ano)">
-                                                {{utils.mesAbreviado(f.mes)}} / {{f.ano}}
-                                            </option>
-                                        </select>
+                                        <div class="input-group">
+                                            <select class="form-select fs-5" v-model="dados.faturaMes">
+                                                <option value="1">JAN</option>
+                                                <option value="2">FEV</option>
+                                                <option value="3">MAR</option>
+                                                <option value="4">ABR</option>
+                                                <option value="5">MAI</option>
+                                                <option value="6">JUN</option>
+                                                <option value="7">JUL</option>
+                                                <option value="8">AGO</option>
+                                                <option value="9">SET</option>
+                                                <option value="10">OUT</option>
+                                                <option value="11">NOV</option>
+                                                <option value="12">DEZ</option>
+                                            </select>
+                                            <input class="form-control fs-5" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="dados.faturaAno">
+                                        </div>
                                     </div>
 
                                 </template>
 
-                                <div class="col col-12 mt-3 text-end">
+                                <div class="col col-12 mt-3 text-end fs-5">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>
@@ -130,7 +141,7 @@
                                 <div class="resumo-icone-container">
                                     <i class="fa-solid fa-file-invoice-dollar fa-3x sys-fg-dark-2 me-2"></i>
                                 </div>
-                                <div class="fs-4 fw-bold text-capitalize">Fatura: {{faturaSelecionadaMes}} / {{faturaSelecionadaAno}}</div>
+                                <div class="fs-4 fw-bold text-capitalize">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
                             </div>
 
                         </template>
@@ -224,16 +235,6 @@
                 dataPorExtenso() {
                     const d = utils.inputToDate(this.dados.data);
                     return utils.dataExtenso(d);
-                },
-
-                faturaSelecionadaMes(){
-                    let fat = utils.parseMesAno(this.dados.faturaSelecionada);
-                    return utils.mesAbreviado(fat[0]);
-                },
-
-                faturaSelecionadaAno() {
-                    let fat = utils.parseMesAno(this.dados.faturaSelecionada);
-                    return fat[1];
                 },
             },
 
@@ -357,11 +358,11 @@
                         if (!reta.ok) {
                             mensagemSistema.showMensagemErro(reta.message);
                             return;
-
                         }
 
                         let fat = reta.value;
-                        this.dados.faturaSelecionada = utils.mesAnoToString(fat.mes, fat.ano);
+                        this.dados.faturaMes = fat.mes;
+                        this.dados.faturaAno = fat.ano;
                     });
 
                 },
@@ -385,12 +386,6 @@
 
                             //conversoes
                             fieldConverter.stringToMoney(this.dados, 'valor');
-
-                            if (this.dados.faturaSelecionada) {
-                                let fat = utils.parseMesAno(this.dados.faturaSelecionada);
-                                this.dados.faturaMes = fat[0];
-                                this.dados.faturaAno = fat[1];
-                            }
 
                             const url = (this.tipoTransferencia == 1 ? '/transferencia/lancar/entreContas' : '/transferencia/lancar/pagamentoFatura');
 
