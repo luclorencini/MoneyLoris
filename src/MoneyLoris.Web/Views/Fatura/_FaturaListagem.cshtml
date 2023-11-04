@@ -29,7 +29,7 @@
         </div>
 
         <!-- filtro desktop -->
-        <section class="container-xxl d-none d-lg-block">
+        <section class="container-xxl d-none d-lg-block" v-ext-loading="loadingCartao">
 
             <div class="row g-0 g-lg-2">
 
@@ -75,64 +75,64 @@
         </section>
 
 
-        <section class="container-xxl" v-if="temCartaoSelecionado">
+        <section class="container-xxl" v-ext-loading="loading">
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="fatura-info-container">
+            <template v-if="temCartaoSelecionado">
 
-                        <div class="mes">
-                            <label class="form-label">Fatura</label>
-                            <div class="lh-1 fs-5 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
-                        </div>
-                        <div class="valor-fatura">
-                            <label class="form-label">Valor da Fatura</label>
-                            <div class="fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
-                        </div>
-                        <div class="valor-pago">
-                            <label class="form-label">Valor Pago</label>
-                            <div class="fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
-                        </div>
-                        <div class="vigencia">
-                            <label class="form-label">Vigência</label>
-                            <div class="d-flex flex-wrap">
-                                <div class="text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div>
-                                <div class="mx-1">-</div>
-                                <div class="text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="fatura-info-container">
+
+                            <div class="mes">
+                                <label class="form-label">Fatura</label>
+                                <div class="lh-1 fs-5 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
                             </div>
-                        </div>
-                        <div class="vencimento">
-                            <label class="form-label">Vence em</label>
-                            <div class="fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
-                        </div>
+                            <div class="valor-fatura">
+                                <label class="form-label">Valor da Fatura</label>
+                                <div class="fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
+                            </div>
+                            <div class="valor-pago">
+                                <label class="form-label">Valor Pago</label>
+                                <div class="fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
+                            </div>
+                            <div class="vigencia">
+                                <label class="form-label">Vigência</label>
+                                <div class="d-flex flex-wrap">
+                                    <div class="text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div>
+                                    <div class="mx-1">-</div>
+                                    <div class="text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
+                                </div>
+                            </div>
+                            <div class="vencimento">
+                                <label class="form-label">Vence em</label>
+                                <div class="fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
+                            </div>
 
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="list-group mt-2 mb-5">
+                <div class="list-group mt-2 mb-5">
 
-                <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+                    <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
 
-                <div class="list-group-item">
-                    <Pagination v-if="totalResults > 0"
-                v-bind:currentPage="filtro.currentPage"
-                v-bind:resultsPerPage="filtro.resultsPerPage"
-                v-bind:totalResults="totalResults"
-                v-on:pagination-change="paginar($event)">
-                    </Pagination>
+                    <div class="list-group-item">
+                        <Pagination v-if="totalResults > 0"
+                    v-bind:currentPage="filtro.currentPage"
+                    v-bind:resultsPerPage="filtro.resultsPerPage"
+                    v-bind:totalResults="totalResults"
+                    v-on:pagination-change="paginar($event)">
+                        </Pagination>
+                    </div>
+
                 </div>
 
-            </div>
+            </template>
+
+            <h4 v-else>Você ainda não tem nenhum Cartão de Crédito cadastrado.</h4>
 
         </section>
-
-        <section class="container-xxl" v-else>
-
-            <h4>Você ainda não tem nenhum Cartão de Crédito cadastrado.</h4>
-
-        </section>
-
+        
         <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
         <LancamentoModal ref="lancModal" v-on:lancamento-salvo="obterListagem()"></LancamentoModal>
 
@@ -159,6 +159,9 @@
                 info: {},
                 lista: [],
                 totalResults: 0,
+
+                loading: true, //força loading true para garantir que o template de loading customizado vai entrar desde o início
+                loadingCartao: true,
             }),
 
             computed: {
@@ -211,9 +214,10 @@
                 },
 
                 async carregarDadosCartaoSelecionado(c) {
-                    this.cartaoSelecionado = c;
-                    this.filtro.idCartao = c.id;
-
+                    await this.setLoadingCustomAndExecute('loadingCartao', async () => {
+                        this.cartaoSelecionado = c;
+                        this.filtro.idCartao = c.id;
+                    });
                     await this.pesquisar();
                 },
                 
@@ -267,11 +271,14 @@
 
                 async pesquisar() {
 
-                    //reseta paginacao
-                    this.filtro.currentPage = 1;
+                    await this.setLoadingAndExecute(async () => {
 
-                    await this.obterInfoFatura();
-                    await this.obterListagem();
+                        //reseta paginacao
+                        this.filtro.currentPage = 1;
+
+                        await this.obterInfoFatura();
+                        await this.obterListagem();
+                    });
                 },
 
                 async obterInfoFatura() {
@@ -289,25 +296,25 @@
 
                 async paginar(paginacao) {
 
-                    this.filtro.currentPage = paginacao.currentPage;
-                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
-                    await this.obterListagem();
+                    await this.setLoadingAndExecute(async () => {
+
+                        this.filtro.currentPage = paginacao.currentPage;
+                        this.filtro.resultsPerPage = paginacao.resultsPerPage;
+                        await this.obterListagem();
+                    });
                 },
 
                 async obterListagem() {
 
-                    await this.showLoadingSplashAndExecute(async () => {
+                    let ret = await fetchData.fetchPostJson(`/fatura/pesquisar`, this.filtro);
 
-                        let ret = await fetchData.fetchPostJson(`/fatura/pesquisar`, this.filtro);
-
-                        if (ret.ok) {
-                            this.totalResults = ret.value.total;
-                            this.lista = ret.value.dataPage;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
+                    if (ret.ok) {
+                        this.totalResults = ret.value.total;
+                        this.lista = ret.value.dataPage;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
                 },
 
                 formatarDataLabel(d) {

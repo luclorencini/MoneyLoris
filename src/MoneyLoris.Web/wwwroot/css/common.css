@@ -350,7 +350,7 @@ main {
     }
 
     to {
-        opacity: 0.8;
+        opacity: 0.9;
     }
 }
 
@@ -381,9 +381,9 @@ main {
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    opacity: 0.8;
+    opacity: 0.9;
     pointer-events: none;
-    animation: adm-fadein 2s;
+    animation: adm-fadein 1s;
 }
 
     #loading-splash .container {
@@ -412,6 +412,7 @@ main {
 
 .ext-component-loading {
     pointer-events: none;
+    position: relative;
 }
 
     .ext-component-loading:before {

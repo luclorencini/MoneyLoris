@@ -50,6 +50,23 @@ const BaseMixin = {
         },
 
         /**
+         * seta a variavel informada 'campo' como true enquanto executa a função informada, e volta para false quando terminar
+         * o campo a ser informado deve ser string, e deve existir no componente. Ex: campo definido em data é loadingArea, então deve passar 'loadingArea' como string. Em javascript, this['loadingArea'] é equivalente a this.loadingArea
+         * @param {any} f funcao a ser executada (de preferencia, uma arrow function)
+         */
+        async setLoadingCustomAndExecute(campo, f) {
+
+            try {
+                this[campo] = true;
+
+                await f();
+            }
+            finally {
+                this[campo] = false;
+            }
+        },
+
+        /**
          * mostra a 'Loading Splash' (div opaca com ícone de 'carregando' enquanto executa a função informada, e a esconde quando terminar
          * @param {any} f funcao a ser executada (de preferencia, uma arrow function)
          */

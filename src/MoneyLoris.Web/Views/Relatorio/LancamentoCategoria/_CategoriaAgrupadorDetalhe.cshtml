@@ -7,38 +7,38 @@
     <script type="text/html" id="template-report-lanc-agr-det">
 
         <div class="offcanvas offcanvas-end offcanvas-detalhe" data-bs-backdrop="static" tabindex="-1" ref="offcanvasDetalhe">
-            <div class="offcanvas-header sys-bg-light-2">
-
-                <div class="container px-0">
-                        <div class="row g-2">
-
-                            <div class="col col-12 col-lg-4">
-                                <label class="form-label d-none d-lg-block">Mês</label>
-                                <div class="lh-sm fw-bold fs-5 text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</div>
-                            </div>
-                            <div class="col col-12 col-lg-6">
-                                <label class="form-label d-none d-lg-block">Categoria</label>
-                                <div class="lh-sm fs-6 text-capitalize">
-                                    <span class="fw-bold">{{categoria.nome}}</span>
-                                    <template v-if="!filtro.todosDaCategoria">
-                                        <span> / </span>
-                                        <span v-if="subcategoria" class="fw-bold">{{subcategoria.nome}}</span>
-                                        <span v-else class="fst-italic">sem subcategoria</span>
-                                    </template>
-                                </div>
-                            </div>
-                            <div class="col col-12 col-lg-2">
-                                <label class="form-label d-none d-lg-block">Total</label>
-                                <div class="lh-sm fs-4 fw-bold"><Moeda :valor="somatorio"></Moeda></div>
-                            </div>
-
-                        </div>
-                    </div>
-
+            <div class="offcanvas-header">
+                <h1 class="modal-title fs-5">Detalhes</h1>
                 <button type="button" class="btn-close" v-on:click="fechar()"></button>
             </div>
 
             <div class="offcanvas-body pt-0" v-ext-loading="loading">
+
+                <div class="container">
+                    <div class="row g-2">
+
+                        <div class="col col-12 col-lg-4">
+                            <label class="form-label d-none d-lg-block">Mês</label>
+                            <div class="lh-sm fw-bold fs-5 text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</div>
+                        </div>
+                        <div class="col col-12 col-lg-6">
+                            <label class="form-label d-none d-lg-block">Categoria</label>
+                            <div class="lh-sm fs-6 text-capitalize">
+                                <span class="fw-bold">{{categoria.nome}}</span>
+                                <template v-if="!filtro.todosDaCategoria">
+                                    <span> / </span>
+                                    <span v-if="subcategoria" class="fw-bold">{{subcategoria.nome}}</span>
+                                    <span v-else class="fst-italic">sem subcategoria</span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="col col-12 col-lg-2">
+                            <label class="form-label d-none d-lg-block">Total</label>
+                            <div class="lh-sm fs-4 fw-bold"><Moeda :valor="somatorio"></Moeda></div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <div class="list-group mt-2 mb-5">
 
@@ -111,18 +111,26 @@
                 async carregar(filtro) {
 
                     this.filtro = filtro;
-
-                    //reseta paginacao
                     this.filtro.currentPage = 1;
 
-                    await this.obterDadosDetalhe();
+                    //reseta campos
+                    this.totalResults = 0;
+                    this.lista = [];
+                    this.somatorio = 0;
+                    this.categoria = {};
+                    this.ubcategoria = {};
+                    this.houveAlteracao = false;
 
                     this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasDetalhe);
+
+                    await this.obterDadosDetalhe();
                 },
 
                 async obterDadosDetalhe() {
-                    await this.obterInfo();
-                    await this.obterListagem();
+                    await this.setLoadingAndExecute(async () => {
+                        await this.obterInfo();
+                        await this.obterListagem();
+                    });
                 },
 
                 async obterInfo() {
@@ -155,26 +163,24 @@
                 },
 
                 async paginar(paginacao) {
-
-                    this.filtro.currentPage = paginacao.currentPage;
-                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
-                    await this.obterListagem();
+                    await this.setLoadingAndExecute(async () => {
+                        this.filtro.currentPage = paginacao.currentPage;
+                        this.filtro.resultsPerPage = paginacao.resultsPerPage;
+                        await this.obterListagem();
+                    });
                 },
 
                 async obterListagem() {
 
-                    await this.showLoadingSplashAndExecute(async () => {
+                    let ret = await fetchData.fetchPostJson(`/relatorio/detalheListagem`, this.filtro);
 
-                        let ret = await fetchData.fetchPostJson(`/relatorio/detalheListagem`, this.filtro);
-
-                        if (ret.ok) {
-                            this.totalResults = ret.value.total;
-                            this.lista = ret.value.dataPage;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
+                    if (ret.ok) {
+                        this.totalResults = ret.value.total;
+                        this.lista = ret.value.dataPage;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
                 },
 
                 editarLancamento(l) {

@@ -44,7 +44,7 @@
 
         </section>
 
-        <section class="sys-container-fullhd">
+        <section class="sys-container-fullhd" v-ext-loading="loading">
 
             <div class="list-group list-group-flush">
                 <div class="list-group-item p-0">
@@ -264,7 +264,7 @@
 
                 async obterRelatorio() {
 
-                    await this.showLoadingSplashAndExecute(async () => {
+                    await this.setLoadingAndExecute(async () => {
 
                         let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
 
