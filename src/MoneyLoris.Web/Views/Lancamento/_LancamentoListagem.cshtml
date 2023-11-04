@@ -30,62 +30,73 @@
             </div>
         </section>
 
-
         <LancamentoListagemFiltro v-on:lancamento-filtrar="pesquisar($event)"></LancamentoListagemFiltro>
+        
 
+        <template v-if="loading">
+            <div class="container-xxl d-flex justify-content-center" style="animation: adm-fadein 0.5s;">
+                <div class="d-flex flex-column align-items-center mt-5">
+                    <i class="fa-solid fa-spinner fa-5x fa-spin"></i>
+                    <div class="fs-4 mt-3">Carregando lançamentos...</div>
+                </div>
+            </div>
+        </template>
+        <template v-else>
 
-        <section class="container-xxl lancamento-rolagem">
+            <section class="container-xxl lancamento-rolagem">
 
-            <div class="card">
-                <div class="card-body p-2">
-                    <div class="row g-0">
+                <div class="card">
+                    <div class="card-body p-2">
+                        <div class="row g-0">
 
-                        <div class="col col-7 d-none d-lg-block ps-2">
-                            <label class="form-label">Período</label>
-                            <div class="lh-1 fw-bold fs-5 text-capitalize">{{this.filtro.labelPeriodo}}</div>
-                        </div>
+                            <div class="col col-7 d-none d-lg-block ps-2">
+                                <label class="form-label">Período</label>
+                                <div class="lh-1 fw-bold fs-5 text-capitalize">{{this.filtro.labelPeriodo}}</div>
+                            </div>
 
-                        <div class="col col-12 col-lg-5">
+                            <div class="col col-12 col-lg-5">
 
-                            <div class="balanco-container">
+                                <div class="balanco-container">
 
-                                <div class="text-center">
-                                    <label class="form-label">Receitas</label>
-                                    <div class="valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
-                                </div>
-                                <div class="text-center">
-                                    <label class="form-label">Despesas</label>
-                                    <div class="valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
-                                </div>
-                                <div class="text-center">
-                                    <label class="form-label">Balanço</label>
-                                    <div class="valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
+                                    <div class="text-center">
+                                        <label class="form-label">Receitas</label>
+                                        <div class="valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
+                                    </div>
+                                    <div class="text-center">
+                                        <label class="form-label">Despesas</label>
+                                        <div class="valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
+                                    </div>
+                                    <div class="text-center">
+                                        <label class="form-label">Balanço</label>
+                                        <div class="valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
+                                    </div>
+
                                 </div>
 
                             </div>
 
                         </div>
-
                     </div>
                 </div>
-            </div>
 
-            <div class="list-group mt-2 mb-5">
+                <div class="list-group mt-2 mb-5">
 
-                <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+                    <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
 
-                <div class="list-group-item">
-                    <Pagination v-if="totalResults > 0"
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
-                    </Pagination>
+                    <div class="list-group-item">
+                        <Pagination v-if="totalResults > 0"
+                        v-bind:currentPage="filtro.currentPage"
+                        v-bind:resultsPerPage="filtro.resultsPerPage"
+                        v-bind:totalResults="totalResults"
+                        v-on:pagination-change="paginar($event)">
+                        </Pagination>
+                    </div>
+
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </template>
 
         @await Html.PartialAsync("_BotaoLancamentoMobile")
 
@@ -120,6 +131,11 @@
                 lista: []
             }),
 
+            mounted() {
+                //força loading true para garantir que o template de loading customizado vai entrar desde o início
+                this.loading = true;
+            },
+
             methods: {
 
                 async pesquisar(filter) {
@@ -141,43 +157,39 @@
                 },
 
                 async carregar() {
-                    this.obterListagem();
-                    this.obterBalanco();
+                    await this.setLoadingAndExecute(async () => {
+                        await this.obterListagem();
+                        await this.obterBalanco();
+                    });
                 },
 
                 async obterListagem() {
 
-                    await this.showLoadingSplashAndExecute(async () => {
+                    //ajustes
+                    if (this.filtro.idMeioPagamento == '' || this.filtro.idMeioPagamento == 'null')
+                        this.filtro.idMeioPagamento = null;
 
-                        //ajustes
-                        if (this.filtro.idMeioPagamento == '' || this.filtro.idMeioPagamento == 'null')
-                            this.filtro.idMeioPagamento = null;
+                    let ret = await fetchData.fetchPostJson(`/lancamento/pesquisar`, this.filtro);
 
-                        let ret = await fetchData.fetchPostJson(`/lancamento/pesquisar`, this.filtro);
-
-                        if (ret.ok) {
-                            this.totalResults = ret.value.total;
-                            this.lista = ret.value.dataPage;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
+                    if (ret.ok) {
+                        this.totalResults = ret.value.total;
+                        this.lista = ret.value.dataPage;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
                 },
 
                 async obterBalanco() {
 
-                    await this.setLoadingAndExecute(async () => {
+                    let ret = await fetchData.fetchPostJson(`/lancamento/balanco`, this.filtro);
 
-                        let ret = await fetchData.fetchPostJson(`/lancamento/balanco`, this.filtro);
-
-                        if (ret.ok) {
-                            this.balanco = ret.value;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
+                    if (ret.ok) {
+                        this.balanco = ret.value;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
                 },
 
 
