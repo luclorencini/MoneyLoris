@@ -57,11 +57,11 @@
 
                     <form ref="formPasso3" onsubmit="return false;">
                         <div class="container">
-                            <div class="row">
+                            <div class="row g-2">
 
                                 <div class="col col-12">
-                                    <h5 class="my-2">Qual é o valor?</h5>
-                                    <div class="input-group mb-3">
+                                    <h5 class="my-1">Qual é o valor?</h5>
+                                    <div class="input-group">
                                         <span class="input-group-text fw-bold fs-3">R$</span>
                                         <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
                                             type="text" inputmode="decimal" required maxlength="10"
@@ -70,13 +70,13 @@
                                 </div>
 
                                 <div class="col col-12">
-                                    <h5 class="my-2">Quando foi a transferência?</h5>
+                                    <h5 class="my-1">Quando foi a transferência?</h5>
                                     <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
                                 </div>
 
                                 <template v-if="isPagamentoFatura">
                                     <div class="col col-8">
-                                        <h5 class="my-2 mt-3">Qual fatura?</h5>
+                                        <h5 class="my-1">Qual fatura?</h5>
                                         <div class="input-group">
                                             <select class="form-select fs-5" v-model="dados.faturaMes">
                                                 <option value="1">JAN</option>
@@ -98,7 +98,7 @@
 
                                 </template>
 
-                                <div class="col col-12 mt-3 text-end fs-5">
+                                <div class="col col-12 mt-3 text-end">
                                     <button class="btn btn-outline-primary" type="button" v-on:click="avancarPasso4()">
                                         <span>Próximo</span>
                                         <i class="fa-solid fa-arrow-right ms-1"></i>

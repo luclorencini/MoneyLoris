@@ -38,8 +38,8 @@
                             <div class="row g-2">
 
                                 <div class="col col-12">
-                                    <h5 class="my-2">Qual é o valor?</h5>
-                                    <div class="input-group mb-2">
+                                    <h5 class="my-1">Qual é o valor?</h5>
+                                    <div class="input-group">
                                         <span class="input-group-text fw-bold fs-3">R$</span>
                                         <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
                                         type="text" inputmode="decimal" required maxlength="10"
@@ -48,8 +48,8 @@
                                 </div>
 
                                 <div class="col col-12">
-                                    <h5 class="my-2">Quando foi a {{labelTipo}}?</h5>
-                                    <input class="form-control form-control-lg fw-bold fs-3 mb-2" type="date" required v-model="dados.data">
+                                    <h5 class="my-1">Quando foi a {{labelTipo}}?</h5>
+                                    <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
                                 </div>
 
                                 <template v-if="isCartaoCredito">
@@ -202,17 +202,14 @@
 
                                 <div class="fs-6 fst-italic lh-1 d-flex">
                                     <div>{{meioPagamentoSelecionado.tipoDescricao}}</div>
-                                    <div class="" v-if="isCartaoCredito">
+                                    <div v-if="isCartaoCredito">
                                         <span class="mx-1">-</span>
-                                        
                                         <span v-if="dados.parcelas == 1">Á vista</span>
                                         <span class="fw-bold" v-else>{{dados.parcelas}} vezes</span>
-                                        
-                                        <div class="fs-6 fw-bold text-capitalize">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
                                     </div>
                                 </div>
 
-
+                                <div v-if="isCartaoCredito" class="fs-6 mt-1">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
                             </div>
                         </div>
 
