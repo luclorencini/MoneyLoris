@@ -47,8 +47,8 @@ public class FaturaRepository : RepositoryBase<Fatura>, IFaturaRepository
             .Include(l => l.Subcategoria)
             .Include(l => l.Fatura)
             .Where(whereQueryListagem(filtro, idUsuario))
-            .OrderByDescending(l => l.Data)
-            .ThenByDescending(l => l.Id);
+            .OrderBy(l => l.Data)
+            .ThenBy(l => l.Id);
 
         var list = await query
             .IncluiPaginacao(filtro)
