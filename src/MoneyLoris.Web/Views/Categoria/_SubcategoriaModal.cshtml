@@ -2,7 +2,7 @@
 {
     <script type="text/html" id="template-subcategoria-modal">
 
-        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+        <div class="modal" ref="modalForm" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -112,7 +112,7 @@
                     if (isValido) {
                         let ret = null;
 
-                        await this.setLoadingAndExecute(async () => {
+                        await this.showLoadingSplashAndExecute(async () => {
                             try {
 
                                 fieldConverter.stringToInt(this.subcategoria, 'ordem');

@@ -15,7 +15,7 @@
 
         <ul class="list-group list-group-cat mt-3" v-ext-loading="loading">
 
-            <li class="list-group-item text-center" v-if="lista.length == 0">Nenhuma categoria encontrada</li>
+            <li class="list-group-item text-center no-cat-group" v-if="lista.length == 0">Nenhuma categoria encontrada</li>
 
             <template v-else>
 
@@ -152,6 +152,10 @@
 @using (Html.VueStyle())
 {
     <style type="text/css">
+
+        .no-cat-group {
+            min-height: 70vh;
+        }
 
         .list-group.list-group-cat {
             border: 0px solid green;

@@ -129,8 +129,6 @@
 
             </template>
 
-            <h4 v-else>Você ainda não tem nenhum Cartão de Crédito cadastrado.</h4>
-
         </section>
         
         <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
@@ -160,7 +158,6 @@
                 lista: [],
                 totalResults: 0,
 
-                loading: true, //força loading true para garantir que o template de loading customizado vai entrar desde o início
                 loadingCartao: true,
             }),
 

@@ -12,19 +12,19 @@
             </div>
         </section>
 
-        <section class="container-xxl">
+        <section class="container-xxl" v-ext-loading="loading">
 
             <div class="row g-0 g-lg-2">
 
                 <div class="col-12 col-lg-8 offset-lg-2">
-                    <div class="card" v-if="temConta">
-                        <div class="card-body d-flex justify-content-evenly">
+                    <div class="card card-resumo">
+                        <div class="card-body d-flex justify-content-evenly" v-if="temConta">
 
                             <div class="d-none d-lg-flex align-items-center">
                                 <i class="fa-solid fa-3x fa-sack-dollar sys-fg-dark-4"></i>
                                 <div class="ms-3">
                                     <div class="fs-6 fw-bold">Saldo em Contas</div>
-                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoContas"></Moeda></div>
+                                    <div class="fs-5 fw-bold"><Moeda v-bind:valor="saldoContas"></Moeda></div>
                                 </div>
                             </div>
 
@@ -32,7 +32,7 @@
                                 <i class="fa-solid fa-3x fa-piggy-bank sys-fg-dark-4"></i>
                                 <div class="ms-3">
                                     <div class="fs-6 fw-bold">Poupança</div>
-                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoPoupancas"></Moeda></div>
+                                    <div class="fs-5 fw-bold"><Moeda v-bind:valor="saldoPoupancas"></Moeda></div>
                                 </div>
                             </div>
 
@@ -40,7 +40,7 @@
                                 <i class="fa-solid fa-3x fa-dollar-sign sys-fg-dark-2 d-none d-lg-block"></i>
                                 <div class="ms-3 saldo-hint">
                                     <div class="fs-6 fw-bold me-3">Saldo Atual:</div>
-                                    <div class="fs-5 fw-bold"><Moeda :valor="saldoAtual"></Moeda></div>
+                                    <div class="fs-5 fw-bold"><Moeda v-bind:valor="saldoAtual"></Moeda></div>
                                 </div>
                             </div>
 
@@ -50,23 +50,16 @@
 
             </div>
 
-        </section>
-
-
-        <section class="container-xxl my-3 my-lg-4">
-            <div class="row g-0">
+            <div class="row g-0 my-3 my-lg-4">
                 <div class="col d-flex justify-content-end px-3 px-lg-0">
                     <button class="btn btn-primary px-4" v-on:click="novo()"><span class="sys-fg-dark-3 fw-bold">Novo</span></button>
                 </div>
             </div>
-        </section>
-
-        <section class="container-xxl">
 
             <div class="row g-0 g-lg-3">
 
                 <div class="col col-12 text-center" v-if="!temConta">
-                    <h6>Nenhuma conta ou cartão cadastrado.</h6>
+                    <div class="fs-6 list-group-item">Nenhuma conta ou cartão cadastrado.</div>
                 </div>
 
                 <template v-else>
@@ -161,7 +154,7 @@
                         }
                     });
                 },
-                
+
                 somarContas(contas) {
                     return contas
                         .map(c => c.valor)
@@ -185,6 +178,10 @@
 @using (Html.VueStyle())
 {
     <style type="text/css">
+
+        .card-resumo {
+            min-height: 6rem;
+        }
 
         .conta-container {
             display: grid;
@@ -247,6 +244,10 @@
 
 
         @@media (max-width: 991px) { /*lg*/
+
+            .card-resumo {
+                min-height: 3rem;
+            }
 
             .conta-container {
                 grid-template-columns: 3rem auto 7.5rem 2.5rem;
