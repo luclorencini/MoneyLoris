@@ -17,6 +17,7 @@ public class HomeController : Controller
         return Redirect("/Lancamento");
     }
 
+    [HttpHead("/ping")]
     [HttpGet("/ping")]
     public IActionResult Ping()
     {
