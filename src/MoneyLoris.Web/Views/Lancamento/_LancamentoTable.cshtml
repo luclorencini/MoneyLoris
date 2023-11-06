@@ -14,7 +14,7 @@
         </div>
 
         <template v-if="totalResults > 0">
-            <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : isDataFutura(l.data)}" v-on:click="editarLancamento(l)">
+            <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : sinalizarLancamentoFuturo(l)}" v-on:click="editarLancamento(l)">
                 <div class="lancamento-container">
                     <div class="data">
                         <div class="d-none d-lg-block data-desk">
@@ -79,12 +79,14 @@
                     this.$emit('editar-lancamento', l);
                 },
 
-                isDataFutura(s) {
+                sinalizarLancamentoFuturo(l) {
+
+                    if (l.parcelaAtual) return false;
 
                     let today = new Date();
                     today.setHours(0, 0, 0, 0);
 
-                    let d = new Date(s);
+                    let d = new Date(l.data);
 
                     return d > today;
                 },

@@ -25,6 +25,10 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
 
     public async Task<ICollection<Lancamento>> PesquisaPaginada(LancamentoFiltroDto filtro, int idUsuario)
     {
+        //nota sobre o order by:
+        //queremos agrupar todos os lançamentos que são parcelamentos de compras feitas em meses anteriores no começo ou no final da listagem, dependendo da opção 'MaisAntigosPrimeiro'.
+        //já o lançamento de compra parcelada no mês atual (parcelaAtual = 1), queremos que apareça ordenado normalmente por data junto com as outras compras à vista
+
         var query = _dbset
             .Include(l => l.MeioPagamento)
             .Include(l => l.Categoria)
@@ -35,11 +39,17 @@ public class LancamentoRepository : RepositoryBase<Lancamento>, ILancamentoRepos
 
         if (filtro.MaisAntigosPrimeiro)
         {
-            query = query.OrderBy(l => l.Data).ThenBy(l => l.Id);
+            query = query
+                .OrderBy(l => l.ParcelaAtual == null || l.ParcelaAtual == 1) //agrupar parcelamentos antigos
+                .ThenBy(l => l.Data)
+                .ThenBy(l => l.Id);
         }
         else
         {
-            query = query.OrderByDescending(l => l.Data).ThenByDescending(l => l.Id);
+            query = query
+                .OrderBy(l => l.ParcelaAtual != null && l.ParcelaAtual > 1) //agrupar parcelamentos antigos
+                .ThenByDescending(l => l.Data)
+                .ThenByDescending(l => l.Id);
         }
 
         var list = await query
