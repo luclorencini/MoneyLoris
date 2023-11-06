@@ -132,19 +132,27 @@ main {
         align-items: baseline;
     }
 
-        .container-titulo .area-titulo .botao-voltar .b-web {
-            display: none;
+        .container-titulo .area-titulo {
+            height: 1.5rem;
         }
 
-        .container-titulo .area-titulo .botao-voltar .b-cel {
-            display: unset;
-        }
+            .container-titulo .area-titulo .botao-voltar {
+                margin-top: 0.25rem;
+            }
 
-        .container-titulo .area-titulo .titulo {
-            font-size: 1.35rem;
-            font-weight: 500;
-            color: #fff;
-        }
+                .container-titulo .area-titulo .botao-voltar .b-web {
+                    display: none;
+                }
+
+                .container-titulo .area-titulo .botao-voltar .b-cel {
+                    display: unset;
+                }
+
+            .container-titulo .area-titulo .titulo {
+                font-size: 1.25rem;
+                font-weight: 500;
+                color: #fff;
+            }
 }
 
 /* #endregion */
