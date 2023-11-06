@@ -17,10 +17,16 @@
             <div v-for="l in lista" class="list-group-item sys-clicavel" v-bind:class="{'lancamento-futuro' : isDataFutura(l.data)}" v-on:click="editarLancamento(l)">
                 <div class="lancamento-container">
                     <div class="data">
-                        <div class="d-none d-lg-block">{{utils.dataCurta(l.data)}}</div>
+                        <div class="d-none d-lg-block data-desk">
+                            <div class="d-flex align-items-baseline">
+                                <div>{{utils.dataCurta(l.data)}}</div>
+                                <div class="dia-semana">{{utils.dataDiaSemana(l.data)}}</div>
+                            </div>
+                        </div>
                         <div class="d-lg-none data-mob">
                             <div class="dia">{{utils.dataDia(l.data)}}</div>
                             <div class="mes">{{utils.dataMesShort(l.data)}}</div>
+                            <div class="dia-semana">{{utils.dataDiaSemana(l.data)}}</div>
                         </div>
                     </div>
                     <div class="conta">
@@ -122,7 +128,7 @@
 
         .lancamento-container {
             display: grid;
-            grid-template-columns: 6.5rem 13rem 16rem auto 8rem 6rem;
+            grid-template-columns: 8rem 13rem 16rem auto 8rem 6rem;
             grid-template-areas:
                 "ga-data ga-conta ga-categoria ga-descricao ga-valor ga-opcoes";
             align-items: center;
@@ -131,6 +137,13 @@
             .lancamento-container .data {
                 grid-area: ga-data;
             }
+
+                .lancamento-container .data .data-desk .dia-semana {
+                    font-size: 0.65rem;
+                    margin-left: 0.35rem;
+                    text-transform: uppercase;
+                    width: 1.75rem;
+                }
 
             .lancamento-container .conta {
                 grid-area: ga-conta;
@@ -176,19 +189,27 @@
                     flex-direction: column;
                     color: var(--sys-color-dark-1);
                     align-items: center;
-                    margin: 0.1rem 0.5rem 0.1rem 0;
+                    margin: 0.1rem 0.6rem 0.1rem 0;
                 }
 
                     .lancamento-container .data .data-mob .dia {
-                        font-size: 1.5rem;
+                        font-size: 1.25rem;
                         font-weight: bold;
-                        line-height: 1.6rem;
+                        line-height: 1.25rem;
+                        margin-top: -0.55rem;
                     }
 
                     .lancamento-container .data .data-mob .mes {
-                        font-size: 0.65rem;
+                        font-size: 0.625rem;
                         font-weight: 600;
-                        line-height: 0.75rem;
+                        line-height: 0.55rem;
+                    }
+
+                    .lancamento-container .data .data-mob .dia-semana {
+                        font-size: 0.475rem;
+                        line-height: 1.2rem;
+                        margin-bottom: -1rem;
+                        text-transform: uppercase;
                     }
 
                 .lancamento-container .descricao {

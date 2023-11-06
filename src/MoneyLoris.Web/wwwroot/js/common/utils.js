@@ -149,6 +149,15 @@
         return ext;
     },
 
+    dataDiaSemana(strDate) {
+
+        let d = new Date(strDate);
+
+        let sem = d.toLocaleDateString('pt-BR', { weekday: 'short' }).substring(0, 3);
+
+        return sem;
+    },
+
     horaCurta(strDate) {
 
         let d = new Date(strDate);
