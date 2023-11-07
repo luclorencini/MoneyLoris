@@ -130,9 +130,9 @@
             </template>
 
         </section>
-        
+
         <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
-        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="obterListagem()"></LancamentoModal>
+        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="atualizarInfoEListagem()"></LancamentoModal>
 
     </script>
 }
@@ -217,7 +217,7 @@
                     });
                     await this.pesquisar();
                 },
-                
+
                 // métodos de filtro
 
                 async avancarMes() {
@@ -278,6 +278,26 @@
                     });
                 },
 
+                async paginar(paginacao) {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        this.filtro.currentPage = paginacao.currentPage;
+                        this.filtro.resultsPerPage = paginacao.resultsPerPage;
+
+                        await this.obterListagem();
+                    });
+                },
+
+                async atualizarInfoEListagem() {
+
+                    await this.setLoadingAndExecute(async () => {
+
+                        await this.obterInfoFatura();
+                        await this.obterListagem();
+                    });
+                },
+
                 async obterInfoFatura() {
 
                     let ret = await fetchData.fetchPostJson(`/fatura/info`, this.filtro);
@@ -289,16 +309,6 @@
                     else {
                         mensagemSistema.showMensagemErro(ret.message);
                     }
-                },
-
-                async paginar(paginacao) {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        this.filtro.currentPage = paginacao.currentPage;
-                        this.filtro.resultsPerPage = paginacao.resultsPerPage;
-                        await this.obterListagem();
-                    });
                 },
 
                 async obterListagem() {
