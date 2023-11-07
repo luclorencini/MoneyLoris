@@ -120,8 +120,6 @@
                 meios: [],
                 categorias: [],
 
-                faturas: [],
-
                 modal: null,
             }),
 
@@ -149,7 +147,6 @@
                         this.lancamento = {};
                         this.meios = [];
                         this.categorias = [];
-                        this.faturas = [];
 
                         await this.showLoadingSplashAndExecute(async () => {
 
@@ -169,13 +166,6 @@
                             //busca categorias
                             let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
                             this.categorias = rc.value;
-
-                            //busca faturas, se cartão
-                            if (this.isCartaoCredito) {
-                                let rf = await fetchData.fetchGetJson(`/common/faturas/{this.lancamento.idMeioPagamento}`);
-                                this.faturas = rf.value;
-                            }
-
                         });
 
                         this.modal = bootstrapHelper.openModal(this.$refs.modalForm);

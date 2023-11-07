@@ -250,8 +250,6 @@
                 meios: [],
                 meioPagamentoSelecionado: {},
 
-                faturas: [],
-
                 sugestoes: [],
                 categorias: [],
 
@@ -308,8 +306,6 @@
                     this.dados = {};
                     this.meios = [];
                     this.meioPagamentoSelecionado = {};
-
-                    this.faturas = [];
 
                     this.sugestoes = [];
                     this.categorias = [];
@@ -375,7 +371,6 @@
                     else {
                         //reseta eventuais valores selecionados
                         this.dados.parcelas = null;
-                        this.faturas = [];
                     }
 
                     this.setFocus('campoValor');
@@ -385,22 +380,13 @@
 
                     await this.setLoadingAndExecute(async () => {
 
-                        let retf = await fetchData.fetchGetJson(`/common/faturas/${this.dados.idMeioPagamento}`);
-                        if (!retf.ok) {
-                            mensagemSistema.showMensagemErro(retf.message);
+                        let ret = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamento}`);
+                        if (!ret.ok) {
+                            mensagemSistema.showMensagemErro(ret.message);
                             return;
                         }
 
-                        this.faturas = retf.value;
-                        
-
-                        let reta = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamento}`);
-                        if (!reta.ok) {
-                            mensagemSistema.showMensagemErro(reta.message);
-                            return;
-                        }
-
-                        let fat = reta.value;
+                        let fat = ret.value;
                         this.dados.faturaMes = fat.mes;
                         this.dados.faturaAno = fat.ano;
                     });

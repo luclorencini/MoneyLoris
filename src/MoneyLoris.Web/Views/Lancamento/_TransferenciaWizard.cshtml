@@ -211,8 +211,6 @@
                 meiosDestino: [],
                 meioDestinoSelecionado: {},
 
-                faturas: [],
-
                 offCanvas: null,
             }),
 
@@ -252,7 +250,7 @@
                 },
 
                 async initPagamentoFatura() {
-                    await this._init(2); // 2 - pagamento de faturas
+                    await this._init(2); // 2 - pagamento de fatura
                 },
 
                 async _init(t) {
@@ -264,7 +262,6 @@
                     this.meioOrigemSelecionado = {};
                     this.meiosDestino = [];
                     this.meioDestinoSelecionado = {};
-                    this.faturas = [];
 
                     await this.iniciarPasso1();
 
@@ -326,45 +323,21 @@
                 // passo 3
 
                 async avancarPasso3() {
+
                     this.passo = 3;
-                    this.dados.data = utils.dateToInput(new Date());
+
+                    let hoje = new Date();
+
+                    this.dados.data = utils.dateToInput(hoje);
 
                     if (this.isPagamentoFatura) {
-                        await this.carregarDadosFatura();
-                    }
-                    else {
-                        //reseta eventuais valores de fatura selecionados
-                        this.faturas = [];
-                        this.dados.faturaSelecionada = null;
+
+                        //seleciona a fatura do mês atual
+                        this.dados.faturaMes = hoje.getMonth() + 1;
+                        this.dados.faturaAno = hoje.getFullYear();
                     }
 
                     this.setFocus('campoValor');
-                },
-
-                async carregarDadosFatura() {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        let retf = await fetchData.fetchGetJson(`/common/faturas/${this.dados.idMeioPagamentoDestino}`);
-                        if (!retf.ok) {
-                            mensagemSistema.showMensagemErro(retf.message);
-                            return;
-                        }
-
-                        this.faturas = retf.value;
-
-
-                        let reta = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamentoDestino}`);
-                        if (!reta.ok) {
-                            mensagemSistema.showMensagemErro(reta.message);
-                            return;
-                        }
-
-                        let fat = reta.value;
-                        this.dados.faturaMes = fat.mes;
-                        this.dados.faturaAno = fat.ano;
-                    });
-
                 },
 
                 // passo 4 - resumo

@@ -4,7 +4,6 @@ using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
 using MoneyLoris.Application.Common.Base;
-using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Business.Faturas;
@@ -88,30 +87,5 @@ public class FaturaService : ServiceBase, IFaturaService
 
         return dto;
 
-    }
-
-    public Task<Result<ICollection<FaturaSelecaoDto>>> ObterFaturasSelecao(int IdCartao)
-    {
-
-        //a partir do mês/ano atual, lista os 6 meses anteriores e os 10 posteriores
-
-        ICollection<FaturaSelecaoDto> list = new List<FaturaSelecaoDto>();
-
-        var d = DateTime.Today.AddMonths(-6);
-
-        for (int i = 0; i < 16; i++)
-        {
-            var f = new FaturaSelecaoDto
-            {
-                Mes = d.Month,
-                Ano = d.Year
-            };
-
-            list.Add(f);
-
-            d = d.AddMonths(1);
-        }
-
-        return TaskSuccess(list);
     }
 }
