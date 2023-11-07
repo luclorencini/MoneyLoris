@@ -11,6 +11,11 @@
                 @await Html.PartialAsync("_BotaoVoltar")
                 <div class="titulo">Lançamentos por Categoria</div>
             </div>
+            <div class="area-opcoes">
+                <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
+                    <i class="fa-solid fa-filter fa-lg text-white"></i>
+                </div>
+            </div>
         </section>
 
         <section class="sys-container-fullhd">
@@ -20,6 +25,41 @@
                 <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
                 <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
                 <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
+            </div>
+
+            <!-- filtro offcanvas -->
+            <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">Opções de Filtro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+
+                    <div class="col col-12 col-lg-8 d-flex align-items-center mt-3 mt-lg-0">
+                        <label class="form-label me-2">Modo:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
+                            <label class="form-check-label d-none d-lg-block"><small>Regime de Caixa</small></label>
+                            <label class="form-check-label d-lg-none"><small>Reg. de Caixa</small></label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
+                            <label class="form-check-label d-none d-lg-block"><small>Regime de Competência</small></label>
+                            <label class="form-check-label d-lg-none"><small>Reg. de Competência</small></label>
+                        </div>
+                    </div>
+
+                    <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
+                        <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                            <span>Limpar Filtro</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="obterRelatorio()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i>
+                            <span>Pesquisar</span>
+                        </button>
+                    </div>
+
+                </div>
             </div>
 
             <!-- filtro desktop -->
@@ -175,19 +215,24 @@
             },
 
             async mounted() {
-
                 this.inicializarFiltro();
-
                 await this.obterRelatorio();
             },
 
             methods: {
+
+                async limpar() {
+                    this.inicializarFiltro();
+                    await this.obterRelatorio();
+                },
 
                 //métodos de filtro
 
                 inicializarFiltro() {
 
                     this.filtro.ano = this.obterAnoAtual();
+
+                    this.filtro.regime = 2;  // 2 - competencia
 
                     //desktop sempre filtra 12 meses, inicial do ano corrente
                     if (window.innerWidth > 991) {
@@ -266,6 +311,9 @@
 
                     await this.setLoadingAndExecute(async () => {
 
+                        //conversões
+                        fieldConverter.stringToInt(this.filtro, 'regime');
+
                         let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
 
                         if (ret.ok) {
@@ -312,6 +360,7 @@
                         idSubcategoria: node.idSubcategoria,
                         ano: this.cabecalhoItens[index - 1].ano,
                         mes: this.cabecalhoItens[index - 1].mes,
+                        regime: this.filtro.regime,
                         todosDaCategoria
                     };
 
@@ -464,21 +513,21 @@
                 font-style: italic;
             }
 
-            :root {
-                --rel-hover-bg: #fff9c4; /* MDC YELLOW 100 */
-                --rel-hover-border: #fdd835; /* MDC YELLOW 600 */
-            }
+        :root {
+            --rel-hover-bg: #fff9c4; /* MDC YELLOW 100 */
+            --rel-hover-border: #fdd835; /* MDC YELLOW 600 */
+        }
 
-            [data-bs-theme=dark] {
+        [data-bs-theme=dark] {
             --rel-hover-bg: #111111;
-                --rel-hover-border: #ffff00;
-            }
+            --rel-hover-border: #ffff00;
+        }
 
-            /* 
-            color #ffda6a
-            border 997404
-            
-            */ 
+        /*
+                    color #ffda6a
+                    border 997404
+
+                    */
 
     </style>
 }
