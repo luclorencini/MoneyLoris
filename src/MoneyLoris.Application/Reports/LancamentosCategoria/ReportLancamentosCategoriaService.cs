@@ -24,8 +24,8 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var despesas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Despesa, filtro.Mes, filtro.Ano, filtro.Quantidade);
-        var receitas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Receita, filtro.Mes, filtro.Ano, filtro.Quantidade);
+        var despesas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Despesa, filtro);
+        var receitas = this.GetDadosRelatorioTipoLancamento(userInfo.Id, TipoLancamento.Receita, filtro);
 
         var ret = new List<CategoriaReportItemDto>
         {
@@ -36,12 +36,11 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
         return ret;
     }
 
-    private CategoriaReportItemDto GetDadosRelatorioTipoLancamento(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade)
+    private CategoriaReportItemDto GetDadosRelatorioTipoLancamento(int idUsuario, TipoLancamento tipo, ReportLancamentoFilterDto filtro)
     {
-
         var ret = new List<CategoriaReportItemDto>();
 
-        var list = _reportRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, mes, ano, quantidade);
+        var list = _reportRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, filtro);
 
         //agrupamento de categorias
         var catGroup = list
@@ -151,10 +150,10 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         //pega o total
-        var total = await _reportRepo.DetalheTotalRegistros(filtro, userInfo.Id);
+        var total = await _reportRepo.DetalheTotalRegistros(userInfo.Id, filtro);
 
         //faz a consulta paginada
-        var lancamentos = await _reportRepo.DetalhePaginado(filtro, userInfo.Id);
+        var lancamentos = await _reportRepo.DetalhePaginado(userInfo.Id, filtro);
 
         //transforma no tipo de retorno
         ICollection<LancamentoListItemDto> ret =
@@ -167,7 +166,7 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var somatorio = await _reportRepo.DetalheSomatorio(filtro, userInfo.Id);
+        var somatorio = await _reportRepo.DetalheSomatorio(userInfo.Id, filtro);
 
         return somatorio;
     }

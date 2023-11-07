@@ -5,10 +5,10 @@ using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
 public interface IReportLancamentosCategoriaRepository
 {
-    List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, int mes, int ano, int quantidade);
+    List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, ReportLancamentoFilterDto filtro);
 
-    Task<int> DetalheTotalRegistros(ReportLancamentoDetalheFilterDto filtro, int idUsuario);
-    Task<ICollection<Lancamento>> DetalhePaginado(ReportLancamentoDetalheFilterDto filtro, int idUsuario);
+    Task<int> DetalheTotalRegistros(int idUsuario, ReportLancamentoDetalheFilterDto filtro);
+    Task<ICollection<Lancamento>> DetalhePaginado(int idUsuario, ReportLancamentoDetalheFilterDto filtro);
 
-    Task<decimal> DetalheSomatorio(ReportLancamentoDetalheFilterDto filtro, int idUsuario);
+    Task<decimal> DetalheSomatorio(int idUsuario, ReportLancamentoDetalheFilterDto filtro);
 }
