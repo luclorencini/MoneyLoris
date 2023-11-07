@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MoneyLoris.Application.Domain.Entities;
@@ -40,8 +41,6 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
 ";
 
 
-        var conn = _context.Database.GetDbConnection();
-
         using (var command = _context.Database.GetDbConnection().CreateCommand())
         {
             command.CommandText = query;
@@ -53,37 +52,14 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
             {
                 while (result.Read())
                 {
-                    var obj = new CategoriaQueryResultItemtoDto();
-
-                    obj.catId = Convert.IsDBNull(result["catId"]) ? null : (int?)result["catId"];
-                    obj.catNome = Convert.IsDBNull(result["catNome"]) ? null : (string?)result["catNome"];
-                    obj.catOrdem = Convert.IsDBNull(result["catOrdem"]) ? null : (sbyte?)result["catOrdem"];
-
-                    obj.subId = Convert.IsDBNull(result["subId"]) ? null : (int?)result["subId"];
-                    obj.subNome = Convert.IsDBNull(result["subNome"]) ? null : (string?)result["subNome"];
-                    obj.subOrdem = Convert.IsDBNull(result["subOrdem"]) ? null : (sbyte?)result["subOrdem"];
-
-                    if (filtro.Quantidade >= 01) obj.val01 = Convert.IsDBNull(result["val01"]) ? null : (decimal?)result["val01"];
-                    if (filtro.Quantidade >= 02) obj.val02 = Convert.IsDBNull(result["val02"]) ? null : (decimal?)result["val02"];
-                    if (filtro.Quantidade >= 03) obj.val03 = Convert.IsDBNull(result["val03"]) ? null : (decimal?)result["val03"];
-                    if (filtro.Quantidade >= 04) obj.val04 = Convert.IsDBNull(result["val04"]) ? null : (decimal?)result["val04"];
-                    if (filtro.Quantidade >= 05) obj.val05 = Convert.IsDBNull(result["val05"]) ? null : (decimal?)result["val05"];
-                    if (filtro.Quantidade >= 06) obj.val06 = Convert.IsDBNull(result["val06"]) ? null : (decimal?)result["val06"];
-                    if (filtro.Quantidade >= 07) obj.val07 = Convert.IsDBNull(result["val07"]) ? null : (decimal?)result["val07"];
-                    if (filtro.Quantidade >= 08) obj.val08 = Convert.IsDBNull(result["val08"]) ? null : (decimal?)result["val08"];
-                    if (filtro.Quantidade >= 09) obj.val09 = Convert.IsDBNull(result["val09"]) ? null : (decimal?)result["val09"];
-                    if (filtro.Quantidade >= 10) obj.val10 = Convert.IsDBNull(result["val10"]) ? null : (decimal?)result["val10"];
-                    if (filtro.Quantidade >= 11) obj.val11 = Convert.IsDBNull(result["val11"]) ? null : (decimal?)result["val11"];
-                    if (filtro.Quantidade >= 12) obj.val12 = Convert.IsDBNull(result["val12"]) ? null : (decimal?)result["val12"];
-
-                    list.Add(obj);
+                    var dto = ConvertToDto(result, filtro);
+                    list.Add(dto);
                 }
             }
             _context.Database.CloseConnection();
             return list;
         }
     }
-
 
     private string GeraSubqueriesLancamentosComSubcategoria(ReportLancamentoFilterDto filtro)
     {
@@ -117,6 +93,34 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
         }
 
         return ret;
+    }
+
+    private CategoriaQueryResultItemtoDto ConvertToDto(DbDataReader result, ReportLancamentoFilterDto filtro)
+    {
+        var dto = new CategoriaQueryResultItemtoDto();
+
+        dto.catId = result.ReadColumn<int?>("catId");
+        dto.catNome = result.ReadColumn<string?>("catNome");
+        dto.catOrdem = result.ReadColumn<sbyte?>("catOrdem");
+
+        dto.subId = result.ReadColumn<int?>("subId");
+        dto.subNome = result.ReadColumn<string?>("subNome");
+        dto.subOrdem = result.ReadColumn<sbyte?>("subOrdem");
+
+        if (filtro.Quantidade >= 01) dto.val01 = result.ReadColumn<decimal?>("val01");
+        if (filtro.Quantidade >= 02) dto.val02 = result.ReadColumn<decimal?>("val02");
+        if (filtro.Quantidade >= 03) dto.val03 = result.ReadColumn<decimal?>("val03");
+        if (filtro.Quantidade >= 04) dto.val04 = result.ReadColumn<decimal?>("val04");
+        if (filtro.Quantidade >= 05) dto.val05 = result.ReadColumn<decimal?>("val05");
+        if (filtro.Quantidade >= 06) dto.val06 = result.ReadColumn<decimal?>("val06");
+        if (filtro.Quantidade >= 07) dto.val07 = result.ReadColumn<decimal?>("val07");
+        if (filtro.Quantidade >= 08) dto.val08 = result.ReadColumn<decimal?>("val08");
+        if (filtro.Quantidade >= 09) dto.val09 = result.ReadColumn<decimal?>("val09");
+        if (filtro.Quantidade >= 10) dto.val10 = result.ReadColumn<decimal?>("val10");
+        if (filtro.Quantidade >= 11) dto.val11 = result.ReadColumn<decimal?>("val11");
+        if (filtro.Quantidade >= 12) dto.val12 = result.ReadColumn<decimal?>("val12");
+
+        return dto;
     }
 
     #endregion
