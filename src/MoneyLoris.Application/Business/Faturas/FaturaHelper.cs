@@ -6,16 +6,19 @@ namespace MoneyLoris.Application.Business.Faturas;
 public class FaturaHelper : IFaturaHelper
 {
     private readonly IFaturaFactory _faturaFactory;
+    private readonly IFaturaValidator _faturaValidator;
     private readonly IFaturaRepository _faturaRepo;
     private readonly IMeioPagamentoValidator _meioPagamentoValidator;
 
     public FaturaHelper(
         IFaturaFactory faturaFactory,
+        IFaturaValidator faturaValidator,
         IFaturaRepository faturaRepo,
         IMeioPagamentoValidator meioPagamentoValidator
     )
     {
         _faturaFactory = faturaFactory;
+        _faturaValidator = faturaValidator;
         _faturaRepo = faturaRepo;
         _meioPagamentoValidator = meioPagamentoValidator;
     }
@@ -42,12 +45,30 @@ public class FaturaHelper : IFaturaHelper
 
     public async Task LancarValorPagoFatura(Fatura fatura, decimal valorInformado)
     {
+        _faturaValidator.Existe(fatura);
+
         //fail-safe: se valor pago ainda não existe, seta zero para funcionar a soma
         if (fatura.ValorPago is null)
             fatura.ValorPago = 0;
 
         //incrementa o valor pago (importante caso já haja algum pagamento anterior desta mesma fatura)
         fatura.ValorPago = fatura.ValorPago + valorInformado;
+
+        await _faturaRepo.Update(fatura);
+
+        return;
+    }
+
+    public async Task SubtrairValorPagoFatura(Fatura fatura, decimal valorInformado)
+    {
+        _faturaValidator.Existe(fatura);
+
+        //fail-safe: se valor pago ainda não existe, seta zero para funcionar a soma
+        if (fatura.ValorPago is null)
+            fatura.ValorPago = 0;
+
+        //decrementa o valor pago (importante caso já haja algum pagamento anterior desta mesma fatura)
+        fatura.ValorPago = fatura.ValorPago - valorInformado;
 
         await _faturaRepo.Update(fatura);
 

@@ -228,7 +228,7 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
 
         var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 700);
         var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
-        var fat = await DbSeeder.InserirFatura(mDes.Id, 11, 2023);
+        var fat = await DbSeeder.InserirFatura(mDes.Id, 11, 2023, valorPago: 30);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -302,7 +302,7 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         var fatdb = await Context.Faturas.FindAsync(fat.Id);
 
         Assert.NotNull(fatdb);
-        Assert.Equal(80, fatdb!.ValorPago);
+        Assert.Equal(110, fatdb!.ValorPago);
     }
 
     [Fact]

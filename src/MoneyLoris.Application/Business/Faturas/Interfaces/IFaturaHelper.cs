@@ -5,4 +5,5 @@ public interface IFaturaHelper
 {
     Task<Fatura> ObterOuCriarFatura(MeioPagamento cartao, int mes, int ano);
     Task LancarValorPagoFatura(Fatura fatura, decimal valorInformado);
+    Task SubtrairValorPagoFatura(Fatura fatura, decimal valorInformado);
 }

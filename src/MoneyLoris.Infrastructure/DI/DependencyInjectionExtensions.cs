@@ -65,6 +65,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IFaturaService, FaturaService>();
         services.AddScoped<IFaturaHelper, FaturaHelper>();
         services.AddScoped<IFaturaFactory, FaturaFactory>();
+        services.AddScoped<IFaturaValidator, FaturaValidator>();
         services.AddScoped<IFaturaRepository, FaturaRepository>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();

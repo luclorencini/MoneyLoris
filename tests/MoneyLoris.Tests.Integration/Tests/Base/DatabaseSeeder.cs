@@ -108,7 +108,8 @@ public class DatabaseSeeder
         int ano = 2023,
         DateTime? dataIni = null,
         DateTime? dataFim = null,
-        DateTime? dataVen = null
+        DateTime? dataVen = null,
+        decimal? valorPago = null
     )
     {
         if (dataIni is null) dataIni = new DateTime(2023, 5, 3);
@@ -123,7 +124,8 @@ public class DatabaseSeeder
                 Ano = ano,
                 DataInicio = dataIni.Value,
                 DataFim = dataFim.Value,
-                DataVencimento = dataVen.Value
+                DataVencimento = dataVen.Value,
+                ValorPago = valorPago
             });
 
         await Context.SaveChangesAsync();
@@ -166,7 +168,8 @@ public class DatabaseSeeder
         int idUsuario = TestConstants.USUARIO_COMUM_ID,
         TipoLancamento tipo = TipoLancamento.Despesa,
         string descricao = "Compras",
-        DateTime? data = null
+        DateTime? data = null,
+        int? idFatura = null
     )
     {
         return await _inserirLancamento(
@@ -179,7 +182,8 @@ public class DatabaseSeeder
             tipo,
             descricao,
             data,
-            tipoTransferencia
+            tipoTransferencia,
+            idFatura
         );
     }
 

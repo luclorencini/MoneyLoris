@@ -76,6 +76,6 @@ public static class ErrorCodes
 
     #region Fatura
     public static readonly string Fatura_AdminNaoPode = "FAADNP";
-    public static readonly string Fatura_NaoEncontrado = "FANAEN";
+    public static readonly string Fatura_NaoEncontrada = "FANAEN";
     #endregion
 }

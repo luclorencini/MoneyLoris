@@ -1,4 +1,5 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
+using MoneyLoris.Application.Business.Faturas;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
@@ -18,6 +19,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly ITransferenciaValidator _transferenciaValidator;
     private readonly IFaturaHelper _faturaHelper;
+    
     private readonly IFaturaRepository _faturaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
@@ -250,7 +252,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
         {
             fatura = await _faturaRepo.GetById(lancamentoDestino.IdFatura.Value);
         }
-                
+
         var dto = new TransferenciaUpdateDto(lancamentoOrigem, lancamentoDestino, fatura);
 
         return dto;
@@ -281,6 +283,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
 
         _meioPagamentoValidator.OrigemExiste(meioOrigem);
         _meioPagamentoValidator.OrigemPertenceAoUsuario(meioOrigem);
+        _transferenciaValidator.MeioOrigemNaoPodeSerCartao(meioOrigem);
 
         var meioDestino = await _meioPagamentoRepo.GetById(lancamentoDestino.IdMeioPagamento);
 
@@ -297,6 +300,14 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             // atualiza saldo origem e destino (somente se não for cartao)
             await RecalcularSaldoConta(meioOrigem, (lancamentoOrigem.Valor * -1)); // inverte o sinal pra reverter o valor do saldo
             await RecalcularSaldoConta(meioDestino, (lancamentoDestino.Valor * -1)); // inverte o sinal pra reverter o valor do saldo
+
+            //se foi pagamento de fatura (lançamento destino possui fatura associada), diminui o valor excluído do saldo da fatura
+            if (lancamentoDestino.IdFatura is not null)
+            {
+                var fatura = await _faturaRepo.GetById(lancamentoDestino.IdFatura.Value);
+
+                await _faturaHelper.SubtrairValorPagoFatura(fatura, lancamentoDestino.Valor);
+            }
 
             // tira a referencia do origem, pra poder apagar depois
             lancamentoOrigem.IdLancamentoTransferencia = null;
