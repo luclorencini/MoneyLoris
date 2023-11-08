@@ -3,7 +3,7 @@ using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
-public interface IReportLancamentosCategoriaRepository
+public interface IReportLancamentosCategoriaRegimeCompetenciaRepository
 {
     List<CategoriaQueryResultItemtoDto> RelatorioLancamentosPorCategoria(int idUsuario, TipoLancamento tipo, ReportLancamentoFilterDto filtro);
 

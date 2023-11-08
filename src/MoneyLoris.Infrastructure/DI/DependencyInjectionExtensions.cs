@@ -17,6 +17,7 @@ using MoneyLoris.Application.Stubs;
 using MoneyLoris.Infrastructure.Auth;
 using MoneyLoris.Infrastructure.Persistence.Context;
 using MoneyLoris.Infrastructure.Persistence.Repositories;
+using MoneyLoris.Infrastructure.Persistence.Repositories.Reports;
 
 namespace MoneyLoris.Infrastructure.DI;
 public static class DependencyInjectionExtensions
@@ -69,7 +70,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IFaturaRepository, FaturaRepository>();
 
         services.AddScoped<IReportLancamentosCategoriaService, ReportLancamentosCategoriaService>();
-        services.AddScoped<IReportLancamentosCategoriaRepository, ReportLancamentosCategoriaRepository>();
+        services.AddScoped<IReportLancamentosCategoriaRegimeCompetenciaRepository, ReportLancamentosCategoriaRegimeCompetenciaRepository>();
+        services.AddScoped<IReportLancamentosCategoriaRegimeCaixaRepository, ReportLancamentosCategoriaRegimeCaixaRepository>();
     }
 
     private static void InjetarDependenciasStubs(IServiceCollection services)

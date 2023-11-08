@@ -9,12 +9,18 @@ using MoneyLoris.Application.Utils;
 namespace MoneyLoris.Application.Reports.LancamentosCategoria;
 public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentosCategoriaService
 {
-    private readonly IReportLancamentosCategoriaRepository _reportRepo;
+    private readonly IReportLancamentosCategoriaRegimeCompetenciaRepository _reportCompetenciaRepo;
+    private readonly IReportLancamentosCategoriaRegimeCaixaRepository _reportCaixaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
-    public ReportLancamentosCategoriaService(IReportLancamentosCategoriaRepository reportRepo, IAuthenticationManager authenticationManager)
+    public ReportLancamentosCategoriaService(
+        IReportLancamentosCategoriaRegimeCompetenciaRepository reportCompetenciaRepo, 
+        IReportLancamentosCategoriaRegimeCaixaRepository reportCaixaRepo,
+        IAuthenticationManager authenticationManager
+    )
     {
-        _reportRepo = reportRepo;
+        _reportCompetenciaRepo = reportCompetenciaRepo;
+        _reportCaixaRepo = reportCaixaRepo;
         _authenticationManager = authenticationManager;
     }
 
@@ -40,7 +46,16 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var ret = new List<CategoriaReportItemDto>();
 
-        var list = _reportRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, filtro);
+        var list = new List<CategoriaQueryResultItemtoDto>();
+
+        if (filtro.Regime == RegimeContabil.Competencia)
+        {
+            list = _reportCompetenciaRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, filtro);
+        }
+        else
+        {
+            list = _reportCaixaRepo.RelatorioLancamentosPorCategoria(idUsuario, tipo, filtro);
+        }
 
         //agrupamento de categorias
         var catGroup = list
@@ -150,10 +165,10 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
         //pega o total
-        var total = await _reportRepo.DetalheTotalRegistros(userInfo.Id, filtro);
+        var total = await _reportCompetenciaRepo.DetalheTotalRegistros(userInfo.Id, filtro);
 
         //faz a consulta paginada
-        var lancamentos = await _reportRepo.DetalhePaginado(userInfo.Id, filtro);
+        var lancamentos = await _reportCompetenciaRepo.DetalhePaginado(userInfo.Id, filtro);
 
         //transforma no tipo de retorno
         ICollection<LancamentoListItemDto> ret =
@@ -166,7 +181,7 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var somatorio = await _reportRepo.DetalheSomatorio(userInfo.Id, filtro);
+        var somatorio = await _reportCompetenciaRepo.DetalheSomatorio(userInfo.Id, filtro);
 
         return somatorio;
     }
