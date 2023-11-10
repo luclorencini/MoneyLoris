@@ -12,6 +12,10 @@
                 <div class="titulo">Lançamentos por Categoria</div>
             </div>
             <div class="area-opcoes">
+                 <div class="d-none d-lg-flex align-items-center sys-bg-light-4 p-2 sys-clicavel" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
+                    <i class="fa-solid fa-question-circle fa-lg sys-fg-dark-2"></i>
+                    <small class="ms-2 fw-bold">O que são regimes?</small>
+                </div>
                 <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
                     <i class="fa-solid fa-filter fa-lg text-white"></i>
                 </div>
@@ -35,21 +39,45 @@
                 </div>
                 <div class="offcanvas-body">
 
-                    <div class="col col-12 col-lg-8 d-flex align-items-center mt-3 mt-lg-0">
-                        <label class="form-label me-2">Modo:</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
-                            <label class="form-check-label d-none d-lg-block"><small>Regime de Caixa</small></label>
-                            <label class="form-check-label d-lg-none"><small>Reg. de Caixa</small></label>
+                    <div class="col col-12 col-lg-10 d-flex align-items-center mt-3 mt-lg-0">
+
+                        <!-- modo - desktop -->
+                        <div class="d-none d-lg-flex justify-content-between align-items-baseline w-100">
+
+                            <div>
+                                <label class="form-label me-2">Regime Contábil:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
+                                    <label class="form-check-label"><span>Regime de Caixa</span></label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
+                                    <label class="form-check-label"><span>Regime de Competência</span></label>
+                                </div>
+                            </div>
+                                                       
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
-                            <label class="form-check-label d-none d-lg-block"><small>Regime de Competência</small></label>
-                            <label class="form-check-label d-lg-none"><small>Reg. de Competência</small></label>
+
+                        <!-- modo - mobile -->
+                        <div class="d-lg-none">
+                            <label class="form-label" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
+                                <span>Regime Contábil:</span>
+                                <i class="fa-solid fa-question-circle ms-2 fa-md sys-fg-dark-2"></i>
+                                <small class="fst-italic ms-1 sys-fg-dark-2">(o que é isso?)</small>
+                            </label>
+                            <div class="form-check form-check">
+                                <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
+                                <label class="form-check-label"><small>Regime de Caixa</small></label>
+                            </div>
+                            <div class="form-check form-check">
+                                <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
+                                <label class="form-check-label"><small>Regime de Competência</small></label>
+                            </div>
                         </div>
+
                     </div>
 
-                    <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
+                    <div class="col col-12 col-lg-2 d-flex justify-content-end mt-5 mt-lg-2">
                         <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
                             <span>Limpar Filtro</span>
                         </button>
@@ -80,7 +108,7 @@
                     <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos12Meses()">Últimos 12 meses</div>
 
                 </div>
-            </div>
+            </div>               
 
         </section>
 
@@ -168,6 +196,38 @@
         </section>
 
         <CategoriaAgrupadorDetalhe ref="detalheOffset" v-on:lancamento-atualizado="obterRelatorio()"></CategoriaAgrupadorDetalhe>
+
+        <!-- Modal help -->
+        <div class="modal modal-lg fade" id="modal-help-regime" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Regimes Contábeis</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <h5>Regime de Caixa:</h5>
+                        <p>Baseia-se na entrada e saída efetiva de recursos financeiros. Nesse método, as transações são registradas no momento em que o dinheiro é efetivamente recebido ou gasto. Portanto, as receitas são reconhecidas apenas quando o pagamento é realizado, e as despesas são consideradas somente quando o valor é pago.</p>
+                        <p>Assim, no regime de caixa, compras no cartão só são consideradas no mês que você paga a fatura. Ou seja, normalmente compras no cartão feitas em um mês só vão contabilizar no outro mês. Já compras à vista serão sempre contabilizadas no mês da compra.</p>
+
+                        <h5 class="mt-4">Regime de Competência:</h5>
+                        <p>Leva em consideração o momento em que as transações são realizadas, independentemente dos pagamentos. Nesse método as despesas e receitas são reconhecidas quando são incorridas, independentemente do pagamento ou recebimento efetivo.</p>
+                        <p>Assim, no regime de competência, os lançamentos são contabilizados no mês em que foram realizados, independente de ter sido no cartão, no débito ou no dinheiro.</p>
+
+                        <h5 class="mt-4">Em Resumo:</h5>
+                        <ul>
+                            <li><span class="fs-6 fw-bold">Regime de Competência</span> - contabiliza no mês que você <strong>FAZ</strong> a compra</li>
+                            <li><span class="fs-6 fw-bold">Regime de Caixa</span> - contabiliza no mês que você <strong>PAGA</strong> a compra</li>
+                        </ul>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </script>
 }
@@ -524,10 +584,10 @@
         }
 
         /*
-                    color #ffda6a
-                    border 997404
+                                            color #ffda6a
+                                            border 997404
 
-                    */
+                                            */
 
     </style>
 }

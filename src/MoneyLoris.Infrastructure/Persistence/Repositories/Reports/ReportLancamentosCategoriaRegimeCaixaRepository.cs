@@ -1,9 +1,13 @@
-﻿using MoneyLoris.Application.Domain.Entities;
+﻿using System.Data;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Utils;
 using MoneyLoris.Infrastructure.Persistence.Context;
+using MoneyLoris.Infrastructure.Persistence.Repositories.Base;
 
 namespace MoneyLoris.Infrastructure.Persistence.Repositories.Reports;
 public class ReportLancamentosCategoriaRegimeCaixaRepository : ReportLancamentosCategoriaBaseRepository, IReportLancamentosCategoriaRegimeCaixaRepository
@@ -32,7 +36,7 @@ from
 	union
 	-- cat com sub - faturas do mes
 	select c.Id as catId, c.Nome as catNome, c.Ordem as catOrdem, s.Id as subId, s.Nome as subNome, s.Ordem as subOrdem,
-    {SubqueriesCategoriaComSubcategoriaFaturas(filtro)}	
+    {SubqueriesCategoriaComSubcategoriaCartoes(filtro)}	
 	from categoria c
 	inner join subcategoria s on s.IdCategoria = c.Id
 	where c.Tipo = {t} and c.IdUsuario = {idUsuario}
@@ -45,7 +49,7 @@ from
 	union
 	-- cat sem sub - faturas do mes
 	select c.Id as catId, c.Nome as catNome, c.Ordem as catOrdem, NULL as subId, NULL as subNome, NULL as subOrdem, 
-    {SubqueriesCategoriaSemSubcategoriaFaturas(filtro)}
+    {SubqueriesCategoriaSemSubcategoriaCartoes(filtro)}
 	from categoria c
 	where c.Tipo = {t} and c.IdUsuario = {idUsuario}
 	) x
@@ -93,7 +97,7 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
         return ret;
     }
 
-    private string SubqueriesCategoriaComSubcategoriaFaturas(ReportLancamentoFilterDto filtro)
+    private string SubqueriesCategoriaComSubcategoriaCartoes(ReportLancamentoFilterDto filtro)
     {
         var ret = "";
         var data = new DateTime(filtro.Ano, filtro.Mes, 1);
@@ -136,7 +140,7 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
         return ret;
     }
 
-    private string SubqueriesCategoriaSemSubcategoriaFaturas(ReportLancamentoFilterDto filtro)
+    private string SubqueriesCategoriaSemSubcategoriaCartoes(ReportLancamentoFilterDto filtro)
     {
         var ret = "";
         var data = new DateTime(filtro.Ano, filtro.Mes, 1);
@@ -162,19 +166,164 @@ order by catOrdem is null, catOrdem, catNome, subNome is null, subOrdem is null,
 
     #region Detalhe
 
-    public Task<int> DetalheTotalRegistros(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
+    public async Task<int> DetalheTotalRegistros(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
     {
-        throw new NotImplementedException();
+        var total = await 
+            (
+                _context.Lancamentos
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheContas(idUsuario, filtro))
+            )
+            .Union
+            (
+                _context.Lancamentos
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheCartoes(idUsuario, filtro))
+            )
+            .AsNoTracking()
+            .CountAsync();
+
+        return total;
     }
 
-    public Task<ICollection<Lancamento>> DetalhePaginado(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
+    public async Task<ICollection<Lancamento>> DetalhePaginado(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
     {
-        throw new NotImplementedException();
+        var list = await 
+            (
+                _context.Lancamentos
+                .Include(l => l.MeioPagamento)
+                .Include(l => l.Categoria)
+                .Include(l => l.Subcategoria)
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheContas(idUsuario, filtro))
+            )
+            .Union
+            (
+                _context.Lancamentos
+                .Include(l => l.MeioPagamento)
+                .Include(l => l.Categoria)
+                .Include(l => l.Subcategoria)
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheCartoes(idUsuario, filtro))
+            )
+            .OrderBy(l => l.Data).ThenBy(l => l.Id)
+            .IncluiPaginacao(filtro)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return list;
     }
 
-    public Task<decimal> DetalheSomatorio(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
+    public async Task<decimal> DetalheSomatorio(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
     {
-        throw new NotImplementedException();
+        var val = await
+            (
+                _context.Lancamentos
+                .Include(l => l.MeioPagamento)
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheContas(idUsuario, filtro))
+            )
+            .Union(
+                _context.Lancamentos
+                .Include(l => l.MeioPagamento)
+                .Include(l => l.Fatura)
+                .Where(whereQueryDetalheCartoes(idUsuario, filtro))
+            )
+            .SumAsync(l => l.Valor);
+
+        return val;
+    }
+
+    private Expression<Func<Lancamento, bool>> whereQueryDetalheContas(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
+    {
+        var dataIni = new DateTime(filtro.Ano, filtro.Mes, 1);
+        var dataFim = dataIni.UltimoDiaMes();
+
+        Expression<Func<Lancamento, bool>> query = null!;
+
+        if (filtro.TodosDaCategoria)
+        {
+            //traz todos os lançamentos da categoria informada, independente se tem subcategoria ou não
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.MeioPagamento.Tipo != TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria;
+        }
+        else if (filtro.IdSubcategoria == null)
+        {
+            //traz todos os lançamentos da categoria informada que não possuem subcategoria informada
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.MeioPagamento.Tipo != TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == null;
+        }
+        else
+        {
+            //traz todos os lançamentos da categoria e subcategoria informadas
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Data >= dataIni
+            && l.Data <= dataFim
+            && l.MeioPagamento.Tipo != TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == filtro.IdSubcategoria;
+        }
+
+        return query;
+    }
+
+    private Expression<Func<Lancamento, bool>> whereQueryDetalheCartoes(int idUsuario, ReportLancamentoDetalheFilterDto filtro)
+    {
+        var dataIni = new DateTime(filtro.Ano, filtro.Mes, 1);
+        var dataFim = dataIni.UltimoDiaMes();
+
+        Expression<Func<Lancamento, bool>> query = null!;
+
+        if (filtro.TodosDaCategoria)
+        {
+            //traz todos os lançamentos da categoria informada, independente se tem subcategoria ou não
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Fatura.DataVencimento >= dataIni
+            && l.Fatura.DataVencimento <= dataFim
+            && l.MeioPagamento.Tipo == TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria;
+        }
+        else if (filtro.IdSubcategoria == null)
+        {
+            //traz todos os lançamentos da categoria informada que não possuem subcategoria informada
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Fatura.DataVencimento >= dataIni
+            && l.Fatura.DataVencimento <= dataFim
+            && l.MeioPagamento.Tipo == TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == null;
+        }
+        else
+        {
+            //traz todos os lançamentos da categoria e subcategoria informadas
+
+            query =
+            l => l.IdUsuario == idUsuario
+            && l.Fatura.DataVencimento >= dataIni
+            && l.Fatura.DataVencimento <= dataFim
+            && l.MeioPagamento.Tipo == TipoMeioPagamento.CartaoCredito
+            && l.IdCategoria == filtro.IdCategoria
+            && l.IdSubcategoria == filtro.IdSubcategoria;
+        }
+
+        return query;
     }
 
     #endregion

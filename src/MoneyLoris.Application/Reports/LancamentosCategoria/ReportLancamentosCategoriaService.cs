@@ -1,6 +1,7 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Common.Base;
+using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Reports.LancamentosCategoria.Dto;
 using MoneyLoris.Application.Shared;
@@ -14,7 +15,7 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     private readonly IAuthenticationManager _authenticationManager;
 
     public ReportLancamentosCategoriaService(
-        IReportLancamentosCategoriaRegimeCompetenciaRepository reportCompetenciaRepo, 
+        IReportLancamentosCategoriaRegimeCompetenciaRepository reportCompetenciaRepo,
         IReportLancamentosCategoriaRegimeCaixaRepository reportCaixaRepo,
         IAuthenticationManager authenticationManager
     )
@@ -164,15 +165,29 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        //pega o total
-        var total = await _reportCompetenciaRepo.DetalheTotalRegistros(userInfo.Id, filtro);
+        ICollection<Lancamento> list = new List<Lancamento>();
+        int total = 0;
 
-        //faz a consulta paginada
-        var lancamentos = await _reportCompetenciaRepo.DetalhePaginado(userInfo.Id, filtro);
+        if (filtro.Regime == RegimeContabil.Competencia)
+        {
+            //pega o total
+            total = await _reportCompetenciaRepo.DetalheTotalRegistros(userInfo.Id, filtro);
+
+            //faz a consulta paginada
+            list = await _reportCompetenciaRepo.DetalhePaginado(userInfo.Id, filtro);
+        }
+        else
+        {
+            //pega o total
+            total = await _reportCaixaRepo.DetalheTotalRegistros(userInfo.Id, filtro);
+
+            //faz a consulta paginada
+            list = await _reportCaixaRepo.DetalhePaginado(userInfo.Id, filtro);
+        }
 
         //transforma no tipo de retorno
         ICollection<LancamentoListItemDto> ret =
-            lancamentos.Select(l => new LancamentoListItemDto(l)).ToList();
+            list.Select(l => new LancamentoListItemDto(l)).ToList();
 
         return Pagination(pagedData: ret, total: total);
     }
@@ -181,7 +196,16 @@ public class ReportLancamentosCategoriaService : ServiceBase, IReportLancamentos
     {
         var userInfo = _authenticationManager.ObterInfoUsuarioLogado();
 
-        var somatorio = await _reportCompetenciaRepo.DetalheSomatorio(userInfo.Id, filtro);
+        decimal somatorio = 0;
+
+        if (filtro.Regime == RegimeContabil.Competencia)
+        {
+            somatorio = await _reportCompetenciaRepo.DetalheSomatorio(userInfo.Id, filtro);
+        }
+        else
+        {
+            somatorio = await _reportCaixaRepo.DetalheSomatorio(userInfo.Id, filtro);
+        }
 
         return somatorio;
     }
