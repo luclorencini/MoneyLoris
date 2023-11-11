@@ -28,9 +28,6 @@ public class MeioPagamentoCadastroListItemDto
         Ordem = meio.Ordem;
         Ativo = meio.Ativo;
 
-        Valor = (meio.Tipo == TipoMeioPagamento.CartaoCredito ?
-                    (meio.Limite.HasValue ? meio.Limite.Value : 0) :
-                    (meio.Saldo.HasValue ? meio.Saldo.Value : 0)
-                );
+        //campo Valor - calculado fora daqui
     }
 }

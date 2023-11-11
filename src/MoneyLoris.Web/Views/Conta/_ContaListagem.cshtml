@@ -79,7 +79,7 @@
                                     <button type="button" class="btn sys-icon-button" title="Editar"><i aria-hidden="true" class="fa-solid fa-pen sys-fg-dark-2"></i></button>
                                 </div>
                                 <div class="saldo">
-                                    <div class="fs-6 fw-bold d-none d-lg-block">{{utils.isCartaoCredito(c.tipo) ? 'Limite Total' : 'Saldo Atual'}}:</div>
+                                    <div class="fs-6 fw-bold d-none d-lg-block">{{utils.isCartaoCredito(c.tipo) ? 'Valor a Pagar' : 'Saldo Atual'}}:</div>
                                     <div class="fw-bold" v-bind:class="{ 'fst-italic' : utils.isCartaoCredito(c.tipo) }"><Moeda :valor="c.valor"></Moeda></div>
                                 </div>
                             </div>

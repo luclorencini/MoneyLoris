@@ -7,4 +7,7 @@ public interface IMeioPagamentoRepository : IRepositoryBase<MeioPagamento>
     Task<ICollection<MeioPagamento>> ListarMeiosPagamentoUsuario(int idUsuario);
     Task<ICollection<MeioPagamento>> ListarContasUsuario(int idUsuario);
     Task<ICollection<MeioPagamento>> ListarCartoesUsuario(int idUsuario);
+
+    Task<ICollection<(int id, decimal saldo)>> CalcularSaldoAtualContasUsuario(int idUsuario);
+    Task<ICollection<(int id, decimal valor)>> CalcularValorDevidoCartoesUsuario(int idUsuario);
 }
