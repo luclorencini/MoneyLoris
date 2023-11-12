@@ -75,7 +75,6 @@ public class DatabaseSeeder
         TipoMeioPagamento tipo = TipoMeioPagamento.ContaCorrente,
         string nome = "Conta",
         byte? ordem = null,
-        decimal? saldo = 100,
         bool ativo = true,
         byte? fecha = 1,
         byte? vence = 10
@@ -88,7 +87,6 @@ public class DatabaseSeeder
                 IdUsuario = idUsuario,
                 Nome = nome,
                 Ativo = ativo,
-                Saldo = saldo,
                 Cor = "000000",
                 Ordem = ordem,
 

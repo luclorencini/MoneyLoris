@@ -129,11 +129,6 @@ public class MeioPagamentoValidator : IMeioPagamentoValidator
                 throw new BusinessException(
                     code: ErrorCodes.MeioPagamento_CamposObrigatorios,
                     message: "Dia de Vencimento é obrigatório para cartões de crédito");
-
-            if (meio.Saldo != 0)
-                throw new BusinessException(
-                    code: ErrorCodes.MeioPagamento_CamposObrigatorios,
-                    message: "Saldo de Cartão de Crédito deve ser sempre zero");
         }
     }
 

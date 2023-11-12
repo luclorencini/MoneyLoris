@@ -1,6 +1,4 @@
 ﻿using System.Net.Http.Json;
-using K4os.Compression.LZ4.Internal;
-using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
@@ -18,8 +16,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Administrador);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -56,8 +54,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -80,8 +78,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         await DbSeeder.InserirUsuarios();
 
         var cat = await DbSeeder.InserirCategoria();
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoSimples(mOri.Id, cat.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -103,8 +101,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", idUsuario: TestConstants.USUARIO_COMUM_B_ID);
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
@@ -127,8 +125,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         await DbSeeder.InserirUsuarios();
 
         var cat = await DbSeeder.InserirCategoria();
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoSimples(mDes.Id, cat.Id);
@@ -155,8 +153,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -178,8 +176,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400, tipo: TipoMeioPagamento.CartaoCredito);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", tipo: TipoMeioPagamento.CartaoCredito);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -206,8 +204,8 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", idUsuario: TestConstants.USUARIO_COMUM_B_ID);
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id);
@@ -225,14 +223,14 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
     #endregion
 
     [Fact]
-    public async Task Excluir_EntreContas_DadosCertos_TransferenciaExcluida_SaldosAtualizados()
+    public async Task Excluir_EntreContas_DadosCertos_TransferenciaExcluida()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des");
 
         var lOri = await DbSeeder.InserirLancamentoTransferencia(mOri.Id, valor: -50, tipo: TipoLancamento.Despesa);
         var lDes = await DbSeeder.InserirLancamentoTransferencia(mDes.Id, valor: 50, tipo: TipoLancamento.Receita);
@@ -256,7 +254,6 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(contaOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, contaOri!.IdUsuario);
-        Assert.Equal(450, contaOri.Saldo);
 
         //destino
         var idLancDes = lDes.Id;
@@ -270,18 +267,17 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(contaDes);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, contaDes!.IdUsuario);
-        Assert.Equal(150, contaDes.Saldo);
     }
 
     [Fact]
-    public async Task Excluir_PagamentoFatura_DadosCertos_TransferenciaExcluida_SaldoMeioOrigemAtualiza_SaldoMeioDestinoNaoAtualiza_FaturaDiminuiValorPago()
+    public async Task Excluir_PagamentoFatura_DadosCertos_TransferenciaExcluida_FaturaDiminuiValorPago()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 600);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         var fat = await DbSeeder.InserirFatura(mDes.Id, 11, 2023, valorPago: 90);
 
@@ -307,7 +303,6 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(contaOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, contaOri!.IdUsuario);
-        Assert.Equal(650, contaOri.Saldo);
 
         //destino
         var idLancDes = lDes.Id;
@@ -321,7 +316,6 @@ public class TransferenciaController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(contaDes);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, contaDes!.IdUsuario);
-        Assert.Equal(0, contaDes.Saldo);
 
         //fatura
         var fatdb = await Context.Faturas.FindAsync(fat.Id);

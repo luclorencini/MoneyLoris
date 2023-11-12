@@ -1,5 +1,4 @@
 ﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
-using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Shared;
 
 namespace MoneyLoris.Application.Business.MeiosPagamento.Interfaces;
@@ -14,8 +13,6 @@ public interface IMeioPagamentoService
 
     Task<Result> Inativar(int id);
     Task<Result> Reativar(int id);
-
-    Task<decimal?> RecalcularSaldo(MeioPagamento meio, decimal valorDelta);
 
     Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterMeiosPagamento();
     Task<Result<ICollection<MeioPagamentoListItemDto>>> ObterContas();

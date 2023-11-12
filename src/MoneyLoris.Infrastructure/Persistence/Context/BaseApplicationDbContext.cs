@@ -191,8 +191,6 @@ public class BaseApplicationDbContext : DbContext
 
             entity.Property(e => e.Ordem).HasColumnType("tinyint(4)");
 
-            entity.Property(e => e.Saldo).HasPrecision(8, 2);
-
             entity.Property(e => e.Tipo).HasColumnType("tinyint(4)");
 
             entity.HasOne(d => d.Usuario)

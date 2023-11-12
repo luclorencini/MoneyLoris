@@ -142,7 +142,6 @@ public class ContaController_InserirTests : IntegrationTestsBase
         Assert.Equal(dto.Tipo, meio.Tipo);
         Assert.Equal(dto.Cor, meio.Cor);
         Assert.True(meio.Ativo);
-        Assert.Equal(0, meio.Saldo);
         Assert.Null(meio.Limite);
         Assert.Null(meio.DiaFechamento);
         Assert.Null(meio.DiaVencimento);
@@ -182,7 +181,6 @@ public class ContaController_InserirTests : IntegrationTestsBase
         Assert.Equal(dto.Tipo, meio.Tipo);
         Assert.Equal(dto.Cor, meio.Cor);
         Assert.True(meio.Ativo);
-        Assert.Equal(0, meio.Saldo);
         Assert.Null(meio.Limite);
         Assert.Null(meio.DiaFechamento);
         Assert.Null(meio.DiaVencimento);
@@ -222,7 +220,6 @@ public class ContaController_InserirTests : IntegrationTestsBase
         Assert.Equal(dto.Tipo, meio.Tipo);
         Assert.Equal(dto.Cor, meio.Cor);
         Assert.True(meio.Ativo);
-        Assert.Equal(0, meio.Saldo);
         Assert.Equal(dto.Limite, meio.Limite);
         Assert.Equal(dto.DiaFechamento, meio.DiaFechamento);
         Assert.Equal(dto.DiaVencimento, meio.DiaVencimento);

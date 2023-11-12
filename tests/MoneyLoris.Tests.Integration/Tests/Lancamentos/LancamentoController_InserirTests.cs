@@ -5,7 +5,6 @@ using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
 using MoneyLoris.Tests.Integration.Tests.Base;
-using Org.BouncyCastle.Utilities;
 
 namespace MoneyLoris.Tests.Integration.Tests.Lancamentos;
 public class LancamentoController_InserirTests : IntegrationTestsBase
@@ -256,14 +255,14 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
     #endregion
 
     [Fact]
-    public async Task LancarReceita_DadosCertos_MeioNaoEhCartao_LancamentoRealizado_SaldoMeioAtualizado()
+    public async Task LancarReceita_DadosCertos_MeioNaoEhCartao_LancamentoRealizado()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Receita);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 200, tipo: TipoMeioPagamento.ContaCorrente);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.ContaCorrente);
 
         //Act
         var dto = new LancamentoCadastroDto
@@ -304,11 +303,10 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(210, conta.Saldo);
     }
 
     [Fact]
-    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_SemFatura_LancamentoRealizado_SaldoMeioNaoAtualiza_FaturaCriada()
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_SemFatura_LancamentoRealizado_FaturaCriada()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -316,7 +314,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito, fecha: 5, vence: 15);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito, fecha: 5, vence: 15);
 
         //Act
         var dto = new LancamentoCadastroDto
@@ -361,7 +359,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);
 
         var faturas = await Context.Faturas.ToListAsync();
         Assert.NotNull(faturas);
@@ -375,7 +372,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
     }
 
     [Fact]
-    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_FaturaJaExiste_LancamentoRealizado_SaldoMeioNaoAtualiza()
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_UmaParcela_FaturaJaExiste_LancamentoRealizado()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -383,7 +380,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var fat = await DbSeeder.InserirFatura(mei.Id, mes: 6, ano: 2023);
 
         //Act
@@ -429,7 +426,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);
 
         var faturas = await Context.Faturas.ToListAsync();
         Assert.NotNull(faturas);
@@ -444,7 +440,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
     }
 
     [Fact]
-    public async Task LancarDespesa_DadosCertos_MeioEhCartao_DuasParcelas_SoPrimeiraFaturaExiste_LancamentosRealizados_SaldoMeioNaoAtualiza_UmaFaturaCriada()
+    public async Task LancarDespesa_DadosCertos_MeioEhCartao_DuasParcelas_SoPrimeiraFaturaExiste_LancamentosRealizados_UmaFaturaCriada()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -452,7 +448,7 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var fat = await DbSeeder.InserirFatura(mei.Id, mes: 8, ano: 2023);
 
         var dataLanc1 = new DateTime(2023, 4, 28);
@@ -527,7 +523,6 @@ public class LancamentoController_InserirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);
 
         var faturas = await Context.Faturas.ToListAsync();
         Assert.NotNull(faturas);

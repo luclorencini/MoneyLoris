@@ -1,6 +1,4 @@
 ﻿using System.Net.Http.Json;
-using MoneyLoris.Application.Business.Lancamentos.Dtos;
-using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 using MoneyLoris.Application.Shared;
 using MoneyLoris.Tests.Integration.Setup.Utils;
@@ -94,7 +92,7 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
         await DbSeeder.InserirUsuarios();
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Receita);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 200, tipo: TipoMeioPagamento.ContaCorrente);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.ContaCorrente);
         var lan = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
         //Act
@@ -113,18 +111,17 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(250, conta.Saldo);
     }
 
     [Fact]
-    public async Task Excluir_MeioEhCartaoCredito_LancamentoExcluido_SaldoMeioNaoAtualizado()
+    public async Task Excluir_MeioEhCartaoCredito_LancamentoExcluido()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
         var cat = await DbSeeder.InserirCategoria(TipoLancamento.Receita);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var lan = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
         //Act
@@ -143,6 +140,5 @@ public class LancamentoController_ExcluirTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);
     }
 }

@@ -18,8 +18,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Administrador);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -44,7 +44,7 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -69,8 +69,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -95,8 +95,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400, tipo: TipoMeioPagamento.CartaoCredito);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", tipo: TipoMeioPagamento.CartaoCredito);
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -121,7 +121,7 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 200);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -146,8 +146,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito, idUsuario: TestConstants.USUARIO_COMUM_B_ID);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -172,8 +172,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", saldo: 200, tipo: TipoMeioPagamento.ContaPagamento);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Conta Des", tipo: TipoMeioPagamento.ContaPagamento);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -198,8 +198,8 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 400);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -220,14 +220,14 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
     #endregion
 
     [Fact]
-    public async Task LancarPagamentoFatura_DadosCertos_FaturaExiste_TransferenciaRealzada_SaldoMeioOrigemAtualiza_SaldoMeioDestinoNaoAtualiza_FaturaAtualizaValorPago()
+    public async Task LancarPagamentoFatura_DadosCertos_FaturaExiste_TransferenciaRealzada_FaturaAtualizaValorPago()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 700);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
         var fat = await DbSeeder.InserirFatura(mDes.Id, 11, 2023, valorPago: 30);
 
         //Act
@@ -271,7 +271,6 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
 
         Assert.NotNull(meOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, meOri!.IdUsuario);
-        Assert.Equal(620, meOri.Saldo);
 
         //lançamento destino
         var laDes = await Context.Lancamentos.FindAsync(laOri.IdLancamentoTransferencia);
@@ -296,7 +295,6 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
 
         Assert.NotNull(meOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, meDes!.IdUsuario);
-        Assert.Equal(0, meDes.Saldo);
 
         //fatura
         var fatdb = await Context.Faturas.FindAsync(fat.Id);
@@ -306,14 +304,14 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
     }
 
     [Fact]
-    public async Task LancarPagamentoFatura_DadosCertos_FaturaNaoExiste_TransferenciaRealzada_SaldoMeioOrigemAtualiza_SaldoMeioDestinoNaoAtualiza_CriaFaturaComValorPago()
+    public async Task LancarPagamentoFatura_DadosCertos_FaturaNaoExiste_TransferenciaRealzada_CriaFaturaComValorPago()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
         await DbSeeder.InserirUsuarios();
 
-        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori", saldo: 800);
-        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mOri = await DbSeeder.InserirMeioPagamento(nome: "Conta Ori");
+        var mDes = await DbSeeder.InserirMeioPagamento(nome: "Cartão Des", tipo: TipoMeioPagamento.CartaoCredito);
 
         //Act
         var dto = new TransferenciaInsertDto
@@ -355,7 +353,6 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
 
         Assert.NotNull(meOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, meOri!.IdUsuario);
-        Assert.Equal(660, meOri.Saldo);
 
         //lançamento destino
         var laDes = await Context.Lancamentos.FindAsync(laOri.IdLancamentoTransferencia);
@@ -379,7 +376,6 @@ public class TransferenciaController_LancarPagamentoFaturaTests : IntegrationTes
 
         Assert.NotNull(meOri);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, meDes!.IdUsuario);
-        Assert.Equal(0, meDes.Saldo);
 
         //fatura
         var fatdb = await Context.Faturas.FirstOrDefaultAsync();

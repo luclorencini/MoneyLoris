@@ -295,7 +295,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
@@ -323,7 +323,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
     #endregion
 
     [Fact]
-    public async Task Alterar_Despesa_Conta_ValorNaoMudou_DadosAlterados_SaldoSeMantem()
+    public async Task Alterar_Despesa_Conta_ValorNaoMudou_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -331,7 +331,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 200, tipo: TipoMeioPagamento.ContaCorrente);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.ContaCorrente);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -50, tipo: TipoLancamento.Despesa);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
@@ -377,11 +377,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(200, conta.Saldo);  //se o valor nao muda, o saldo tambem nao
     }
 
     [Fact]
-    public async Task Alterar_Despesa_Conta_ValorMudouPraMenos_DadosAlterados_SaldoAumenta()
+    public async Task Alterar_Despesa_Conta_ValorMudouPraMenos_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -389,7 +388,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 400, tipo: TipoMeioPagamento.Poupanca);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.Poupanca);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -90, tipo: TipoLancamento.Despesa);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
@@ -435,11 +434,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(420, conta.Saldo);  //se o valor muda, o saldo atualiza
     }
 
     [Fact]
-    public async Task Alterar_Despesa_Conta_ValorMudouPraMais_DadosAlterados_SaldoDiminui()
+    public async Task Alterar_Despesa_Conta_ValorMudouPraMais_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -447,7 +445,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 400, tipo: TipoMeioPagamento.CartaoBeneficio);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoBeneficio);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -90, tipo: TipoLancamento.Despesa);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Despesa);
@@ -493,11 +491,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(310, conta.Saldo);  //se o valor muda, o saldo atualiza
     }
 
     [Fact]
-    public async Task Alterar_Despesa_CartaoCredito_ValorMudou_DadosAlterados_SaldoDeCartaoEhSempreZero()
+    public async Task Alterar_Despesa_CartaoCredito_ValorMudou_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -505,7 +502,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Despesa);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var fat = await DbSeeder.InserirFatura(mei.Id, mes: 6, ano: 2023);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: -100, tipo: TipoLancamento.Despesa, idFatura: fat.Id);
 
@@ -555,11 +552,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);  //saldo de cartão de crédito é sempre zero
     }
 
     [Fact]
-    public async Task Alterar_Receita_Conta_ValorNaoMudou_DadosAlterados_SaldoSeMantem()
+    public async Task Alterar_Receita_Conta_ValorNaoMudou_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -567,7 +563,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 300, tipo: TipoMeioPagamento.Carteira);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.Carteira);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 40, tipo: TipoLancamento.Receita);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
@@ -613,11 +609,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(300, conta.Saldo);  //se o valor nao muda, o saldo tambem nao
     }
 
     [Fact]
-    public async Task Alterar_Receita_Conta_ValorMudouPraMais_DadosAlterados_SaldoAumenta()
+    public async Task Alterar_Receita_Conta_ValorMudouPraMais_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -625,7 +620,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 500, tipo: TipoMeioPagamento.ContaPagamento);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.ContaPagamento);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 110, tipo: TipoLancamento.Receita);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
@@ -671,11 +666,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(540, conta.Saldo);  //se o valor muda, o saldo atualiza
     }
 
     [Fact]
-    public async Task Alterar_Receita_Conta_ValorMudouPraMenos_DadosAlterados_SaldoDiminui()
+    public async Task Alterar_Receita_Conta_ValorMudouPraMenos_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -683,7 +677,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 500, tipo: TipoMeioPagamento.ContaPagamento);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.ContaPagamento);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 110, tipo: TipoLancamento.Receita);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
@@ -729,11 +723,10 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(470, conta.Saldo);  //se o valor muda, o saldo atualiza
     }
 
     [Fact]
-    public async Task Alterar_Receita_CartaoCredito_ValorMudou_DadosAlterados_SaldoDeCartaoEhSempreZero()
+    public async Task Alterar_Receita_CartaoCredito_ValorMudou_DadosAlterados()
     {
         //Arrange
         SubirAplicacao(perfil: PerfilUsuario.Usuario);
@@ -741,7 +734,7 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         var cat = await DbSeeder.InserirCategoria(tipo: TipoLancamento.Receita);
         var sub = await DbSeeder.InserirSubcategoria(cat.Id);
-        var mei = await DbSeeder.InserirMeioPagamento(saldo: 0, tipo: TipoMeioPagamento.CartaoCredito);
+        var mei = await DbSeeder.InserirMeioPagamento(tipo: TipoMeioPagamento.CartaoCredito);
         var lanc = await DbSeeder.InserirLancamentoSimples(mei.Id, cat.Id, sub.Id, valor: 3800, tipo: TipoLancamento.Receita);
 
         var catB = await DbSeeder.InserirCategoria(nome: "Diversos", tipo: TipoLancamento.Receita);
@@ -787,6 +780,5 @@ public class LancamentoController_AlterarTests : IntegrationTestsBase
 
         Assert.NotNull(conta);
         Assert.Equal(TestConstants.USUARIO_COMUM_ID, conta!.IdUsuario);
-        Assert.Equal(0, conta.Saldo);  //saldo de cartão de crédito é sempre zero
     }
 }

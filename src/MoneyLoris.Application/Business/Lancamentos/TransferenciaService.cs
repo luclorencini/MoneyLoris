@@ -1,5 +1,4 @@
 ﻿using MoneyLoris.Application.Business.Auth.Interfaces;
-using MoneyLoris.Application.Business.Faturas;
 using MoneyLoris.Application.Business.Faturas.Interfaces;
 using MoneyLoris.Application.Business.Lancamentos.Dtos;
 using MoneyLoris.Application.Business.Lancamentos.Interfaces;
@@ -19,7 +18,7 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
     private readonly ILancamentoRepository _lancamentoRepo;
     private readonly ITransferenciaValidator _transferenciaValidator;
     private readonly IFaturaHelper _faturaHelper;
-    
+
     private readonly IFaturaRepository _faturaRepo;
     private readonly IAuthenticationManager _authenticationManager;
 
@@ -113,11 +112,6 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             await _lancamentoRepo.Update(lancamentoOrigem);
             await _lancamentoRepo.Update(lancamentoDestino);
 
-            //atualiza o saldo das contas
-
-            await RecalcularSaldoConta(meioOrigem, lancamentoOrigem.Valor);
-            await RecalcularSaldoConta(meioDestino, lancamentoDestino.Valor);
-
             await _lancamentoRepo.CommitTransaction();
 
             return lancamentoOrigem.Id;
@@ -206,10 +200,6 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             await _lancamentoRepo.Update(lancamentoOrigem);
             await _lancamentoRepo.Update(lancamentoDestino);
 
-            //atualiza o saldo da conta origem
-
-            await RecalcularSaldoConta(meioOrigem, lancamentoOrigem.Valor);
-
             await _faturaHelper.LancarValorPagoFatura(fatura, dto.Valor);
 
             await _lancamentoRepo.CommitTransaction();
@@ -222,22 +212,6 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
             throw;
         }
 
-    }
-
-    private async Task<decimal?> RecalcularSaldoConta(MeioPagamento meio, decimal valorDelta)
-    {
-        decimal? novoSaldo = null!;
-
-        if (meio.Tipo != TipoMeioPagamento.CartaoCredito)
-        {
-            meio.Saldo = meio.Saldo + valorDelta;
-
-            await _meioPagamentoRepo.Update(meio);
-
-            novoSaldo = meio.Saldo!.Value;
-        }
-
-        return novoSaldo;
     }
 
     public async Task<Result<TransferenciaUpdateDto>> Obter(int idLancamentoOrigem)
@@ -290,16 +264,11 @@ public class TransferenciaService : ServiceBase, ITransferenciaService
         _meioPagamentoValidator.DestinoExiste(meioDestino);
         _meioPagamentoValidator.DestinoPertenceAoUsuario(meioDestino);
 
-
         // transação 
 
         try
         {
             await _lancamentoRepo.BeginTransaction();
-
-            // atualiza saldo origem e destino (somente se não for cartao)
-            await RecalcularSaldoConta(meioOrigem, (lancamentoOrigem.Valor * -1)); // inverte o sinal pra reverter o valor do saldo
-            await RecalcularSaldoConta(meioDestino, (lancamentoDestino.Valor * -1)); // inverte o sinal pra reverter o valor do saldo
 
             //se foi pagamento de fatura (lançamento destino possui fatura associada), diminui o valor excluído do saldo da fatura
             if (lancamentoDestino.IdFatura is not null)

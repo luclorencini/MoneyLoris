@@ -16,7 +16,6 @@ public partial class MeioPagamento : EntityBase
     public string Cor { get; set; } = null!;
     public byte? Ordem { get; set; }
     public bool Ativo { get; set; }
-    public decimal? Saldo { get; set; }
     public decimal? Limite { get; set; }
     public byte? DiaFechamento { get; set; }
     public byte? DiaVencimento { get; set; }
