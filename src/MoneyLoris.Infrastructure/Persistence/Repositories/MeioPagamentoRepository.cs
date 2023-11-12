@@ -49,31 +49,16 @@ public class MeioPagamentoRepository : RepositoryBase<MeioPagamento>, IMeioPagam
         return list;
     }
 
-    public async Task<ICollection<(int id, decimal saldo)>> CalcularSaldoAtualContasUsuario(int idUsuario)
+    public async Task<ICollection<(int id, decimal saldo)>> CalcularSaldoAtualMeiosPagamentoUsuario(int idUsuario)
     {
         var dados = await _context.Lancamentos
             .Include(l => l.MeioPagamento)
-            .Where(l => l.IdUsuario == idUsuario && l.MeioPagamento.Tipo != TipoMeioPagamento.CartaoCredito)
+            .Where(l => l.IdUsuario == idUsuario)
             .GroupBy(l => l.MeioPagamento.Id)
             .Select(l => new { id = l.Key, saldo = l.Sum(x => x.Valor) })
             .ToListAsync();
 
         var ret = dados.Select(x => (x.id, x.saldo)).ToList();
-
-        return ret;
-    }
-
-    public async Task<ICollection<(int id, decimal valor)>> CalcularValorDevidoCartoesUsuario(int idUsuario)
-    {
-        var dados = await _context.Lancamentos
-            .Include(l => l.MeioPagamento)
-            .Include(l => l.Fatura)
-            .Where(l => l.IdUsuario == idUsuario && l.MeioPagamento.Tipo == TipoMeioPagamento.CartaoCredito && l.Fatura.ValorPago == null)
-            .GroupBy(l => l.MeioPagamento.Id)
-            .Select(l => new { id = l.Key, valor = l.Sum(x => x.Valor) })
-            .ToListAsync();
-
-        var ret = dados.Select(x => (x.id, x.valor)).ToList();
 
         return ret;
     }

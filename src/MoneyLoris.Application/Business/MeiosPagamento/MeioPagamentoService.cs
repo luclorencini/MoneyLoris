@@ -36,26 +36,14 @@ public class MeioPagamentoService : ServiceBase, IMeioPagamentoService
 
         //obtem e carrega saldos de conta e valores devidos de cartão
 
-        var saldos = await _meioPagamentoRepo.CalcularSaldoAtualContasUsuario(userInfo.Id);
-
-        var valoresDevidos = await _meioPagamentoRepo.CalcularValorDevidoCartoesUsuario(userInfo.Id);
+        var saldos = await _meioPagamentoRepo.CalcularSaldoAtualMeiosPagamentoUsuario(userInfo.Id);
 
         foreach (var item in ret)
         {
-            if (item.Tipo != TipoMeioPagamento.CartaoCredito)
-            {
-                item.Valor =
-                    saldos.Where(x => x.id == item.Id && item.Tipo != TipoMeioPagamento.CartaoCredito)
-                    .Select(x => x.saldo)
-                    .SingleOrDefault();
-            }
-            else
-            {
-                item.Valor =
-                    valoresDevidos.Where(x => x.id == item.Id && item.Tipo == TipoMeioPagamento.CartaoCredito)
-                    .Select(x => x.valor)
-                    .SingleOrDefault();
-            }
+            item.Valor =
+                saldos.Where(x => x.id == item.Id)
+                .Select(x => x.saldo)
+                .SingleOrDefault();
         }
 
         return new Result<ICollection<MeioPagamentoCadastroListItemDto>>(ret);

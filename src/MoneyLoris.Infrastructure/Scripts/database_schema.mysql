@@ -27,7 +27,6 @@ CREATE TABLE `MeioPagamento` (
   `Cor` varchar(6) NOT NULL,
   `Ordem` tinyint NULL,
   `Ativo` boolean NOT NULL,
-  `Saldo` decimal(8,2) NULL,
   `Limite` decimal(8,2) NULL,
   `DiaFechamento` tinyint NULL,
   `DiaVencimento` tinyint NULL
