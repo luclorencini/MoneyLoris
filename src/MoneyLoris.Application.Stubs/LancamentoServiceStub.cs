@@ -26,9 +26,6 @@ public class LancamentoServiceStub : ServiceBase, ILancamentoService
             Tipo = TipoLancamento.Despesa,
 
             IdMeioPagamento = 302,  //nubank
-            MeioPagamentoNome = "Nubank",
-            MeioPagamentoTipo = TipoMeioPagamento.CartaoCredito,
-            MeioPagamentoCor = "820AD1",
 
             IdCategoria = 101,  //Alimentação
             IdSubcategoria = 213,  //Lanche

@@ -1,4 +1,6 @@
-﻿@using (Html.VueTemplate())
+﻿<partial name="_MeioPagamentoSeletor"></partial>
+
+@using (Html.VueTemplate())
 {
     <script type="text/html" id="template-lancamento-modal">
 
@@ -14,10 +16,8 @@
                             <div class="row g-2">
 
                                 <div class="col-12">
-                                    <div class="d-flex align-items-baseline mb-2">
-                                        <i class="fa-solid fa-2x" v-bind:class="utils.cssIconeByTipoConta(lancamento.meioPagamentoTipo)" v-bind:style="{ 'color': '#' + lancamento.meioPagamentoCor}"></i>
-                                        <div class="fs-5 fw-bold ms-2">{{lancamento.meioPagamentoNome}}</div>
-                                    </div>
+                                    <label class="form-label required-asterisk">Conta / Cartão</label>
+                                    <MeioPagamentoSeletor ref="meioSeletor" v-on:meio-selecionado="selecionarMeioPagamento($event)"></MeioPagamentoSeletor>
                                 </div>
 
                                 <div class="col-12">
@@ -112,13 +112,15 @@
             template: '#template-lancamento-modal',
             mixins: [BaseMixin],
             emits: ['lancamento-salvo'],
-            components: { ConfirmationDialog },
+            components: { MeioPagamentoSeletor, ConfirmationDialog },
 
             data: () => ({
                 lancamento: {},
 
                 meios: [],
                 categorias: [],
+
+                meioSelecionado: {},
 
                 modal: null,
             }),
@@ -130,7 +132,7 @@
                 },
 
                 isCartaoCredito() {
-                    return (this.lancamento.meioPagamentoTipo == 3);
+                    return (this.meioSelecionado.tipo == 3);
                 },
             },
 
@@ -162,6 +164,7 @@
                             //busca meios
                             let rm = await fetchData.fetchGetJson(`/common/meiosPagamento`);
                             this.meios = rm.value;
+                            this.meioSelecionado = this.$refs.meioSeletor.carregar(this.meios, this.lancamento.idMeioPagamento);
 
                             //busca categorias
                             let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
@@ -179,6 +182,10 @@
                 fechar() {
                     this.cleanValidationForm(this.$refs.form);
                     bootstrapHelper.closeModal(this.modal);
+                },
+
+                selecionarMeioPagamento(meioPagamento) {
+                    this.meioSelecionado = meioPagamento;
                 },
 
                 async salvar() {

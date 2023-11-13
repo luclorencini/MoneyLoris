@@ -1,5 +1,4 @@
-﻿using MoneyLoris.Application.Business.MeiosPagamento.Dtos;
-using MoneyLoris.Application.Domain.Entities;
+﻿using MoneyLoris.Application.Domain.Entities;
 using MoneyLoris.Application.Domain.Enums;
 
 namespace MoneyLoris.Application.Business.Lancamentos.Dtos;
@@ -10,9 +9,6 @@ public class LancamentoInfoDto
     public TipoLancamento Tipo { get; set; }
 
     public int IdMeioPagamento { get; set; }
-    public string MeioPagamentoNome { get; set; } = default!;
-    public TipoMeioPagamento MeioPagamentoTipo { get; set; }
-    public string MeioPagamentoCor { get; set; } = default!;
 
     public int IdCategoria { get; set; }
     public int? IdSubcategoria { get; set; }
@@ -36,9 +32,6 @@ public class LancamentoInfoDto
         Tipo = lancamento.Tipo;
 
         IdMeioPagamento = lancamento.MeioPagamento.Id;
-        MeioPagamentoNome = lancamento.MeioPagamento.Nome;
-        MeioPagamentoTipo = lancamento.MeioPagamento.Tipo;
-        MeioPagamentoCor = lancamento.MeioPagamento.Cor;
 
         IdCategoria = lancamento.IdCategoria!.Value;
         IdSubcategoria = lancamento.IdSubcategoria;

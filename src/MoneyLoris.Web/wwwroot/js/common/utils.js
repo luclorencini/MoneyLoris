@@ -293,6 +293,8 @@
 
     cssIconeByTipoConta(t) {
 
+        if (!t) return;
+
         if (utils.isCartaoCredito(t))
             return 'fa-credit-card';
 

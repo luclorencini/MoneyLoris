@@ -68,17 +68,13 @@ public class LancamentoService : ServiceBase, ILancamentoService
     public async Task<Result<int>> InserirDespesa(LancamentoCadastroDto dto)
     {
         var idLancamento = await Inserir(dto, TipoLancamento.Despesa);
-
-        var msg = "Despesa lançada com sucesso.";
-        return (idLancamento, msg);
+        return (idLancamento, "Despesa lançada com sucesso.");
     }
 
     public async Task<Result<int>> InserirReceita(LancamentoCadastroDto dto)
     {
         var idLancamento = await Inserir(dto, TipoLancamento.Receita);
-
-        var msg = "Receita lançada com sucesso.";
-        return (idLancamento, msg);
+        return (idLancamento, "Receita lançada com sucesso.");
     }
 
     private async Task<int> Inserir(LancamentoCadastroDto dto, TipoLancamento tipo)
@@ -218,7 +214,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _meioPagamentoValidator.Existe(meio);
         _meioPagamentoValidator.PertenceAoUsuario(meio);
 
-        _lancamentoValidator.NaoPodeTrocarMeioPagamento(lancamento, dto.IdMeioPagamento);
+        //_lancamentoValidator.NaoPodeTrocarMeioPagamento(lancamento, dto.IdMeioPagamento);
 
         //TODO - lorencini - avaliar no futuro se precisará informar fatura na receita de cartão (pagamento de fatura)
         if (lancamento.Tipo == TipoLancamento.Despesa)
@@ -271,8 +267,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
 
         //inicia transação
 
-        decimal? novoSaldo = null!;
-
         try
         {
             await _lancamentoRepo.BeginTransaction();
@@ -288,8 +282,7 @@ public class LancamentoService : ServiceBase, ILancamentoService
         }
 
         //retorno
-        return (lancamento.Id,
-                $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
+        return (lancamento.Id, $"{lancamento.Tipo.ObterDescricao()} lançada com sucesso.");
     }
 
     public async Task<Result<int>> Excluir(int idLancamento)
@@ -308,7 +301,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
         _meioPagamentoValidator.Existe(meio);
         _meioPagamentoValidator.PertenceAoUsuario(meio);
 
-
         //inicia transação
 
         try
@@ -326,7 +318,6 @@ public class LancamentoService : ServiceBase, ILancamentoService
         }
 
         //retorno
-        return (idLancamento,
-                "Lançamento excluído com sucesso.");
+        return (idLancamento, "Lançamento excluído com sucesso.");
     }
 }
