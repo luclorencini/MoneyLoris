@@ -1,60 +1,49 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-meio-pagamento-seletor">
+﻿<script>
 
-        <div class="input-group align-items-center">
-            <i class="fa-solid fa-2x me-2" v-bind:class="utils.cssIconeByTipoConta(meioSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioSelecionado.cor}"></i>
-            <select class="form-select" v-model="id" v-on:change="selecionarMeioPagamento(id)">
-                <option v-for="m in meios" :value="m.id">{{m.nome}}</option>
-            </select>
-        </div>
+    const MeioPagamentoSeletor = {
 
-    </script>
-}
+        name: 'MeioPagamentoSeletor',
+        template: '#template-meio-pagamento-seletor',
+        mixins: [BaseMixin],
+        emits: ['meio-selecionado'],
 
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
+        data: () => ({
+            meios: [],
+            id: 0,
+            meioSelecionado: {}
+        }),
 
-        const MeioPagamentoSeletor = {
+        methods: {
 
-            name: 'MeioPagamentoSeletor',
-            template: '#template-meio-pagamento-seletor',
-            mixins: [BaseMixin],
-            emits: ['meio-selecionado'],
+            carregar(meios, id) {
+                this.meios = meios;
+                this.id = id;
 
-            data: () => ({
-                meios: [],
-                id: 0,
-                meioSelecionado: {}
-            }),
+                this.obterMeioSelecionado(id);
 
-            methods: {
+                return this.meioSelecionado;
+            },
 
-                carregar(meios, id) {
-                    this.meios = meios;
-                    this.id = id;
+            selecionarMeioPagamento(meioId) {
+                this.obterMeioSelecionado(meioId);
+                this.$emit('meio-selecionado', this.meioSelecionado);
+            },
 
-                    this.obterMeioSelecionado(id);
-
-                    return this.meioSelecionado;
-                },
-
-                selecionarMeioPagamento(meioId) {
-                    this.obterMeioSelecionado(meioId);
-                    this.$emit('meio-selecionado', this.meioSelecionado);
-                },
-
-                obterMeioSelecionado(meioId) {
-                    this.meioSelecionado = this.meios.find(m => m.id == meioId);
-                },
-            }
+            obterMeioSelecionado(meioId) {
+                this.meioSelecionado = this.meios.find(m => m.id == meioId);
+            },
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+<script type="text/html" id="template-meio-pagamento-seletor">
+
+    <div class="input-group align-items-center">
+        <i class="fa-solid fa-2x me-2" v-bind:class="utils.cssIconeByTipoConta(meioSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioSelecionado.cor}"></i>
+        <select class="form-select" v-model="id" v-on:change="selecionarMeioPagamento(id)">
+            <option v-for="m in meios" :value="m.id">{{m.nome}}</option>
+        </select>
+    </div>
+
+</script>

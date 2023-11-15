@@ -1,4 +1,6 @@
-﻿<script>
+﻿<partial name="_MeioPagamentoSeletor"></partial>
+
+<script>
 
     const LancamentoModal = {
 
@@ -6,13 +8,15 @@
         template: '#template-lancamento-modal',
         mixins: [BaseMixin],
         emits: ['lancamento-salvo'],
-        components: { ConfirmationDialog },
+        components: { MeioPagamentoSeletor, ConfirmationDialog },
 
         data: () => ({
             lancamento: {},
 
             meios: [],
             categorias: [],
+
+            meioSelecionado: {},
 
             modal: null,
         }),
@@ -24,7 +28,7 @@
             },
 
             isCartaoCredito() {
-                return (this.lancamento.meioPagamentoTipo == 3);
+                return (this.meioSelecionado.tipo == 3);
             },
         },
 
@@ -56,6 +60,7 @@
                         //busca meios
                         let rm = await fetchData.fetchGetJson(`/common/meiosPagamento`);
                         this.meios = rm.value;
+                        this.meioSelecionado = this.$refs.meioSeletor.carregar(this.meios, this.lancamento.idMeioPagamento);
 
                         //busca categorias
                         let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
@@ -73,6 +78,10 @@
             fechar() {
                 this.cleanValidationForm(this.$refs.form);
                 bootstrapHelper.closeModal(this.modal);
+            },
+
+            selecionarMeioPagamento(meioPagamento) {
+                this.meioSelecionado = meioPagamento;
             },
 
             async salvar() {
@@ -143,102 +152,100 @@
 
 </script>
 
-<script type="text/x-template" id="template-lancamento-modal">
+<script type="text/html" id="template-lancamento-modal">
 
     <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
-        <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Editar {{labelTipo}}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form ref="form">
-                        <div class="row g-2">
+            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Editar {{labelTipo}}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="min-height: 410px;">
+                        <form ref="form">
+                            <div class="row g-2">
 
-                            <div class="col-12">
-                                <div class="d-flex align-items-baseline mb-2">
-                                    <i class="fa-solid fa-2x" v-bind:class="utils.cssIconeByTipoConta(lancamento.meioPagamentoTipo)" v-bind:style="{ 'color': '#' + lancamento.meioPagamentoCor}"></i>
-                                    <div class="fs-5 fw-bold ms-2">{{lancamento.meioPagamentoNome}}</div>
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Conta / Cartão</label>
+                                    <MeioPagamentoSeletor ref="meioSeletor" v-on:meio-selecionado="selecionarMeioPagamento($event)"></MeioPagamentoSeletor>
                                 </div>
-                            </div>
 
-                            <div class="col-12">
-                                <label class="form-label required-asterisk">Categoria / Subcategoria</label>
-                                <select class="form-select" v-model="lancamento.idCatSub">
-                                    <option v-for="c in categorias" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
-                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <label class="form-label required-asterisk">Descrição</label>
-                                <input class="form-control fw-bold" required maxlength="50" v-model="lancamento.descricao">
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label required-asterisk">Data</label>
-                                <input class="form-control" type="date" v-model="lancamento.data">
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label required-asterisk">Valor</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">R$</span>
-                                    <input class="form-control fw-bold" type="text" inputmode="decimal" required maxlength="10" v-model="lancamento.valor" v-ext-mask="'dinheiro'">
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Categoria / Subcategoria</label>
+                                    <select class="form-select" v-model="lancamento.idCatSub">
+                                        <option v-for="c in categorias" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                            {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                        </option>
+                                    </select>
                                 </div>
-                            </div>
 
-                            <template v-if="isCartaoCredito">
+                                <div class="col-12">
+                                    <label class="form-label required-asterisk">Descrição</label>
+                                    <input class="form-control fw-bold" required maxlength="50" v-model="lancamento.descricao">
+                                </div>
 
-                                <div class="col col6">
-                                    <label class="form-label required-asterisk">Fatura</label>
-                                    <div class="input-group">
-                                        <select class="form-select" v-model="lancamento.faturaMes">
-                                            <option value="1">JAN</option>
-                                            <option value="2">FEV</option>
-                                            <option value="3">MAR</option>
-                                            <option value="4">ABR</option>
-                                            <option value="5">MAI</option>
-                                            <option value="6">JUN</option>
-                                            <option value="7">JUL</option>
-                                            <option value="8">AGO</option>
-                                            <option value="9">SET</option>
-                                            <option value="10">OUT</option>
-                                            <option value="11">NOV</option>
-                                            <option value="12">DEZ</option>
-                                        </select>
-                                        <input class="form-control" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="lancamento.faturaAno">
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Data</label>
+                                    <input class="form-control" type="date" v-model="lancamento.data">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Valor</label>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control fw-bold" type="text" inputmode="decimal" required maxlength="10" v-model="lancamento.valor" v-ext-mask="'dinheiro'">
                                     </div>
                                 </div>
 
-                                <div class="col-5 offset-1">
-                                    <label class="form-label">Parcela</label>
-                                    <div class="d-flex align-items-center">
-                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaAtual">
-                                        <div class="mx-2">de</div>
-                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaTotal">
+                                <template v-if="isCartaoCredito">
+
+                                    <div class="col col6" v-show="isCartaoCredito">
+                                        <label class="form-label required-asterisk">Fatura</label>
+                                        <div class="input-group">
+                                            <select class="form-select" v-model="lancamento.faturaMes">
+                                                <option value="1">JAN</option>
+                                                <option value="2">FEV</option>
+                                                <option value="3">MAR</option>
+                                                <option value="4">ABR</option>
+                                                <option value="5">MAI</option>
+                                                <option value="6">JUN</option>
+                                                <option value="7">JUL</option>
+                                                <option value="8">AGO</option>
+                                                <option value="9">SET</option>
+                                                <option value="10">OUT</option>
+                                                <option value="11">NOV</option>
+                                                <option value="12">DEZ</option>
+                                            </select>
+                                            <input class="form-control" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="lancamento.faturaAno">
+                                        </div>
                                     </div>
-                                </div>
 
-                            </template>
+                                    <div class="col-5 offset-1" v-show="isCartaoCredito">
+                                        <label class="form-label">Parcela</label>
+                                        <div class="d-flex align-items-center">
+                                            <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaAtual">
+                                            <div class="mx-2">de</div>
+                                            <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaTotal">
+                                        </div>
+                                    </div>
 
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="d-flex justify-content-between w-100">
-                        <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
-                        <div class="d-flex justify-content-end w-100">
-                            <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
-                            <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+                                </template>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-flex justify-content-between w-100">
+                            <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
+                            <div class="d-flex justify-content-end w-100">
+                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
