@@ -48,7 +48,11 @@
 
     <partial name="_Header.cshtml" />
 
-    <main role="main" id="app"></main>
+    @RenderSection("BeforeMain", required: false)
+
+    <main role="main" id="app">
+        @RenderSection("InsideMain", required: false)
+    </main>
 
     <div class="toast-container position-fixed bottom-0 start-0 p-2" style="z-index:1500;"></div>
 
@@ -60,11 +64,6 @@
     </div>
 
     @* JS ao final do Body *@
-
-    <!-- Eruda - console for mobile browsers - https://github.com/liriliri/eruda
-    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
-    -->
 
     <environment include="Production">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.global.prod.min.js" integrity="sha512-3CesFAr6COyDB22AiVG2erk2moD1FeL3VMx6UezptTW3qmYdcQhfv6yDGmH4ICNTxd0Rs2AbMQ0Q5lG7J/8n3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -89,6 +88,11 @@
     <script src="~/pwa/appInstall.js" asp-append-version="true"></script>
 
     @RenderBody()
+
+    <!-- Eruda - console for mobile browsers - https://github.com/liriliri/eruda
+    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+    -->
 
 </body>
 </html>
