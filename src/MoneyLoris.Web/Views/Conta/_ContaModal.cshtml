@@ -1,325 +1,316 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-conta-modal">
+﻿<script>
 
-        <div class="modal" ref="modalForm" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
-                        <h5 class="modal-title">{{titulo}}</h5>
-                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form ref="form">
-                            <div class="row g-1">
+    const ContaModal = {
 
-                                <div class="col-9">
-                                    <label class="form-label required-asterisk">Nome</label>
-                                    <input class="form-control form-control-lg fw-bold" required maxlength="20" v-model="conta.nome">
+        name: 'ContaModal',
+        template: '#template-conta-modal',
+        mixins: [BaseMixin],
+        emits: ['conta-salva'],
+        components: { ConfirmationDialog },
+
+        data: () => ({
+            conta: {},
+            modal: null,
+        }),
+
+        computed: {
+
+            titulo() {
+                if (this.isNovo) return "Nova Conta / Cartão";
+
+                if (utils.isCartaoCredito(this.conta.tipo))
+                    return 'Alterar Cartão';
+                else
+                    return 'Alterar Conta';
+            },
+
+            isNovo() {
+                return (this.conta.id == undefined);
+            },
+
+            podeAlterarTipo() {
+                if (this.isNovo) return true;
+
+                if (utils.isCartaoCredito(this.conta.tipo))
+                    return false;
+                else
+                    return true;
+            },
+
+            exibirTipoCartaoCredito() {
+                if (this.isNovo) return true;
+
+                if (utils.isCartaoCredito(this.conta.tipo))
+                    return true;
+                else
+                    return false;
+            }
+        },
+
+        methods: {
+
+            async carregar(id) {
+
+                await this.showLoadingSplashAndExecute(async () => {
+                    if (id) {
+                        let ret = await fetchData.fetchGetJson(`/conta/obter/${id}`);
+                        this.conta = ret.value;
+
+                        fieldConverter.moneyToString(this.conta, 'limite');
+                    }
+                    else {
+                        this.conta = { tipo: 1, cor: '000000' };
+                    }
+                });
+
+                this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+            },
+
+            fechar() {
+                this.cleanValidationForm(this.$refs.form);
+                bootstrapHelper.closeModal(this.modal);
+            },
+
+            async salvar() {
+
+                //TODO - validar dia de fechamento e vencimento de fatura
+                let isValido = this.validarForm(this.$refs.form);
+
+                if (isValido) {
+                    let ret = null;
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        try {
+
+                            //conversões
+                            //fieldConverter.stringToMoney(this.conta, 'saldoInicial');
+                            fieldConverter.stringToMoney(this.conta, 'limite');
+                            fieldConverter.stringToInt(this.conta, 'tipo');
+                            fieldConverter.stringToInt(this.conta, 'ordem');
+
+                            //submit
+                            let url = (this.conta.id ? '/conta/alterar' : '/conta/inserir');
+
+                            ret = await fetchData.fetchPostJson(url, this.conta);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('conta-salva', ret.value.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
+            },
+
+            async excluir() {
+
+                const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                    titulo: 'Exclusão de Conta',
+                    mensagem: `Deseja excluir esta Conta?`,
+                    okLabel: 'Excluir',
+                });
+
+                if (confirma) {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson('/conta/excluir', this.conta.id);
+
+                        if (ret.ok) {
+                            mensagemSistema.showMensagemSucesso('Conta excluída com sucesso.');
+                            this.fechar();
+                            this.$emit('conta-salva', this.conta.id);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+            },
+
+            alterarCor(rgb) {
+                this.conta.cor = rgb;
+            },
+
+            obterCores() {
+                let cores = [
+                    { rgb: '0369B9', desc: 'Caixa' },
+                    { rgb: 'FCF800', desc: 'Banco do Brasil' },
+                    { rgb: 'FF7000', desc: 'Itaú' },
+                    { rgb: 'EC0000', desc: 'Santander' },
+                    { rgb: 'CE0930', desc: 'Bradesco' },
+                    { rgb: '820AD1', desc: 'Nubank' },
+                    { rgb: '11C56E', desc: 'PicPay' },
+                    { rgb: '000000', desc: '' },
+                    { rgb: '004384', desc: 'Banestes' },
+                    { rgb: 'FFD900', desc: 'Will Bank' },
+                    { rgb: 'F17700', desc: 'Inter' },
+                    { rgb: 'FF0000', desc: 'Sodexo' },
+                    { rgb: '0F92FF', desc: 'Neon' },
+                    { rgb: '4F2F87', desc: 'Nu Ultravioleta' },
+                    { rgb: '00A992', desc: 'Sofisa' },
+                    { rgb: '414141', desc: '' }
+                ];
+                return cores;
+            },
+
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-conta-modal">
+
+    <div class="modal" ref="modalForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
+                    <h5 class="modal-title">{{titulo}}</h5>
+                    <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
+                </div>
+                <div class="modal-body">
+                    <form ref="form">
+                        <div class="row g-1">
+
+                            <div class="col-9">
+                                <label class="form-label required-asterisk">Nome</label>
+                                <input class="form-control form-control-lg fw-bold" required maxlength="20" v-model="conta.nome">
+                            </div>
+
+                            <div class="col-3 text-center">
+                                <label class="form-label">Ícone</label>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-3x" v-bind:class="utils.cssIconeByTipoConta(conta.tipo)" v-bind:style="{ 'color': '#' + conta.cor}"></i>
                                 </div>
+                            </div>
 
-                                <div class="col-3 text-center">
-                                    <label class="form-label">Ícone</label>
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <i class="fa-solid fa-3x" v-bind:class="utils.cssIconeByTipoConta(conta.tipo)" v-bind:style="{ 'color': '#' + conta.cor}"></i>
+                            <div class="col-9">
+                                <label class="form-label required-asterisk">Tipo</label>
+                                <select class="form-select" v-model="conta.tipo" v-bind:disabled="!podeAlterarTipo">
+                                    <option value="1">Carteira</option>
+                                    <option value="2">Conta Corrente</option>
+                                    <option value="3" v-if="exibirTipoCartaoCredito">Cartão de Crédito</option>
+                                    <option value="4">Poupança</option>
+                                    <option value="5">Conta de Pagamento</option>
+                                    <option value="6">Carteira Digital</option>
+                                    <option value="7">Cartão de Benefício</option>
+                                    <option value="99">Outros</option>
+                                </select>
+                            </div>
+
+                            <div class="col-3">
+                                <label class="form-label">Ordem</label>
+                                <input class="form-control" type="number" v-model="conta.ordem">
+                            </div>
+
+                            <div class="col-12 mb-2">
+                                <label class="form-label required-asterisk">Cor</label>
+
+                                <div class="d-flex flex-wrap justify-content-center">
+                                    <template v-for="c in obterCores()">
+                                        <div class="opcao-cor" v-on:click="alterarCor(c.rgb)" v-bind:style="{ 'background-color': '#' + c.rgb}" v-bind:title="c.desc"></div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            @*<template v-if="isNovo">
+
+                                <hr class="my-1" />
+
+                                <div class="col-12 mt-2">
+                                    <h5>Saldo Inicial</h5>
+                                    <div class="lh-sm">
+                                        <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
+                                        <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
                                     </div>
                                 </div>
 
-                                <div class="col-9">
-                                    <label class="form-label required-asterisk">Tipo</label>
-                                    <select class="form-select" v-model="conta.tipo" v-bind:disabled="!podeAlterarTipo">
-                                        <option value="1">Carteira</option>
-                                        <option value="2">Conta Corrente</option>
-                                        <option value="3" v-if="exibirTipoCartaoCredito">Cartão de Crédito</option>
-                                        <option value="4">Poupança</option>
-                                        <option value="5">Conta de Pagamento</option>
-                                        <option value="6">Carteira Digital</option>
-                                        <option value="7">Cartão de Benefício</option>
-                                        <option value="99">Outros</option>
-                                    </select>
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Valor {{utils.isCartaoCredito(this.conta.tipo) ? 'da Fatual Atual' : 'do Saldo'}}</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Data Lançamento</label>
+                                    <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
+                                </div>
+
+                            </template>*@
+
+                            <template v-if="utils.isCartaoCredito(conta.tipo)">
+
+                                <hr class="my-1" />
+
+                                <div class="col-12">
+                                    <h5>Informações do Cartão de Crédito</h5>
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="form-label required-asterisk">Limite</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">R$</span>
+                                        <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.limite" v-ext-mask="'dinheiro'">
+                                    </div>
                                 </div>
 
                                 <div class="col-3">
-                                    <label class="form-label">Ordem</label>
-                                    <input class="form-control" type="number" v-model="conta.ordem">
+                                    <label class="form-label required-asterisk">Fecha dia</label>
+                                    <input class="form-control" type="number" required v-model="conta.diaFechamento">
                                 </div>
 
-                                <div class="col-12 mb-2">
-                                    <label class="form-label required-asterisk">Cor</label>
-
-                                    <div class="d-flex flex-wrap justify-content-center">
-                                        <template v-for="c in obterCores()">
-                                            <div class="opcao-cor" v-on:click="alterarCor(c.rgb)" v-bind:style="{ 'background-color': '#' + c.rgb}" v-bind:title="c.desc"></div>
-                                        </template>
-                                    </div>
+                                <div class="col-3">
+                                    <label class="form-label required-asterisk">Vence dia</label>
+                                    <input class="form-control" type="number" required v-model="conta.diaVencimento">
                                 </div>
 
-                                @*<template v-if="isNovo">
+                            </template>
 
-                            <hr class="my-1" />
-
-                            <div class="col-12 mt-2">
-                                <h5>Saldo Inicial</h5>
-                                <div class="lh-sm">
-                                    <i class="fa-solid fa-circle-info fa-sm sys-fg-dark-4 me-2"></i>
-                                    <small class="fst-italic">Ao criar a conta ou cartão, será feito um lançamento inicial com o valor e na data informadas abaixo.</small>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label required-asterisk">Valor {{utils.isCartaoCredito(this.conta.tipo) ? 'da Fatual Atual' : 'do Saldo'}}</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">R$</span>
-                                    <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.saldoInicial" v-ext-mask="'dinheiro'">
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label required-asterisk">Data Lançamento</label>
-                                <input class="form-control" type="date" required v-model="conta.dataLancamentoInicial">
-                            </div>
-
-                        </template>*@
-
-                                <template v-if="utils.isCartaoCredito(conta.tipo)">
-
-                                    <hr class="my-1" />
-
-                                    <div class="col-12">
-                                        <h5>Informações do Cartão de Crédito</h5>
-                                    </div>
-
-                                    <div class="col-6">
-                                        <label class="form-label required-asterisk">Limite</label>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">R$</span>
-                                            <input class="form-control" type="text" inputmode="decimal" required maxlength="10" v-model="conta.limite" v-ext-mask="'dinheiro'">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-3">
-                                        <label class="form-label required-asterisk">Fecha dia</label>
-                                        <input class="form-control" type="number" required v-model="conta.diaFechamento">
-                                    </div>
-
-                                    <div class="col-3">
-                                        <label class="form-label required-asterisk">Vence dia</label>
-                                        <input class="form-control" type="number" required v-model="conta.diaVencimento">
-                                    </div>
-
-                                </template>
-
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
-                            <div class="d-flex justify-content-end w-100">
-                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
-                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                        <div class="d-flex justify-content-end w-100">
+                            <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                            <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
-    </script>
-}
+</script>
 
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
+<style>
 
-        const ContaModal = {
+    .opcao-cor {
+        width: 3.125rem;
+        height: 2.5rem;
+        margin: 0.25rem;
+        cursor: pointer;
+    }
 
-            name: 'ContaModal',
-            template: '#template-conta-modal',
-            mixins: [BaseMixin],
-            emits: ['conta-salva'],
-            components: { ConfirmationDialog },
-
-            data: () => ({
-                conta: {},
-                modal: null,
-            }),
-
-            computed: {
-
-                titulo() {
-                    if (this.isNovo) return "Nova Conta / Cartão";
-
-                    if (utils.isCartaoCredito(this.conta.tipo))
-                        return 'Alterar Cartão';
-                    else
-                        return 'Alterar Conta';
-                },
-
-                isNovo() {
-                    return (this.conta.id == undefined);
-                },
-
-                podeAlterarTipo() {
-                    if (this.isNovo) return true;
-
-                    if (utils.isCartaoCredito(this.conta.tipo))
-                        return false;
-                    else
-                        return true;
-                },
-
-                exibirTipoCartaoCredito() {
-                    if (this.isNovo) return true;
-
-                    if (utils.isCartaoCredito(this.conta.tipo))
-                        return true;
-                    else
-                        return false;
-                }
-            },
-
-            methods: {
-
-                async carregar(id) {
-
-                    await this.showLoadingSplashAndExecute(async () => {
-                        if (id) {
-                            let ret = await fetchData.fetchGetJson(`/conta/obter/${id}`);
-                            this.conta = ret.value;
-
-                            fieldConverter.moneyToString(this.conta, 'limite');
-                        }
-                        else {
-                            this.conta = { tipo: 1, cor: '000000' };
-                        }
-                    });
-
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
-                },
-
-                fechar() {
-                    this.cleanValidationForm(this.$refs.form);
-                    bootstrapHelper.closeModal(this.modal);
-                },
-
-                async salvar() {
-
-                    //TODO - validar dia de fechamento e vencimento de fatura
-                    let isValido = this.validarForm(this.$refs.form);
-
-                    if (isValido) {
-                        let ret = null;
-
-                        await this.showLoadingSplashAndExecute(async () => {
-                            try {
-
-                                //conversões
-                                //fieldConverter.stringToMoney(this.conta, 'saldoInicial');
-                                fieldConverter.stringToMoney(this.conta, 'limite');
-                                fieldConverter.stringToInt(this.conta, 'tipo');
-                                fieldConverter.stringToInt(this.conta, 'ordem');
-
-                                //submit
-                                let url = (this.conta.id ? '/conta/alterar' : '/conta/inserir');
-
-                                ret = await fetchData.fetchPostJson(url, this.conta);
-
-                                if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(ret.message);
-                                    this.fechar();
-                                    this.$emit('conta-salva', ret.value.id);
-                                }
-                                else {
-                                    mensagemSistema.showMensagemErro(ret.message);
-                                }
-                            }
-                            catch (e) {
-                                mensagemSistema.showMensagemErro(e);
-                            }
-                        });
-                    }
-                },
-
-                async excluir() {
-
-                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
-                        titulo: 'Exclusão de Conta',
-                        mensagem: `Deseja excluir esta Conta?`,
-                        okLabel: 'Excluir',
-                    });
-
-                    if (confirma) {
-
-                        await this.showLoadingSplashAndExecute(async () => {
-
-                            let ret = await fetchData.fetchPostJson('/conta/excluir', this.conta.id);
-
-                            if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso('Conta excluída com sucesso.');
-                                this.fechar();
-                                this.$emit('conta-salva', this.conta.id);
-                            }
-                            else {
-                                mensagemSistema.showMensagemErro(ret.message);
-                            }
-                        });
-                    }
-                },
-
-                alterarCor(rgb) {
-                    this.conta.cor = rgb;
-                },
-
-                obterCores() {
-                    let cores = [
-                        { rgb: '0369B9', desc: 'Caixa' },
-                        { rgb: 'FCF800', desc: 'Banco do Brasil' },
-                        { rgb: 'FF7000', desc: 'Itaú' },
-                        { rgb: 'EC0000', desc: 'Santander' },
-                        { rgb: 'CE0930', desc: 'Bradesco' },
-                        { rgb: '820AD1', desc: 'Nubank' },
-                        { rgb: '11C56E', desc: 'PicPay' },
-                        { rgb: '000000', desc: '' },
-                        { rgb: '004384', desc: 'Banestes' },
-                        { rgb: 'FFD900', desc: 'Will Bank' },
-                        { rgb: 'F17700', desc: 'Inter' },
-                        { rgb: 'FF0000', desc: 'Sodexo' },
-                        { rgb: '0F92FF', desc: 'Neon' },
-                        { rgb: '4F2F87', desc: 'Nu Ultravioleta' },
-                        { rgb: '00A992', desc: 'Sofisa' },
-                        { rgb: '414141', desc: '' }
-                    ];
-                    return cores;
-                },
-
-            }
-        }
-
-    </script>
-}
-
-@using (Html.VueStyle())
-{
-    <style type="text/css">
+    @@media (max-width: 991px) { /*lg*/
 
         .opcao-cor {
-            width: 3.125rem;
-            height: 2.5rem;
-            margin: 0.25rem;
-            cursor: pointer;
+            width: 9.7vw;
+            margin: 0.2rem;
         }
+    }
 
-        @@media (max-width: 991px) { /*lg*/
-
-            .opcao-cor {
-                width: 9.7vw;
-                margin: 0.2rem;
-            }
-        }
-
-    </style>
-}
+</style>

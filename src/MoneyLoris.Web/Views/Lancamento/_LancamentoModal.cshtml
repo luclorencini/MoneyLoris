@@ -1,263 +1,245 @@
-﻿<partial name="_MeioPagamentoSeletor"></partial>
+﻿<script>
 
-@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-lancamento-modal">
+    const LancamentoModal = {
 
-        <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
-            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Editar {{labelTipo}}</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form ref="form">
-                            <div class="row g-2">
+        name: 'LancamentoModal',
+        template: '#template-lancamento-modal',
+        mixins: [BaseMixin],
+        emits: ['lancamento-salvo'],
+        components: { ConfirmationDialog },
 
-                                <div class="col-12">
-                                    <label class="form-label required-asterisk">Conta / Cartão</label>
-                                    <MeioPagamentoSeletor ref="meioSeletor" v-on:meio-selecionado="selecionarMeioPagamento($event)"></MeioPagamentoSeletor>
+        data: () => ({
+            lancamento: {},
+
+            meios: [],
+            categorias: [],
+
+            modal: null,
+        }),
+
+        computed: {
+
+            labelTipo() {
+                return (this.lancamento.tipo == 1 ? "Receita" : "Despesa");
+            },
+
+            isCartaoCredito() {
+                return (this.lancamento.meioPagamentoTipo == 3);
+            },
+        },
+
+        mounted() {
+        },
+
+        methods: {
+
+            async carregar(id) {
+
+                try {
+
+                    //clean-up
+                    this.lancamento = {};
+                    this.meios = [];
+                    this.categorias = [];
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        //busca lançamento
+                        let ret = await fetchData.fetchGetJson(`/lancamento/obter/${id}`);
+                        this.lancamento = ret.value;
+
+                        //conversoes e tratamentos
+                        fieldConverter.moneyToString(this.lancamento, 'valor');
+                        fieldConverter.dateStringIsoToInputString(this.lancamento, 'data');
+                        this.lancamento.idCatSub = utils.catSubToString(this.lancamento.idCategoria, this.lancamento.idSubcategoria);
+
+                        //busca meios
+                        let rm = await fetchData.fetchGetJson(`/common/meiosPagamento`);
+                        this.meios = rm.value;
+
+                        //busca categorias
+                        let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
+                        this.categorias = rc.value;
+                    });
+
+                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+
+                }
+                catch (e) {
+                    mensagemSistema.showMensagemErro(e);
+                }
+            },
+
+            fechar() {
+                this.cleanValidationForm(this.$refs.form);
+                bootstrapHelper.closeModal(this.modal);
+            },
+
+            async salvar() {
+
+                let isValido = this.validarForm(this.$refs.form);
+
+                if (isValido) {
+                    let ret = null;
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        try {
+
+                            //conversões
+                            fieldConverter.stringToMoney(this.lancamento, 'valor');
+                            fieldConverter.stringToInt(this.lancamento, 'parcelaAtual');
+                            fieldConverter.stringToInt(this.lancamento, 'parcelaTotal');
+
+                            let catIds = utils.parseCatSub(this.lancamento.idCatSub);
+                            this.lancamento.idCategoria = catIds[0];
+                            this.lancamento.idSubcategoria = catIds[1];
+
+                            ret = await fetchData.fetchPostJson('/lancamento/alterar', this.lancamento);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('lancamento-salvo', ret.value.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
+            },
+
+            async excluir() {
+
+                const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                    titulo: 'Exclusão de Lançamento',
+                    mensagem: `Deseja realmente excluir este Lançamento?`,
+                    okLabel: 'Excluir',
+                });
+
+                if (confirma) {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson('/lancamento/excluir', this.lancamento.id);
+
+                        if (ret.ok) {
+                            mensagemSistema.showMensagemSucesso(ret.message);
+                            this.fechar();
+                            this.$emit('lancamento-salvo', this.lancamento.id);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+            },
+
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-lancamento-modal">
+
+    <div class="modal" ref="modalForm" tabindex="-1" v-ext-loading="loading">
+        <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Editar {{labelTipo}}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form ref="form">
+                        <div class="row g-2">
+
+                            <div class="col-12">
+                                <div class="d-flex align-items-baseline mb-2">
+                                    <i class="fa-solid fa-2x" v-bind:class="utils.cssIconeByTipoConta(lancamento.meioPagamentoTipo)" v-bind:style="{ 'color': '#' + lancamento.meioPagamentoCor}"></i>
+                                    <div class="fs-5 fw-bold ms-2">{{lancamento.meioPagamentoNome}}</div>
                                 </div>
-
-                                <div class="col-12">
-                                    <label class="form-label required-asterisk">Categoria / Subcategoria</label>
-                                    <select class="form-select" v-model="lancamento.idCatSub">
-                                        <option v-for="c in categorias" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
-                                            {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12">
-                                    <label class="form-label required-asterisk">Descrição</label>
-                                    <input class="form-control fw-bold" required maxlength="50" v-model="lancamento.descricao">
-                                </div>
-
-                                <div class="col-6">
-                                    <label class="form-label required-asterisk">Data</label>
-                                    <input class="form-control" type="date" v-model="lancamento.data">
-                                </div>
-
-                                <div class="col-6">
-                                    <label class="form-label required-asterisk">Valor</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">R$</span>
-                                        <input class="form-control fw-bold" type="text" inputmode="decimal" required maxlength="10" v-model="lancamento.valor" v-ext-mask="'dinheiro'">
-                                    </div>
-                                </div>
-
-                                <template v-if="isCartaoCredito">
-
-                                    <div class="col col6">
-                                        <label class="form-label required-asterisk">Fatura</label>
-                                        <div class="input-group">
-                                            <select class="form-select" v-model="lancamento.faturaMes">
-                                                <option value="1">JAN</option>
-                                                <option value="2">FEV</option>
-                                                <option value="3">MAR</option>
-                                                <option value="4">ABR</option>
-                                                <option value="5">MAI</option>
-                                                <option value="6">JUN</option>
-                                                <option value="7">JUL</option>
-                                                <option value="8">AGO</option>
-                                                <option value="9">SET</option>
-                                                <option value="10">OUT</option>
-                                                <option value="11">NOV</option>
-                                                <option value="12">DEZ</option>
-                                            </select>
-                                            <input class="form-control" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="lancamento.faturaAno">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-5 offset-1">
-                                        <label class="form-label">Parcela</label>
-                                        <div class="d-flex align-items-center">
-                                            <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaAtual">
-                                            <div class="mx-2">de</div>
-                                            <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaTotal">
-                                        </div>
-                                    </div>
-
-                                </template>
-
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
-                            <div class="d-flex justify-content-end w-100">
-                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+
+                            <div class="col-12">
+                                <label class="form-label required-asterisk">Categoria / Subcategoria</label>
+                                <select class="form-select" v-model="lancamento.idCatSub">
+                                    <option v-for="c in categorias" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                    </option>
+                                </select>
                             </div>
+
+                            <div class="col-12">
+                                <label class="form-label required-asterisk">Descrição</label>
+                                <input class="form-control fw-bold" required maxlength="50" v-model="lancamento.descricao">
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label required-asterisk">Data</label>
+                                <input class="form-control" type="date" v-model="lancamento.data">
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label required-asterisk">Valor</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">R$</span>
+                                    <input class="form-control fw-bold" type="text" inputmode="decimal" required maxlength="10" v-model="lancamento.valor" v-ext-mask="'dinheiro'">
+                                </div>
+                            </div>
+
+                            <template v-if="isCartaoCredito">
+
+                                <div class="col col6">
+                                    <label class="form-label required-asterisk">Fatura</label>
+                                    <div class="input-group">
+                                        <select class="form-select" v-model="lancamento.faturaMes">
+                                            <option value="1">JAN</option>
+                                            <option value="2">FEV</option>
+                                            <option value="3">MAR</option>
+                                            <option value="4">ABR</option>
+                                            <option value="5">MAI</option>
+                                            <option value="6">JUN</option>
+                                            <option value="7">JUL</option>
+                                            <option value="8">AGO</option>
+                                            <option value="9">SET</option>
+                                            <option value="10">OUT</option>
+                                            <option value="11">NOV</option>
+                                            <option value="12">DEZ</option>
+                                        </select>
+                                        <input class="form-control" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="lancamento.faturaAno">
+                                    </div>
+                                </div>
+
+                                <div class="col-5 offset-1">
+                                    <label class="form-label">Parcela</label>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaAtual">
+                                        <div class="mx-2">de</div>
+                                        <input class="form-control" type="number" min="1" max="36" v-model="lancamento.parcelaTotal">
+                                    </div>
+                                </div>
+
+                            </template>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <button type="button" class="btn btn-danger" v-on:click="excluir()">Excluir</button>
+                        <div class="d-flex justify-content-end w-100">
+                            <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                            <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const LancamentoModal = {
-
-            name: 'LancamentoModal',
-            template: '#template-lancamento-modal',
-            mixins: [BaseMixin],
-            emits: ['lancamento-salvo'],
-            components: { MeioPagamentoSeletor, ConfirmationDialog },
-
-            data: () => ({
-                lancamento: {},
-
-                meios: [],
-                categorias: [],
-
-                meioSelecionado: {},
-
-                modal: null,
-            }),
-
-            computed: {
-
-                labelTipo() {
-                    return (this.lancamento.tipo == 1 ? "Receita" : "Despesa");
-                },
-
-                isCartaoCredito() {
-                    return (this.meioSelecionado.tipo == 3);
-                },
-            },
-
-            mounted() {
-            },
-
-            methods: {
-
-                async carregar(id) {
-
-                    try {
-
-                        //clean-up
-                        this.lancamento = {};
-                        this.meios = [];
-                        this.categorias = [];
-
-                        await this.showLoadingSplashAndExecute(async () => {
-
-                            //busca lançamento
-                            let ret = await fetchData.fetchGetJson(`/lancamento/obter/${id}`);
-                            this.lancamento = ret.value;
-
-                            //conversoes e tratamentos
-                            fieldConverter.moneyToString(this.lancamento, 'valor');
-                            fieldConverter.dateStringIsoToInputString(this.lancamento, 'data');
-                            this.lancamento.idCatSub = utils.catSubToString(this.lancamento.idCategoria, this.lancamento.idSubcategoria);
-
-                            //busca meios
-                            let rm = await fetchData.fetchGetJson(`/common/meiosPagamento`);
-                            this.meios = rm.value;
-                            this.meioSelecionado = this.$refs.meioSeletor.carregar(this.meios, this.lancamento.idMeioPagamento);
-
-                            //busca categorias
-                            let rc = await fetchData.fetchGetJson(`/common/categorias/${this.lancamento.tipo}`);
-                            this.categorias = rc.value;
-                        });
-
-                        this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
-
-                    }
-                    catch (e) {
-                        mensagemSistema.showMensagemErro(e);
-                    }
-                },
-
-                fechar() {
-                    this.cleanValidationForm(this.$refs.form);
-                    bootstrapHelper.closeModal(this.modal);
-                },
-
-                selecionarMeioPagamento(meioPagamento) {
-                    this.meioSelecionado = meioPagamento;
-                },
-
-                async salvar() {
-
-                    let isValido = this.validarForm(this.$refs.form);
-
-                    if (isValido) {
-                        let ret = null;
-
-                        await this.showLoadingSplashAndExecute(async () => {
-                            try {
-
-                                //conversões
-                                fieldConverter.stringToMoney(this.lancamento, 'valor');
-                                fieldConverter.stringToInt(this.lancamento, 'parcelaAtual');
-                                fieldConverter.stringToInt(this.lancamento, 'parcelaTotal');
-
-                                let catIds = utils.parseCatSub(this.lancamento.idCatSub);
-                                this.lancamento.idCategoria = catIds[0];
-                                this.lancamento.idSubcategoria = catIds[1];
-
-                                ret = await fetchData.fetchPostJson('/lancamento/alterar', this.lancamento);
-
-                                if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(ret.message);
-                                    this.fechar();
-                                    this.$emit('lancamento-salvo', ret.value.id);
-                                }
-                                else {
-                                    mensagemSistema.showMensagemErro(ret.message);
-                                }
-                            }
-                            catch (e) {
-                                mensagemSistema.showMensagemErro(e);
-                            }
-                        });
-                    }
-                },
-
-                async excluir() {
-
-                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
-                        titulo: 'Exclusão de Lançamento',
-                        mensagem: `Deseja realmente excluir este Lançamento?`,
-                        okLabel: 'Excluir',
-                    });
-
-                    if (confirma) {
-
-                        await this.showLoadingSplashAndExecute(async () => {
-
-                            let ret = await fetchData.fetchPostJson('/lancamento/excluir', this.lancamento.id);
-
-                            if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso(ret.message);
-                                this.fechar();
-                                this.$emit('lancamento-salvo', this.lancamento.id);
-                            }
-                            else {
-                                mensagemSistema.showMensagemErro(ret.message);
-                            }
-                        });
-                    }
-                },
-
-            }
-        }
-
-    </script>
-}
-
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+</script>

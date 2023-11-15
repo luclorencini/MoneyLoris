@@ -1,69 +1,56 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-moeda">
+﻿<script>
 
-        <span v-if="mostrarValor" v-bind:class="cssClass">{{formatado}}</span>
-        <span v-else>-</span>
+    const Moeda = {
 
-    </script>
-}
+        name: 'Moeda',
+        template: '#template-moeda',
+        mixins: [BaseMixin],
 
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
+        props: {
+            valor: Number,
+            retirarCor: Boolean,
+            retirarSinal: Boolean,
+            retirarCifrao: Boolean,
+        },
 
-        const Moeda = {
+        computed: {
 
-            name: 'Moeda',
-            template: '#template-moeda',
-            mixins: [BaseMixin],
-
-            props: {
-                valor: Number,
-                retirarCor: Boolean,
-                retirarSinal: Boolean,
-                retirarCifrao: Boolean,
+            mostrarValor() {
+                return (this.valor != null && this.valor != undefined);
             },
 
-            computed: {
+            cssClass() {
 
-                mostrarValor() {
-                    return (this.valor != null && this.valor != undefined);
-                },
+                if (this.retirarCor) return '';
 
-                cssClass() {
+                if (this.valor == 0) return 'sys-fg-dark-1';
 
-                    if (this.retirarCor) return '';
+                return (this.valor > 0 ? 'din-receita' : 'din-despesa');
+            },
 
-                    if (this.valor == 0) return 'sys-fg-dark-1';
+            formatado() {
 
-                    return (this.valor > 0 ? 'din-receita' : 'din-despesa');
-                },
+                let params = {};
 
-                formatado() {
+                params.minimumFractionDigits = 2;
 
-                    let params = {};
+                params.signDisplay = (this.retirarSinal ? 'never' : 'exceptZero');
 
-                    params.minimumFractionDigits = 2;
-
-                    params.signDisplay = (this.retirarSinal ? 'never' : 'exceptZero');
-
-                    if (!this.retirarCifrao){
-                        params.style = 'currency';
-                        params.currency = 'BRL';
-                    }
-
-                    let ret = Intl.NumberFormat('pt-BR', params).format(this.valor);
-
-                    return ret;
+                if (!this.retirarCifrao) {
+                    params.style = 'currency';
+                    params.currency = 'BRL';
                 }
+
+                let ret = Intl.NumberFormat('pt-BR', params).format(this.valor);
+
+                return ret;
             }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+<script type="text/x-template" id="template-moeda">
+    <span v-if="mostrarValor" v-bind:class="cssClass">{{formatado}}</span>
+    <span v-else>-</span>
+</script>

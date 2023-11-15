@@ -5,443 +5,434 @@
 <partial name="/Views/Lancamento/_LancamentoTable.cshtml"></partial>
 <partial name="/Views/Lancamento/_LancamentoModal.cshtml"></partial>
 
-@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-fatura-listagem">
+<script>
 
-        <section class="container-xxl container-titulo">
-            <div class="area-titulo">
-                @await Html.PartialAsync("_BotaoVoltar")
-                <div class="titulo">Faturas</div>
-            </div>
-        </section>
+    const FaturaListagem = {
 
-        <!-- filtro mobile -->
-        <div class="barra-filtro-mobile">
-            <div></div>
-            <span class="text-capitalize fs-5">{{cartaoSelecionado.nome}}</span>
-            <i aria-hidden="true" class="fa-solid fa-search" v-on:click="selecionarCartao()"></i>
-        </div>
-        <div class="barra-filtro-mobile">
-            <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
-            <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
-            <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
-        </div>
+        name: 'FaturaListagem',
+        template: '#template-fatura-listagem',
+        mixins: [BaseMixin],
+        components: { Moeda, Pagination, LancamentoTable, CartaoSelecaoModal, LancamentoModal },
 
-        <!-- filtro desktop -->
-        <section class="container-xxl d-none d-lg-block" v-ext-loading="loadingCartao">
+        data: () => ({
 
-            <div class="row g-0 g-lg-2">
+            cartoes: [],
+            cartaoSelecionado: {},
 
-                <div class="col-12 col-md-4">
+            filtro: {},
+            info: {},
+            lista: [],
+            totalResults: 0,
 
-                    <div class="card card-selecao-cartao" v-on:click="selecionarCartao()">
-                        <div class="card-body" v-if="temCartaoSelecionado">
-                            <div class="d-flex justify-content-between">
-                                <div>Cartão de Crédito</div>
-                                <i aria-hidden="true" class="fa-solid fa-search"></i>
-                            </div>
-                            <div class="d-flex align-items-baseline mt-1">
-                                <div class="icone">
-                                    <i class="fa-solid fa-credit-card" v-bind:style="{ 'color': '#' + cartaoSelecionado.cor}"></i>
-                                </div>
-                                <div class="fs-3 fw-bold ms-2">{{cartaoSelecionado.nome}}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            loadingCartao: true,
+        }),
 
-            </div>
+        computed: {
 
-            <div class="row g-1 my-2">
-                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
-                    <label class="me-3 fw-bold">Filtros rápidos:</label>
+            temCartaoSelecionado() {
+                return (this.cartaoSelecionado && this.cartaoSelecionado.id);
+            },
 
-                    <div class="filtro-rapido-opcao" v-on:click="retrocederMes()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
-                    </div>
+            labelMesFaturaAtual() {
+                let d = new Date();
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+            },
 
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAnterior()">{{labelMesFaturaAnterior}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAtual()">{{labelMesFaturaAtual}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaProxima()">{{labelMesFaturaProxima}}</div>
+            labelMesFaturaAnterior() {
+                let d = new Date();
+                d.setMonth(d.getMonth() - 1);
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+            },
 
-                    <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
-                    </div>
+            labelMesFaturaProxima() {
+                let d = new Date();
+                d.setMonth(d.getMonth() + 1);
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+            }
+        },
 
-                </div>
-            </div>
+        async mounted() {
+            this.obterMesAnoAtual();
+            await this.obterCartaoInicial();
+        },
 
-        </section>
+        methods: {
 
+            // métodos de seleção de cartão
 
-        <section class="container-xxl" v-ext-loading="loading">
+            async obterCartaoInicial() {
 
-            <template v-if="temCartaoSelecionado">
-
-                <div class="card">
-                    <div class="card-body">
-                        <div class="fatura-info-container">
-
-                            <div class="mes">
-                                <label class="form-label">Fatura</label>
-                                <div class="lh-1 fs-5 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
-                            </div>
-                            <div class="valor-fatura">
-                                <label class="form-label">Valor da Fatura</label>
-                                <div class="fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
-                            </div>
-                            <div class="valor-pago">
-                                <label class="form-label">Valor Pago</label>
-                                <div class="fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
-                            </div>
-                            <div class="vigencia">
-                                <label class="form-label">Vigência</label>
-                                <div class="d-flex flex-wrap">
-                                    <div class="text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div>
-                                    <div class="mx-1">-</div>
-                                    <div class="text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
-                                </div>
-                            </div>
-                            <div class="vencimento">
-                                <label class="form-label">Vence em</label>
-                                <div class="fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="list-group mt-2 mb-5">
-
-                    <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
-
-                    <div class="list-group-item">
-                        <Pagination v-if="totalResults > 0"
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
-                        </Pagination>
-                    </div>
-
-                </div>
-
-            </template>
-
-        </section>
-
-        <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
-        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="atualizarInfoEListagem()"></LancamentoModal>
-
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const FaturaListagem = {
-
-            name: 'FaturaListagem',
-            template: '#template-fatura-listagem',
-            mixins: [BaseMixin],
-            components: { Moeda, Pagination, LancamentoTable, CartaoSelecaoModal, LancamentoModal },
-
-            data: () => ({
-
-                cartoes: [],
-                cartaoSelecionado: {},
-
-                filtro: {},
-                info: {},
-                lista: [],
-                totalResults: 0,
-
-                loadingCartao: true,
-            }),
-
-            computed: {
-
-                temCartaoSelecionado() {
-                    return (this.cartaoSelecionado && this.cartaoSelecionado.id);
-                },
-
-                labelMesFaturaAtual() {
-                    let d = new Date();
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesFaturaAnterior() {
-                    let d = new Date();
-                    d.setMonth(d.getMonth() - 1);
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesFaturaProxima() {
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 1);
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+                let ret = await fetchData.fetchGetJson(`/common/cartoes`);
+                if (ret.ok) {
+                    this.cartoes = ret.value;
+                    await this.carregarDadosCartaoSelecionado(ret.value[0]);
                 }
             },
 
-            async mounted() {
+            async selecionarCartao() {
+                let c = await this.$refs.cartaoSelecao.aguardarSelecao(this.cartoes);
+                if (c) {
+                    await this.carregarDadosCartaoSelecionado(c);
+                }
+            },
+
+            async carregarDadosCartaoSelecionado(c) {
+                await this.setLoadingCustomAndExecute('loadingCartao', async () => {
+                    this.cartaoSelecionado = c;
+                    this.filtro.idCartao = c.id;
+                });
+                await this.pesquisar();
+            },
+
+            // métodos de filtro
+
+            async avancarMes() {
+                if (this.filtro.mes == 12) {
+                    this.filtro.mes = 1;
+                    this.filtro.ano = this.filtro.ano + 1;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes + 1;
+                }
+
+                await this.pesquisar();
+            },
+
+            async retrocederMes() {
+                if (this.filtro.mes == 1) {
+                    this.filtro.mes = 12;
+                    this.filtro.ano = this.filtro.ano - 1;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes - 1;
+                }
+
+                await this.pesquisar();
+            },
+
+            async filtrarMesFaturaAtual() {
                 this.obterMesAnoAtual();
-                await this.obterCartaoInicial();
+                await this.pesquisar();
             },
 
-            methods: {
+            async filtrarMesFaturaAnterior() {
+                this.obterMesAnoAtual();
+                await this.retrocederMes();
+            },
 
-                // métodos de seleção de cartão
+            async filtrarMesFaturaProxima() {
+                this.obterMesAnoAtual();
+                await this.avancarMes();
+            },
 
-                async obterCartaoInicial() {
+            obterMesAnoAtual() {
+                this.filtro.ano = new Date().getFullYear(); //ano atual
+                this.filtro.mes = new Date().getMonth() + 1;  //mes atual
+            },
 
-                    let ret = await fetchData.fetchGetJson(`/common/cartoes`);
-                    if (ret.ok) {
-                        this.cartoes = ret.value;
-                        await this.carregarDadosCartaoSelecionado(ret.value[0]);
-                    }
-                },
+            //métodos de pesquisa
 
-                async selecionarCartao() {
-                    let c = await this.$refs.cartaoSelecao.aguardarSelecao(this.cartoes);
-                    if (c) {
-                        await this.carregarDadosCartaoSelecionado(c);
-                    }
-                },
+            async pesquisar() {
 
-                async carregarDadosCartaoSelecionado(c) {
-                    await this.setLoadingCustomAndExecute('loadingCartao', async () => {
-                        this.cartaoSelecionado = c;
-                        this.filtro.idCartao = c.id;
-                    });
-                    await this.pesquisar();
-                },
+                await this.setLoadingAndExecute(async () => {
 
-                // métodos de filtro
+                    //reseta paginacao
+                    this.filtro.currentPage = 1;
 
-                async avancarMes() {
-                    if (this.filtro.mes == 12) {
-                        this.filtro.mes = 1;
-                        this.filtro.ano = this.filtro.ano + 1;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes + 1;
-                    }
+                    await this.obterInfoFatura();
+                    await this.obterListagem();
+                });
+            },
 
-                    await this.pesquisar();
-                },
+            async paginar(paginacao) {
 
-                async retrocederMes() {
-                    if (this.filtro.mes == 1) {
-                        this.filtro.mes = 12;
-                        this.filtro.ano = this.filtro.ano - 1;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes - 1;
-                    }
+                await this.setLoadingAndExecute(async () => {
 
-                    await this.pesquisar();
-                },
+                    this.filtro.currentPage = paginacao.currentPage;
+                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
 
-                async filtrarMesFaturaAtual() {
-                    this.obterMesAnoAtual();
-                    await this.pesquisar();
-                },
+                    await this.obterListagem();
+                });
+            },
 
-                async filtrarMesFaturaAnterior() {
-                    this.obterMesAnoAtual();
-                    await this.retrocederMes();
-                },
+            async atualizarInfoEListagem() {
 
-                async filtrarMesFaturaProxima() {
-                    this.obterMesAnoAtual();
-                    await this.avancarMes();
-                },
+                await this.setLoadingAndExecute(async () => {
 
-                obterMesAnoAtual() {
-                    this.filtro.ano = new Date().getFullYear(); //ano atual
-                    this.filtro.mes = new Date().getMonth() + 1;  //mes atual
-                },
+                    await this.obterInfoFatura();
+                    await this.obterListagem();
+                });
+            },
 
-                //métodos de pesquisa
+            async obterInfoFatura() {
 
-                async pesquisar() {
+                let ret = await fetchData.fetchPostJson(`/fatura/info`, this.filtro);
 
-                    await this.setLoadingAndExecute(async () => {
-
-                        //reseta paginacao
-                        this.filtro.currentPage = 1;
-
-                        await this.obterInfoFatura();
-                        await this.obterListagem();
-                    });
-                },
-
-                async paginar(paginacao) {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        this.filtro.currentPage = paginacao.currentPage;
-                        this.filtro.resultsPerPage = paginacao.resultsPerPage;
-
-                        await this.obterListagem();
-                    });
-                },
-
-                async atualizarInfoEListagem() {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        await this.obterInfoFatura();
-                        await this.obterListagem();
-                    });
-                },
-
-                async obterInfoFatura() {
-
-                    let ret = await fetchData.fetchPostJson(`/fatura/info`, this.filtro);
-
-                    if (ret.ok) {
-                        this.info = ret.value;
-                        this.filtro.idFatura = this.info.id;
-                    }
-                    else {
-                        mensagemSistema.showMensagemErro(ret.message);
-                    }
-                },
-
-                async obterListagem() {
-
-                    let ret = await fetchData.fetchPostJson(`/fatura/pesquisar`, this.filtro);
-
-                    if (ret.ok) {
-                        this.totalResults = ret.value.total;
-                        this.lista = ret.value.dataPage;
-                    }
-                    else {
-                        mensagemSistema.showMensagemErro(ret.message);
-                    }
-                },
-
-                formatarDataLabel(d) {
-                    let label = '';
-
-                    if (d) {
-                        const dt = utils.inputToDate(d);
-                        label = utils.dataExtenso(dt);
-                    }
-
-                    return label;
-                },
-
-                editarLancamento(l) {
-                    this.$refs.lancModal.carregar(l.id);
+                if (ret.ok) {
+                    this.info = ret.value;
+                    this.filtro.idFatura = this.info.id;
                 }
+                else {
+                    mensagemSistema.showMensagemErro(ret.message);
+                }
+            },
+
+            async obterListagem() {
+
+                let ret = await fetchData.fetchPostJson(`/fatura/pesquisar`, this.filtro);
+
+                if (ret.ok) {
+                    this.totalResults = ret.value.total;
+                    this.lista = ret.value.dataPage;
+                }
+                else {
+                    mensagemSistema.showMensagemErro(ret.message);
+                }
+            },
+
+            formatarDataLabel(d) {
+                let label = '';
+
+                if (d) {
+                    const dt = utils.inputToDate(d);
+                    label = utils.dataExtenso(dt);
+                }
+
+                return label;
+            },
+
+            editarLancamento(l) {
+                this.$refs.lancModal.carregar(l.id);
             }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    <style type="text/css">
+<script type="text/x-template" id="template-fatura-listagem">
+
+    <section class="container-xxl container-titulo">
+        <div class="area-titulo">
+            @await Html.PartialAsync("_BotaoVoltar")
+            <div class="titulo">Faturas</div>
+        </div>
+    </section>
+
+    <!-- filtro mobile -->
+    <div class="barra-filtro-mobile">
+        <div></div>
+        <span class="text-capitalize fs-5">{{cartaoSelecionado.nome}}</span>
+        <i aria-hidden="true" class="fa-solid fa-search" v-on:click="selecionarCartao()"></i>
+    </div>
+    <div class="barra-filtro-mobile">
+        <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
+        <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
+        <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
+    </div>
+
+    <!-- filtro desktop -->
+    <section class="container-xxl d-none d-lg-block" v-ext-loading="loadingCartao">
+
+        <div class="row g-0 g-lg-2">
+
+            <div class="col-12 col-md-4">
+
+                <div class="card card-selecao-cartao" v-on:click="selecionarCartao()">
+                    <div class="card-body" v-if="temCartaoSelecionado">
+                        <div class="d-flex justify-content-between">
+                            <div>Cartão de Crédito</div>
+                            <i aria-hidden="true" class="fa-solid fa-search"></i>
+                        </div>
+                        <div class="d-flex align-items-baseline mt-1">
+                            <div class="icone">
+                                <i class="fa-solid fa-credit-card" v-bind:style="{ 'color': '#' + cartaoSelecionado.cor}"></i>
+                            </div>
+                            <div class="fs-3 fw-bold ms-2">{{cartaoSelecionado.nome}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-1 my-2">
+            <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
+                <label class="me-3 fw-bold">Filtros rápidos:</label>
+
+                <div class="filtro-rapido-opcao" v-on:click="retrocederMes()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
+                </div>
+
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAnterior()">{{labelMesFaturaAnterior}}</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaAtual()">{{labelMesFaturaAtual}}</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesFaturaProxima()">{{labelMesFaturaProxima}}</div>
+
+                <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <section class="container-xxl" v-ext-loading="loading">
+
+        <template v-if="temCartaoSelecionado">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="fatura-info-container">
+
+                        <div class="mes">
+                            <label class="form-label">Fatura</label>
+                            <div class="lh-1 fs-5 fw-bold text-capitalize">{{utils.mesPorExtenso(info.mes)}} {{info.ano}}</div>
+                        </div>
+                        <div class="valor-fatura">
+                            <label class="form-label">Valor da Fatura</label>
+                            <div class="fw-bold"><Moeda :valor="info.valorFatura"></Moeda></div>
+                        </div>
+                        <div class="valor-pago">
+                            <label class="form-label">Valor Pago</label>
+                            <div class="fw-bold"><Moeda :valor="info.valorPago"></Moeda></div>
+                        </div>
+                        <div class="vigencia">
+                            <label class="form-label">Vigência</label>
+                            <div class="d-flex flex-wrap">
+                                <div class="text-capitalize">{{formatarDataLabel(info.dataInicio)}}</div>
+                                <div class="mx-1">-</div>
+                                <div class="text-capitalize">{{formatarDataLabel(info.dataFim)}}</div>
+                            </div>
+                        </div>
+                        <div class="vencimento">
+                            <label class="form-label">Vence em</label>
+                            <div class="fw-bold text-capitalize">{{formatarDataLabel(info.dataVencimento)}}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-group mt-2 mb-5">
+
+                <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+
+                <div class="list-group-item">
+                    <Pagination v-if="totalResults > 0"
+                v-bind:currentPage="filtro.currentPage"
+                v-bind:resultsPerPage="filtro.resultsPerPage"
+                v-bind:totalResults="totalResults"
+                v-on:pagination-change="paginar($event)">
+                    </Pagination>
+                </div>
+
+            </div>
+
+        </template>
+
+    </section>
+
+    <CartaoSelecaoModal ref="cartaoSelecao"></CartaoSelecaoModal>
+
+    <LancamentoModal ref="lancModal" v-on:lancamento-salvo="atualizarInfoEListagem()"></LancamentoModal>
+
+</script>
+
+<style>
+
+    .barra-filtro-mobile {
+        display: none;
+    }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .barra-filtro-mobile {
-            display: none;
+            padding: 0.75rem 2rem;
+            background-color: var(--sys-color-menu-2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            height: 2.6rem;
         }
 
-        @@media (max-width: 991px) { /*lg*/
-
-            .barra-filtro-mobile {
-                padding: 0.75rem 2rem;
-                background-color: var(--sys-color-menu-2);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-size: 1rem;
-                font-weight: 500;
-                color: #fff;
-                height: 2.6rem;
+            .barra-filtro-mobile i {
+                font-size: 1.5rem;
             }
+    }
 
-                .barra-filtro-mobile i {
-                    font-size: 1.5rem;
-                }
+    .card-selecao-cartao {
+        min-height: 6.5rem;
+        cursor: pointer;
+    }
+
+        .card-selecao-cartao .icone i {
+            font-size: 2.5rem;
         }
 
-        .card-selecao-cartao {
-            min-height: 6.5rem;
-            cursor: pointer;
+    .fatura-info-container {
+        display: grid;
+        grid-template-columns: auto 20rem 9.5rem 9.5rem 9.5rem;
+        grid-template-areas:
+            "ga-mes ga-vigencia ga-vencimento ga-valor-fatura ga-valor-pago";
+        align-items: end;
+    }
+
+        .fatura-info-container .mes {
+            grid-area: ga-mes;
         }
 
-            .card-selecao-cartao .icone i {
-                font-size: 2.5rem;
-            }
+        .fatura-info-container .valor-fatura {
+            grid-area: ga-valor-fatura;
+            font-size: 1.5rem;
+            line-height: 1;
+            text-align: end;
+        }
+
+        .fatura-info-container .valor-pago {
+            grid-area: ga-valor-pago;
+            font-size: 1.25rem;
+            line-height: 1;
+            text-align: end;
+        }
+
+        .fatura-info-container .vigencia {
+            grid-area: ga-vigencia;
+            line-height: 1;
+        }
+
+        .fatura-info-container .vencimento {
+            grid-area: ga-vencimento;
+            line-height: 1;
+        }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .fatura-info-container {
-            display: grid;
-            grid-template-columns: auto 20rem 9.5rem 9.5rem 9.5rem;
+            grid-template-columns: auto 1rem 8rem;
             grid-template-areas:
-                "ga-mes ga-vigencia ga-vencimento ga-valor-fatura ga-valor-pago";
-            align-items: end;
+                "ga-valor-fatura ga-valor-fatura ga-valor-pago"
+                "ga-vigencia ga-vencimento ga-vencimento";
+            row-gap: 0.75rem;
         }
 
             .fatura-info-container .mes {
-                grid-area: ga-mes;
+                display: none;
             }
 
             .fatura-info-container .valor-fatura {
-                grid-area: ga-valor-fatura;
-                font-size: 1.5rem;
-                line-height: 1;
-                text-align: end;
-            }
-
-            .fatura-info-container .valor-pago {
-                grid-area: ga-valor-pago;
-                font-size: 1.25rem;
-                line-height: 1;
-                text-align: end;
+                text-align: start;
             }
 
             .fatura-info-container .vigencia {
-                grid-area: ga-vigencia;
-                line-height: 1;
+                font-size: 0.9rem;
             }
 
             .fatura-info-container .vencimento {
-                grid-area: ga-vencimento;
-                line-height: 1;
+                text-align: end;
             }
+    }
 
-        @@media (max-width: 991px) { /*lg*/
-
-            .fatura-info-container {
-                grid-template-columns: auto 1rem 8rem;
-                grid-template-areas:
-                    "ga-valor-fatura ga-valor-fatura ga-valor-pago"
-                    "ga-vigencia ga-vencimento ga-vencimento";
-                row-gap: 0.75rem;
-            }
-
-                .fatura-info-container .mes {
-                    display: none;
-                }
-
-                .fatura-info-container .valor-fatura {
-                    text-align: start;
-                }
-
-                .fatura-info-container .vigencia {
-                    font-size: 0.9rem;
-                }
-
-                .fatura-info-container .vencimento {
-                    text-align: end;
-                }
-        }
-
-    </style>
-}
+</style>

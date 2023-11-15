@@ -1,175 +1,164 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-subcategoria-modal">
+﻿<script>
 
-        <div class="modal" ref="modalForm" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{titulo}}</h5>
-                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form ref="form">
-                            <div class="row g-1">
+    const SubcategoriaModal = {
 
-                                <div class="col-12">
-                                    <label class="form-label">Categoria</label>
-                                    <div class="lh-1 fs-6 fw-bold mb-3">{{categoria.nome}}</div>
-                                </div>
+        name: 'SubcategoriaModal',
+        template: '#template-subcategoria-modal',
+        mixins: [BaseMixin],
+        emits: ['subcategoria-salva'],
+        components: { ConfirmationDialog },
 
-                                <div class="col-9">
-                                    <label class="form-label required-asterisk">Nome</label>
-                                    <input class="form-control" required maxlength="20" v-model="subcategoria.nome">
-                                </div>
+        data: () => ({
+            categoria: {},
+            subcategoria: {},
+            modal: null,
+        }),
 
-                                <div class="col-3">
-                                    <label class="form-label">Ordem</label>
-                                    <input class="form-control" type="number" v-model="subcategoria.ordem">
-                                </div>
+        computed: {
 
+            titulo() {
+                return (this.isNovo ? "Nova Subcategoria" : "Alterar Subcategoria");
+            },
+
+            isNovo() {
+                return (this.subcategoria.id == undefined);
+            },
+        },
+
+        mounted() {
+        },
+
+        methods: {
+
+            async carregar(cat, id) {
+
+                this.categoria = cat;
+
+                await this.showLoadingSplashAndExecute(async () => {
+                    if (id) {
+                        let ret = await fetchData.fetchGetJson(`/categoria/sub/obter/${id}`);
+                        this.subcategoria = ret.value;
+                    }
+                    else {
+                        this.subcategoria = { idCategoria: this.categoria.id };
+                    }
+                });
+
+                this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+            },
+
+            fechar() {
+                this.cleanValidationForm(this.$refs.form);
+                bootstrapHelper.closeModal(this.modal);
+            },
+
+            async salvar() {
+
+                let isValido = this.validarForm(this.$refs.form);
+
+                if (isValido) {
+                    let ret = null;
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        try {
+
+                            fieldConverter.stringToInt(this.subcategoria, 'ordem');
+
+                            let url = (this.subcategoria.id ? '/categoria/sub/alterar' : '/categoria/sub/inserir');
+
+                            ret = await fetchData.fetchPostJson(url, this.subcategoria);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('subcategoria-salva', ret.value.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
+            },
+
+            async excluir() {
+
+                const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                    titulo: 'Exclusão de Subcategoria',
+                    mensagem: `Deseja excluir esta Subcategoria?`,
+                    okLabel: 'Excluir',
+                });
+
+                if (confirma) {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson('/categoria/sub/excluir', this.subcategoria.id);
+
+                        if (ret.ok) {
+                            mensagemSistema.showMensagemSucesso(ret.message);
+                            this.fechar();
+                            this.$emit('subcategoria-salva', this.subcategoria.id);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+            },
+
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-subcategoria-modal">
+
+    <div class="modal" ref="modalForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{titulo}}</h5>
+                    <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
+                </div>
+                <div class="modal-body">
+                    <form ref="form">
+                        <div class="row g-1">
+
+                            <div class="col-12">
+                                <label class="form-label">Categoria</label>
+                                <div class="lh-1 fs-6 fw-bold mb-3">{{categoria.nome}}</div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
-                            <div class="d-flex justify-content-end w-100">
-                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+
+                            <div class="col-9">
+                                <label class="form-label required-asterisk">Nome</label>
+                                <input class="form-control" required maxlength="20" v-model="subcategoria.nome">
                             </div>
+
+                            <div class="col-3">
+                                <label class="form-label">Ordem</label>
+                                <input class="form-control" type="number" v-model="subcategoria.ordem">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                        <div class="d-flex justify-content-end w-100">
+                            <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                            <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const SubcategoriaModal = {
-
-            name: 'SubcategoriaModal',
-            template: '#template-subcategoria-modal',
-            mixins: [BaseMixin],
-            emits: ['subcategoria-salva'],
-            components: { ConfirmationDialog },
-
-            data: () => ({
-                categoria: {},
-                subcategoria: {},
-                modal: null,
-            }),
-
-            computed: {
-
-                titulo() {
-                    return (this.isNovo ? "Nova Subcategoria" : "Alterar Subcategoria");
-                },
-
-                isNovo() {
-                    return (this.subcategoria.id == undefined);
-                },
-            },
-
-            mounted() {
-            },
-
-            methods: {
-
-                async carregar(cat, id) {
-
-                    this.categoria = cat;
-
-                    await this.showLoadingSplashAndExecute(async () => {
-                        if (id) {
-                            let ret = await fetchData.fetchGetJson(`/categoria/sub/obter/${id}`);
-                            this.subcategoria = ret.value;
-                        }
-                        else {
-                            this.subcategoria = { idCategoria: this.categoria.id };
-                        }
-                    });
-
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
-                },
-
-                fechar() {
-                    this.cleanValidationForm(this.$refs.form);
-                    bootstrapHelper.closeModal(this.modal);
-                },
-
-                async salvar() {
-
-                    let isValido = this.validarForm(this.$refs.form);
-
-                    if (isValido) {
-                        let ret = null;
-
-                        await this.showLoadingSplashAndExecute(async () => {
-                            try {
-
-                                fieldConverter.stringToInt(this.subcategoria, 'ordem');
-
-                                let url = (this.subcategoria.id ? '/categoria/sub/alterar' : '/categoria/sub/inserir');
-
-                                ret = await fetchData.fetchPostJson(url, this.subcategoria);
-
-                                if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(ret.message);
-                                    this.fechar();
-                                    this.$emit('subcategoria-salva', ret.value.id);
-                                }
-                                else {
-                                    mensagemSistema.showMensagemErro(ret.message);
-                                }
-                            }
-                            catch (e) {
-                                mensagemSistema.showMensagemErro(e);
-                            }
-                        });
-                    }
-                },
-
-                async excluir() {
-
-                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
-                        titulo: 'Exclusão de Subcategoria',
-                        mensagem: `Deseja excluir esta Subcategoria?`,
-                        okLabel: 'Excluir',
-                    });
-
-                    if (confirma) {
-
-                        await this.showLoadingSplashAndExecute(async () => {
-
-                            let ret = await fetchData.fetchPostJson('/categoria/sub/excluir', this.subcategoria.id);
-
-                            if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso(ret.message);
-                                this.fechar();
-                                this.$emit('subcategoria-salva', this.subcategoria.id);
-                            }
-                            else {
-                                mensagemSistema.showMensagemErro(ret.message);
-                            }
-                        });
-                    }
-                },
-
-            }
-        }
-
-    </script>
-}
-
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+</script>

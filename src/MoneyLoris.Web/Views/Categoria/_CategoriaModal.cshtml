@@ -1,169 +1,158 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-categoria-modal">
+﻿<script>
 
-        <div class="modal" ref="modalForm" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
-                        <h5 class="modal-title">{{titulo}}</h5>
-                        <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form ref="form">
-                            <div class="row g-1">
+    const CategoriaModal = {
 
-                                <div class="col-9">
-                                    <label class="form-label required-asterisk">Nome</label>
-                                    <input class="form-control" required maxlength="20" v-model="categoria.nome">
-                                </div>
+        name: 'CategoriaModal',
+        template: '#template-categoria-modal',
+        mixins: [BaseMixin],
+        emits: ['categoria-salva'],
+        components: { ConfirmationDialog },
 
-                                <div class="col-3">
-                                    <label class="form-label">Ordem</label>
-                                    <input class="form-control" type="number" v-model="categoria.ordem">
-                                </div>
+        data: () => ({
+            categoria: {},
+            modal: null,
+        }),
 
+        computed: {
+
+            titulo() {
+                return (this.isNovo ? "Nova Categoria" : "Alterar Categoria");
+            },
+
+            isNovo() {
+                return (this.categoria.id == undefined);
+            },
+        },
+
+        mounted() {
+        },
+
+        methods: {
+
+            initCategoria(t) {
+                this.categoria = { tipo: t };
+                this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+            },
+
+            async carregar(id) {
+
+                await this.showLoadingSplashAndExecute(async () => {
+                    let ret = await fetchData.fetchGetJson(`/categoria/obter/${id}`);
+                    this.categoria = ret.value;
+                });
+
+                this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
+            },
+
+            fechar() {
+                this.cleanValidationForm(this.$refs.form);
+                bootstrapHelper.closeModal(this.modal);
+            },
+
+            async salvar() {
+
+                let isValido = this.validarForm(this.$refs.form);
+
+                if (isValido) {
+                    let ret = null;
+
+                    await this.showLoadingSplashAndExecute(async () => {
+                        try {
+
+                            //conversões
+                            fieldConverter.stringToInt(this.categoria, 'ordem');
+
+                            let url = (this.categoria.id ? '/categoria/alterar' : '/categoria/inserir');
+
+                            ret = await fetchData.fetchPostJson(url, this.categoria);
+
+                            if (ret.ok) {
+                                mensagemSistema.showMensagemSucesso(ret.message);
+                                this.fechar();
+                                this.$emit('categoria-salva', ret.value.id);
+                            }
+                            else {
+                                mensagemSistema.showMensagemErro(ret.message);
+                            }
+                        }
+                        catch (e) {
+                            mensagemSistema.showMensagemErro(e);
+                        }
+                    });
+                }
+            },
+
+            async excluir() {
+
+                const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
+                    titulo: 'Exclusão de Categoria',
+                    mensagem: `Deseja excluir esta Categoria?`,
+                    okLabel: 'Excluir',
+                });
+
+                if (confirma) {
+
+                    await this.showLoadingSplashAndExecute(async () => {
+
+                        let ret = await fetchData.fetchPostJson('/categoria/excluir', this.categoria.id);
+
+                        if (ret.ok) {
+                            mensagemSistema.showMensagemSucesso(ret.message);
+                            this.fechar();
+                            this.$emit('categoria-salva', this.categoria.id);
+                        }
+                        else {
+                            mensagemSistema.showMensagemErro(ret.message);
+                        }
+                    });
+                }
+            },
+
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-categoria-modal">
+
+    <div class="modal" ref="modalForm" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md modal-fullscreen-lg-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel d-lg-none" v-on:click="fechar()"></i>
+                    <h5 class="modal-title">{{titulo}}</h5>
+                    <button type="button" class="btn-close" aria-label="Close" v-on:click="fechar()"></button>
+                </div>
+                <div class="modal-body">
+                    <form ref="form">
+                        <div class="row g-1">
+
+                            <div class="col-9">
+                                <label class="form-label required-asterisk">Nome</label>
+                                <input class="form-control" required maxlength="20" v-model="categoria.nome">
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
-                            <div class="d-flex justify-content-end w-100">
-                                <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
-                                <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
+
+                            <div class="col-3">
+                                <label class="form-label">Ordem</label>
+                                <input class="form-control" type="number" v-model="categoria.ordem">
                             </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <button type="button" class="btn btn-danger" v-if="!isNovo" v-on:click="excluir()">Excluir</button>
+                        <div class="d-flex justify-content-end w-100">
+                            <button type="button" class="btn btn-secondary" v-on:click="fechar()">Cancelar</button>
+                            <button type="button" class="btn btn-primary ms-2" v-on:click="salvar()">Salvar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
+    <ConfirmationDialog ref="confirmaAcao"></ConfirmationDialog>
 
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const CategoriaModal = {
-
-            name: 'CategoriaModal',
-            template: '#template-categoria-modal',
-            mixins: [BaseMixin],
-            emits: ['categoria-salva'],
-            components: { ConfirmationDialog },
-
-            data: () => ({
-                categoria: {},
-                modal: null,
-            }),
-
-            computed: {
-
-                titulo() {
-                    return (this.isNovo ? "Nova Categoria" : "Alterar Categoria");
-                },
-
-                isNovo() {
-                    return (this.categoria.id == undefined);
-                },
-            },
-
-            mounted() {
-            },
-
-            methods: {
-
-                initCategoria(t) {
-                    this.categoria = { tipo: t };
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
-                },
-
-                async carregar(id) {
-
-                    await this.showLoadingSplashAndExecute(async () => {
-                        let ret = await fetchData.fetchGetJson(`/categoria/obter/${id}`);
-                        this.categoria = ret.value;
-                    });
-
-                    this.modal = bootstrapHelper.openModal(this.$refs.modalForm);
-                },
-
-                fechar() {
-                    this.cleanValidationForm(this.$refs.form);
-                    bootstrapHelper.closeModal(this.modal);
-                },
-
-                async salvar() {
-
-                    let isValido = this.validarForm(this.$refs.form);
-
-                    if (isValido) {
-                        let ret = null;
-
-                        await this.showLoadingSplashAndExecute(async () => {
-                            try {
-
-                                //conversões
-                                fieldConverter.stringToInt(this.categoria, 'ordem');
-
-                                let url = (this.categoria.id ? '/categoria/alterar' : '/categoria/inserir');
-
-                                ret = await fetchData.fetchPostJson(url, this.categoria);
-
-                                if (ret.ok) {
-                                    mensagemSistema.showMensagemSucesso(ret.message);
-                                    this.fechar();
-                                    this.$emit('categoria-salva', ret.value.id);
-                                }
-                                else {
-                                    mensagemSistema.showMensagemErro(ret.message);
-                                }
-                            }
-                            catch (e) {
-                                mensagemSistema.showMensagemErro(e);
-                            }
-                        });
-                    }
-                },
-
-                async excluir() {
-
-                    const confirma = await this.$refs.confirmaAcao.aguardarConfirmacao({
-                        titulo: 'Exclusão de Categoria',
-                        mensagem: `Deseja excluir esta Categoria?`,
-                        okLabel: 'Excluir',
-                    });
-
-                    if (confirma) {
-
-                        await this.showLoadingSplashAndExecute(async () => {
-
-                            let ret = await fetchData.fetchPostJson('/categoria/excluir', this.categoria.id);
-
-                            if (ret.ok) {
-                                mensagemSistema.showMensagemSucesso(ret.message);
-                                this.fechar();
-                                this.$emit('categoria-salva', this.categoria.id);
-                            }
-                            else {
-                                mensagemSistema.showMensagemErro(ret.message);
-                            }
-                        });
-                    }
-                },
-
-            }
-        }
-
-    </script>
-}
-
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+</script>

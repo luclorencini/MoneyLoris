@@ -1,10 +1,5 @@
 ﻿<partial name="_ContaListagem.cshtml" />
 
-@using (Html.VueScript())
-{
-    <script>
-        VueFactory.createAndMountApp(ContaListagem, '#app');
-    </script>
-}
-
-<ContaListagem></ContaListagem>
+<script>
+    VueFactory.createAndMountApp(ContaListagem, '#app');
+</script>

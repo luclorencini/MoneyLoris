@@ -1,141 +1,130 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-login-alterar-senha">
+﻿<script>
 
-        <template v-if="exibir">
+    const LoginAlterarSenha = {
 
-            <div class="alert alert-light my-1 mb-3">
-                <div class="d-flex flex-column align-items-center">
-                    <div class="fs-6 fw-bold">Redefinir Senha</div>
-                    <small>É necessário alterar sua senha. Por favor, informe uma nova senha abaixo.</small>
-                </div>
-            </div>
+        name: 'LoginAlterarSenha',
+        template: '#template-login-alterar-senha',
+        mixins: [BaseMixin],
+        emits: ['senha-alterada'],
 
-            <form ref="form">
+        props: {
+            exibir: Boolean,
+            login: String
+        },
 
-                <div class="form-floating">
-                    <input type="password" ref="campoPassword" class="form-control" required v-model="senhaAtual">
-                    <label>Senha Atual</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control" required v-model="novaSenha">
-                    <label>Nova Senha</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control" required v-model="confirmarNovaSenha" v-on:keyup.enter="alterarSenha()">
-                    <label>Confirme a Nova Senha</label>
-                </div>
+        data: () => ({
+            senhaAtual: '',
+            novaSenha: '',
+            confirmarNovaSenha: ''
+        }),
 
-            </form>
+        watch: {
+            async exibir(newValue, oldValue) {
+                if (newValue == true) {
 
-            <button class="w-100 btn btn-lg btn-primary" v-on:click="alterarSenha()">Alterar Senha</button>
+                    //reseta os campos
+                    this.senhaAtual = '';
+                    this.novaSenha = '';
+                    this.confirmarNovaSenha = '';
 
-        </template>
-
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const LoginAlterarSenha = {
-
-            name: 'LoginAlterarSenha',
-            template: '#template-login-alterar-senha',
-            mixins: [BaseMixin],
-            emits: ['senha-alterada'],
-
-            props: {
-                exibir: Boolean,
-                login: String
-            },
-
-            data: () => ({
-                senhaAtual: '',
-                novaSenha: '',
-                confirmarNovaSenha: ''
-            }),
-
-            watch: {
-                async exibir(newValue, oldValue) {
-                    if (newValue == true) {
-
-                        //reseta os campos
-                        this.senhaAtual = '';
-                        this.novaSenha = '';
-                        this.confirmarNovaSenha = '';
-
-                        this.ajustaFoco();
-                    }
-                }
-            },
-
-            mounted() {
-                this.ajustaFoco();
-            },
-
-            methods: {
-
-                ajustaFoco() {
-                    //bota foca no campo de senha
-                    this.setFocus('campoPassword');
-                },
-
-                async alterarSenha() {
-
-                    let isValido = this.validarFormulario();
-                    if (!isValido) return;
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        let dados = {
-                            login: this.login,
-                            senhaAtual: this.senhaAtual,
-                            novaSenha: this.novaSenha,
-                            confirmarNovaSenha: this.confirmarNovaSenha
-                        };
-
-                        let ret = await fetchData.fetchPostJson('/Login/AlterarSenha', dados);
-                        if (ret.ok) {
-                            mensagemSistema.showMensagemSucesso('Senha foi alterada com sucesso. Por favor, faça login.');
-                            this.$emit('senha-alterada');
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
-                },
-
-                validarFormulario() {
-
-                    //validacao base de form
-                    let isFormValido = this.validarForm(this.$refs.form);
-
-                    if (!isFormValido) return false;
-
-                    //casos específicos
-
-                    if (this.senhaAtual == this.novaSenha) {
-                        mensagemSistema.showMensagemErro("A senha atual e a nova senha não podem ser iguais");
-                        return false;
-                    }
-
-                    if (this.novaSenha != this.confirmarNovaSenha) {
-                        mensagemSistema.showMensagemErro("A nova senha e a confirmação são diferentes");
-                        return false;
-                    }
-
-                    //tudo certo
-                    return true;
+                    this.ajustaFoco();
                 }
             }
+        },
+
+        mounted() {
+            this.ajustaFoco();
+        },
+
+        methods: {
+
+            ajustaFoco() {
+                //bota foca no campo de senha
+                this.setFocus('campoPassword');
+            },
+
+            async alterarSenha() {
+
+                let isValido = this.validarFormulario();
+                if (!isValido) return;
+
+                await this.setLoadingAndExecute(async () => {
+
+                    let dados = {
+                        login: this.login,
+                        senhaAtual: this.senhaAtual,
+                        novaSenha: this.novaSenha,
+                        confirmarNovaSenha: this.confirmarNovaSenha
+                    };
+
+                    let ret = await fetchData.fetchPostJson('/Login/AlterarSenha', dados);
+                    if (ret.ok) {
+                        mensagemSistema.showMensagemSucesso('Senha foi alterada com sucesso. Por favor, faça login.');
+                        this.$emit('senha-alterada');
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
+                });
+            },
+
+            validarFormulario() {
+
+                //validacao base de form
+                let isFormValido = this.validarForm(this.$refs.form);
+
+                if (!isFormValido) return false;
+
+                //casos específicos
+
+                if (this.senhaAtual == this.novaSenha) {
+                    mensagemSistema.showMensagemErro("A senha atual e a nova senha não podem ser iguais");
+                    return false;
+                }
+
+                if (this.novaSenha != this.confirmarNovaSenha) {
+                    mensagemSistema.showMensagemErro("A nova senha e a confirmação são diferentes");
+                    return false;
+                }
+
+                //tudo certo
+                return true;
+            }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+<script type="text/x-template" id="template-login-alterar-senha">
+
+    <template v-if="exibir">
+
+        <div class="alert alert-light my-1 mb-3">
+            <div class="d-flex flex-column align-items-center">
+                <div class="fs-6 fw-bold">Redefinir Senha</div>
+                <small>É necessário alterar sua senha. Por favor, informe uma nova senha abaixo.</small>
+            </div>
+        </div>
+
+        <form ref="form">
+
+            <div class="form-floating">
+                <input type="password" ref="campoPassword" class="form-control" required v-model="senhaAtual">
+                <label>Senha Atual</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" required v-model="novaSenha">
+                <label>Nova Senha</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" required v-model="confirmarNovaSenha" v-on:keyup.enter="alterarSenha()">
+                <label>Confirme a Nova Senha</label>
+            </div>
+
+        </form>
+
+        <button class="w-100 btn btn-lg btn-primary" v-on:click="alterarSenha()">Alterar Senha</button>
+
+    </template>
+
+</script>

@@ -1,538 +1,529 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-lancamento-wizard">
+﻿<script>
 
-        <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasLancamentoWizard" style="width: 35rem;">
-            <div class="offcanvas-header">
-                <i v-on:click="retornarPasso()" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel"></i>
-                <h5 class="offcanvas-title">Lançar {{labelTipo}}</h5>
-                <button type="button" class="btn-close" v-on:click="fechar()"></button>
-            </div>
-            <div class="offcanvas-body pt-0" v-ext-loading="loading">
+    const LancamentoWizard = {
 
-                <template v-if="passo == 1">
+        name: 'LancamentoWizard',
+        template: '#template-lancamento-wizard',
+        mixins: [BaseMixin],
+        components: { Moeda },
+        emits: ['lancamento-realizado'],
 
-                    <h5 class="my-2">Em qual {{isReceita ? 'conta' : 'conta ou cartão'}} você vai lançar a {{labelTipo}}?</h5>
+        data: () => ({
 
-                    <ul class="list-group">
-                        <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamento }" v-on:click="selecionarMeioPagamento(m)">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex flex-wrap align-items-center">
-                                    <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
-                                    <div>
-                                        <div class="fw-bold fs-6 lh-1">{{m.nome}}</div>
-                                        <small class="fst-italic lh-1">{{m.tipoDescricao}}</small>
-                                    </div>
-                                </div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                    </ul>
+            dados: {},
+            tipo: 1,
+            passo: 1,
 
-                </template>
+            meios: [],
+            meioPagamentoSelecionado: {},
 
-                <template v-else-if="passo == 2">
+            sugestoes: [],
+            categorias: [],
 
-                    <form ref="formPasso2" onsubmit="return false;">
-                        <div class="container">
-                            <div class="row g-2">
+            offCanvas: null,
+        }),
 
-                                <div class="col col-12">
-                                    <h5 class="my-1">Qual é o valor?</h5>
-                                    <div class="input-group">
-                                        <span class="input-group-text fw-bold fs-3">R$</span>
-                                        <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
-                                        type="text" inputmode="decimal" required maxlength="10"
-                                        v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso3()">
-                                    </div>
-                                </div>
+        computed: {
 
-                                <div class="col col-12">
-                                    <h5 class="my-1">Quando foi a {{labelTipo}}?</h5>
-                                    <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
-                                </div>
+            isCartaoCredito() {
+                return (this.meioPagamentoSelecionado.tipo == 3);
+            },
 
-                                <template v-if="isCartaoCredito">
+            isReceita() {
+                return (this.tipo == 1);
+            },
 
-                                    <div class="col col-12 col-lg-6">
-                                        <h5 class="my-1">Quantas parcelas?</h5>
-                                        <input class="form-control fs-5 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
-                                    </div>
+            labelTipo() {
+                return (this.tipo == 1 ? "Receita" : "Despesa");
+            },
 
-                                    <div class="col col-12 col-lg-6">
-                                        <h5 class="my-1">Qual fatura?</h5>
-                                        <div class="input-group">
-                                            <select class="form-select fs-5" v-model="dados.faturaMes">
-                                                <option value="1">JAN</option>
-                                                <option value="2">FEV</option>
-                                                <option value="3">MAR</option>
-                                                <option value="4">ABR</option>
-                                                <option value="5">MAI</option>
-                                                <option value="6">JUN</option>
-                                                <option value="7">JUL</option>
-                                                <option value="8">AGO</option>
-                                                <option value="9">SET</option>
-                                                <option value="10">OUT</option>
-                                                <option value="11">NOV</option>
-                                                <option value="12">DEZ</option>
-                                            </select>
-                                            <input class="form-control fs-5" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="dados.faturaAno">
-                                        </div>
-                                    </div>
+            valorDecimal() {
+                let str = mascaras.parseMoney(this.dados.valor);
+                str = mascaras.unparseMoney(str);
+                return parseFloat(str);
+            },
 
-                                </template>
+            dataPorExtenso() {
+                const d = utils.inputToDate(this.dados.data);
+                return utils.dataExtenso(d);
+            }
+        },
 
-                                <div class="col col-12 mt-3 text-end">
-                                    <button class="btn btn-primary" type="button" v-on:click="avancarPasso3()">
-                                        <span>Próximo</span>
-                                        <i class="fa-solid fa-arrow-right ms-1"></i>
-                                    </button>
-                                </div>
+        mounted() {
+        },
 
-                            </div>
-                        </div>
-                    </form>
+        methods: {
 
-                </template>
+            fechar() {
+                bootstrapHelper.closeOffcanvas(this.offCanvas);
+            },
 
-                <template v-else-if="passo == 3">
+            async initReceita() {
+                await this._init(1); // 1 - receita
+            },
 
-                    <form ref="formPasso3" onsubmit="return false;">
-                        <div class="container">
-                            <div class="row">
+            async initDespesa() {
+                await this._init(2); // 2 - despesa
+            },
 
-                                <div class="col col-12">
-                                    <h5 class="my-2">Informe uma curta descrição:</h5>
-                                    <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
-                                    v-model="dados.descricao" v-on:input="buscarDigitacao()" v-on:keyup.enter="avancarPasso4()">
-                                </div>
+            async _init(t) {
 
-                                <div class="col col-12 mt-3 text-end">
-                                    <button class="btn btn-primary" type="button" v-on:click="avancarPasso4()">
-                                        <span>Próximo</span>
-                                        <i class="fa-solid fa-arrow-right ms-1"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                //clean-up
+                this.tipo = t;
+                this.dados = {};
+                this.meios = [];
+                this.meioPagamentoSelecionado = {};
 
-                    <div class="d-flex align-items-center mt-1 mb-2">
-                        <template v-if="!dados.descricao">
-                            <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-4 me-2"></i>
-                            <div class="fs-5">{{labelTipo}}s recentes:</div>
-                        </template>
-                        <template v-else>
-                            <i class="fa-solid fa-magnifying-glass fa-xl sys-fg-dark-4 me-2"></i>
-                            <div class="fs-5">Resultado de pesquisa:</div>
-                        </template>
-                    </div>
+                this.sugestoes = [];
+                this.categorias = [];
 
-                    <ul class="list-group" v-if="sugestoes.length > 0">
-                        <li v-for="s in sugestoes" class="list-group-item sys-clicavel py-1" v-on:click="selecionarSugestao(s)">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex flex-column flex-wrap">
-                                    <div class="fw-bold fs-6">{{s.descricao}}</div>
-                                    <small class="fst-italic"><span>{{s.categoria.categoriaNome}}</span><span v-if="s.categoria.subcategoriaNome"> / {{s.categoria.subcategoriaNome}}</span></small>
-                                </div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                    </ul>
+                await this.iniciarPasso1();
 
-                </template>
+                this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
+            },
 
-                <template v-else-if="passo == 4">
+            retornarPasso() {
+                if (this.passo == 1)
+                    this.fechar();
+                else
+                    this.passo = this.passo - 1;
+            },
 
-                    <h5 class="my-2">Qual categoria?</h5>
 
-                    <ul class="list-group">
-                        <li v-for="c in categorias" class="list-group-item sys-clicavel py-2" v-on:click="selecionarCategoria(c)">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fs-6" v-bind:class="{'ms-4' : c.subcategoriaId}">{{c.subcategoriaId ? c.subcategoriaNome : c.categoriaNome}}</div>
-                                <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
-                            </div>
-                        </li>
-                    </ul>
+            // passo 1
 
-                </template>
+            async iniciarPasso1() {
+                this.passo = 1;
+                await this.obterMeiosPagamento();
+            },
 
-                <template v-else-if="passo == 5">
+            async obterMeiosPagamento() {
 
-                    <div class="container">
+                await this.setLoadingAndExecute(async () => {
 
-                        <div class="d-flex justify-content-center mb-3">
-                            <div class="fs-3">Confira se está tudo certo:</div>
-                        </div>
+                    //receita é só pra contas (cartão não); despesa é pra qualquer meio
+                    let url = (this.isReceita ? `/common/contas` : `/common/meiosPagamento`)
 
-                        <div class="d-flex align-items-center my-4">
-                            <div class="resumo-icone-container">
-                                <i class="fa-solid fa-sack-dollar fa-3x sys-fg-dark-2 me-2"></i>
-                            </div>
-                            <div class="fs-1 fw-bold" v-bind:class="[this.tipo == 1 ? 'din-receita' : 'din-despesa']">
-                                <Moeda :valor="valorDecimal" :retirarCor="true" :retirarSinal="true"/>
-                            </div>
-                        </div>
+                    let ret = await fetchData.fetchGetJson(url);
+                    if (ret.ok) {
+                        this.meios = ret.value;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
+                });
+            },
 
-                        <div class="d-flex align-items-center my-4">
-                            <div class="resumo-icone-container">
-                                <i class="fa-regular fa-calendar-days fa-3x sys-fg-dark-2 me-2"></i>
-                            </div>
-                            <div class="fs-2 fw-bold text-capitalize">{{dataPorExtenso}}</div>
-                        </div>
+            selecionarMeioPagamento(m) {
+                this.dados.idMeioPagamento = m.id;
+                this.meioPagamentoSelecionado = m;
+                this.avancarPasso2();
+            },
 
-                        <div class="d-flex align-items-center my-4">
-                            <div class="resumo-icone-container">
-                                <i class="fa-regular fa-pen-to-square fa-3x sys-fg-dark-2 me-2"></i>
-                            </div>
-                            <div>
-                                <div class="fs-4 fw-bold">{{dados.descricao}}</div>
-                                <div class="fs-5 fst-italic lh-1">
-                                    <span>{{dados.nomeCategoria}}</span><span v-if="dados.idSubcategoria"> / {{dados.nomeSubCategoria}}</span>
-                                </div>
-                            </div>
-                        </div>
+            // passo 2
 
-                        <div class="d-flex align-items-center my-4">
-                            <div class="resumo-icone-container">
-                                <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioPagamentoSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioPagamentoSelecionado.cor}"></i>
-                            </div>
-                            <div>
-                                <div class="fs-4 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
+            async avancarPasso2() {
+                this.passo = 2;
+                this.dados.data = utils.dateToInput(new Date());
 
-                                <div class="fs-6 fst-italic lh-1 d-flex">
-                                    <div>{{meioPagamentoSelecionado.tipoDescricao}}</div>
-                                    <div v-if="isCartaoCredito">
-                                        <span class="mx-1">-</span>
-                                        <span v-if="dados.parcelas == 1">Á vista</span>
-                                        <span class="fw-bold" v-else>{{dados.parcelas}} vezes</span>
-                                    </div>
-                                </div>
+                if (this.isCartaoCredito) {
 
-                                <div v-if="isCartaoCredito" class="fs-6 mt-1">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
-                            </div>
-                        </div>
+                    //inicializa numero de parcela
+                    if (!this.dados.parcelas) {
+                        this.dados.parcelas = 1;
+                    }
 
-                        <div class="d-flex align-items-center mt-5">
-                             <button class="btn btn-primary btn-lg w-100" type="button" v-on:click="salvar()">
-                                <span class="sys-fg-dark-3 fw-bold">Lançar {{labelTipo}}</span>
-                            </button>
-                        </div>
+                    await this.carregarDadosFatura();
+                }
+                else {
+                    //reseta eventuais valores selecionados
+                    this.dados.parcelas = null;
+                }
 
-                    </div>
+                this.setFocus('campoValor');
+            },
 
-                </template>
+            async carregarDadosFatura() {
 
-            </div>
-        </div>
+                await this.setLoadingAndExecute(async () => {
 
-    </script>
-}
+                    let ret = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamento}`);
+                    if (!ret.ok) {
+                        mensagemSistema.showMensagemErro(ret.message);
+                        return;
+                    }
 
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
+                    let fat = ret.value;
+                    this.dados.faturaMes = fat.mes;
+                    this.dados.faturaAno = fat.ano;
+                });
 
-        const LancamentoWizard = {
+            },
 
-            name: 'LancamentoWizard',
-            template: '#template-lancamento-wizard',
-            mixins: [BaseMixin],
-            components: { Moeda },
-            emits: ['lancamento-realizado'],
+            // passo 3
 
-            data: () => ({
+            async avancarPasso3() {
 
-                dados: {},
-                tipo: 1,
-                passo: 1,
+                let passo2valido = this.validarForm(this.$refs.formPasso2);
 
-                meios: [],
-                meioPagamentoSelecionado: {},
-
-                sugestoes: [],
-                categorias: [],
-
-                offCanvas: null,
-            }),
-
-            computed: {
-
-                isCartaoCredito() {
-                    return (this.meioPagamentoSelecionado.tipo == 3);
-                },
-
-                isReceita() {
-                    return (this.tipo == 1);
-                },
-
-                labelTipo() {
-                    return (this.tipo == 1 ? "Receita" : "Despesa");
-                },
-
-                valorDecimal() {
-                    let str = mascaras.parseMoney(this.dados.valor);
-                    str = mascaras.unparseMoney(str);
-                    return parseFloat(str);
-                },
-
-                dataPorExtenso() {
-                    const d = utils.inputToDate(this.dados.data);
-                    return utils.dataExtenso(d);
+                if (passo2valido) {
+                    this.passo = 3;
+                    this.setFocus('campoDescricao');
+                    await this.buscarSugestoes();
                 }
             },
 
-            mounted() {
+            async buscarDigitacao() {
+
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
+                this.timer = setTimeout(async () => {
+                    await this.filtrarSugestoesInput();
+                }, 0.3 * 1000);
+
             },
 
-            methods: {
+            async filtrarSugestoesInput() {
+                let val = this.$refs.campoDescricao.value;
+                this.dados.descricao = val;
+                await this.buscarSugestoes(val);
+            },
 
-                fechar() {
-                    bootstrapHelper.closeOffcanvas(this.offCanvas);
-                },
+            async buscarSugestoes(termo) {
 
-                async initReceita() {
-                    await this._init(1); // 1 - receita
-                },
-
-                async initDespesa() {
-                    await this._init(2); // 2 - despesa
-                },
-
-                async _init(t) {
-
-                    //clean-up
-                    this.tipo = t;
-                    this.dados = {};
-                    this.meios = [];
-                    this.meioPagamentoSelecionado = {};
-
-                    this.sugestoes = [];
-                    this.categorias = [];
-
-                    await this.iniciarPasso1();
-
-                    this.offCanvas = bootstrapHelper.openOffcanvas(this.$refs.offcanvasLancamentoWizard);
-                },
-
-                retornarPasso() {
-                    if (this.passo == 1)
-                        this.fechar();
-                    else
-                        this.passo = this.passo - 1;
-                },
-
-
-                // passo 1
-
-                async iniciarPasso1() {
-                    this.passo = 1;
-                    await this.obterMeiosPagamento();
-                },
-
-                async obterMeiosPagamento() {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        //receita é só pra contas (cartão não); despesa é pra qualquer meio
-                        let url = (this.isReceita ? `/common/contas` : `/common/meiosPagamento`)
-
-                        let ret = await fetchData.fetchGetJson(url);
-                        if (ret.ok) {
-                            this.meios = ret.value;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
-                },
-
-                selecionarMeioPagamento(m) {
-                    this.dados.idMeioPagamento = m.id;
-                    this.meioPagamentoSelecionado = m;
-                    this.avancarPasso2();
-                },
-
-                // passo 2
-
-                async avancarPasso2() {
-                    this.passo = 2;
-                    this.dados.data = utils.dateToInput(new Date());
-
-                    if (this.isCartaoCredito) {
-
-                        //inicializa numero de parcela
-                        if (!this.dados.parcelas) {
-                            this.dados.parcelas = 1;
-                        }
-
-                        await this.carregarDadosFatura();
+                await this.setLoadingAndExecute(async () => {
+                    const url = (this.tipo == 1 ? '/lancamento/sugestoes/receitas' : '/lancamento/sugestoes/despesas');
+                    let ret = await fetchData.fetchPostJson(url, termo);
+                    if (ret.ok) {
+                        this.sugestoes = ret.value;
                     }
                     else {
-                        //reseta eventuais valores selecionados
-                        this.dados.parcelas = null;
+                        mensagemSistema.showMensagemErro(ret.message);
                     }
+                });
+            },
 
-                    this.setFocus('campoValor');
-                },
+            selecionarSugestao(s) {
+                this.dados.descricao = s.descricao;
+                this.selecionarCategoria(s.categoria);
+            },
 
-                async carregarDadosFatura() {
+            // passo 4 - categoria
 
-                    await this.setLoadingAndExecute(async () => {
+            async avancarPasso4() {
 
-                        let ret = await fetchData.fetchGetJson(`/common/faturaEmAberto/${this.dados.idMeioPagamento}`);
-                        if (!ret.ok) {
-                            mensagemSistema.showMensagemErro(ret.message);
-                            return;
-                        }
+                let passo3valido = this.validarForm(this.$refs.formPasso3);
 
-                        let fat = ret.value;
-                        this.dados.faturaMes = fat.mes;
-                        this.dados.faturaAno = fat.ano;
-                    });
+                if (passo3valido) {
+                    this.passo = 4;
+                    await this.obterCategorias();
+                }
+            },
 
-                },
+            async obterCategorias() {
 
-                // passo 3
-
-                async avancarPasso3() {
-
-                    let passo2valido = this.validarForm(this.$refs.formPasso2);
-
-                    if (passo2valido) {
-                        this.passo = 3;
-                        this.setFocus('campoDescricao');
-                        await this.buscarSugestoes();
+                await this.setLoadingAndExecute(async () => {
+                    let ret = await fetchData.fetchGetJson(`/common/categorias/${this.tipo}`);
+                    if (ret.ok) {
+                        this.categorias = ret.value;
                     }
-                },
-
-                async buscarDigitacao() {
-
-                    if (this.timer) {
-                        clearTimeout(this.timer);
-                        this.timer = null;
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
                     }
-                    this.timer = setTimeout(async () => {
-                        await this.filtrarSugestoesInput();
-                    }, 0.3 * 1000);
+                });
+            },
 
-                },
+            selecionarCategoria(c) {
 
-                async filtrarSugestoesInput() {
-                    let val = this.$refs.campoDescricao.value;
-                    this.dados.descricao = val;
-                    await this.buscarSugestoes(val);
-                },
+                this.dados.idCategoria = c.categoriaId;
+                this.dados.nomeCategoria = c.categoriaNome;
+                this.dados.idSubcategoria = c.subcategoriaId;
+                this.dados.nomeSubCategoria = c.subcategoriaNome;
 
-                async buscarSugestoes(termo) {
+                this.avancarPasso5();
+            },
 
-                    await this.setLoadingAndExecute(async () => {
-                        const url = (this.tipo == 1 ? '/lancamento/sugestoes/receitas' : '/lancamento/sugestoes/despesas');
-                        let ret = await fetchData.fetchPostJson(url, termo);
+            // passo 5 - resumo
+
+            avancarPasso5() {
+                this.passo = 5;
+            },
+
+            async salvar() {
+
+                await this.showLoadingSplashAndExecute(async () => {
+
+                    try {
+
+                        //conversoes
+                        fieldConverter.stringToMoney(this.dados, 'valor');
+
+                        const url = (this.tipo == 1 ? '/lancamento/lancar/receita' : '/lancamento/lancar/despesa');
+
+                        let ret = await fetchData.fetchPostJson(url, this.dados);
+
                         if (ret.ok) {
-                            this.sugestoes = ret.value;
+                            mensagemSistema.showSplashSucesso(`${this.labelTipo} salva`);
+                            this.fechar();
+                            this.$emit('lancamento-realizado');
                         }
                         else {
                             mensagemSistema.showMensagemErro(ret.message);
                         }
-                    });
-                },
-
-                selecionarSugestao(s) {
-                    this.dados.descricao = s.descricao;
-                    this.selecionarCategoria(s.categoria);
-                },
-
-                // passo 4 - categoria
-
-                async avancarPasso4() {
-
-                    let passo3valido = this.validarForm(this.$refs.formPasso3);
-
-                    if (passo3valido) {
-                        this.passo = 4;
-                        await this.obterCategorias();
                     }
-                },
+                    catch (e) {
+                        mensagemSistema.showMensagemErro(e);
+                    }
+                });
+            },
+        }
+    }
 
-                async obterCategorias() {
+</script>
 
-                    await this.setLoadingAndExecute(async () => {
-                        let ret = await fetchData.fetchGetJson(`/common/categorias/${this.tipo}`);
-                        if (ret.ok) {
-                            this.categorias = ret.value;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
-                },
+<script type="text/x-template" id="template-lancamento-wizard">
 
-                selecionarCategoria(c) {
+    <div class="offcanvas offcanvas-end" tabindex="-1" ref="offcanvasLancamentoWizard" style="width: 35rem;">
+        <div class="offcanvas-header">
+            <i v-on:click="retornarPasso()" class="fa-solid fa-arrow-left fa-2x sys-fg-dark-2 me-2 sys-clicavel"></i>
+            <h5 class="offcanvas-title">Lançar {{labelTipo}}</h5>
+            <button type="button" class="btn-close" v-on:click="fechar()"></button>
+        </div>
+        <div class="offcanvas-body pt-0" v-ext-loading="loading">
 
-                    this.dados.idCategoria = c.categoriaId;
-                    this.dados.nomeCategoria = c.categoriaNome;
-                    this.dados.idSubcategoria = c.subcategoriaId;
-                    this.dados.nomeSubCategoria = c.subcategoriaNome;
+            <template v-if="passo == 1">
 
-                    this.avancarPasso5();
-                },
+                <h5 class="my-2">Em qual {{isReceita ? 'conta' : 'conta ou cartão'}} você vai lançar a {{labelTipo}}?</h5>
 
-                // passo 5 - resumo
+                <ul class="list-group">
+                    <li v-for="m in meios" class="list-group-item sys-clicavel py-2" v-bind:class="{'meio-list-selected' : m.id == dados.idMeioPagamento }" v-on:click="selecionarMeioPagamento(m)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <i class="fa-solid fa-2x ms-1 me-3" v-bind:class="utils.cssIconeByTipoConta(m.tipo)" v-bind:style="{ 'color': '#' + m.cor}"></i>
+                                <div>
+                                    <div class="fw-bold fs-6 lh-1">{{m.nome}}</div>
+                                    <small class="fst-italic lh-1">{{m.tipoDescricao}}</small>
+                                </div>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                </ul>
 
-                avancarPasso5() {
-                    this.passo = 5;
-                },
+            </template>
 
-                async salvar() {
+            <template v-else-if="passo == 2">
 
-                    await this.showLoadingSplashAndExecute(async () => {
+                <form ref="formPasso2" onsubmit="return false;">
+                    <div class="container">
+                        <div class="row g-2">
 
-                        try {
+                            <div class="col col-12">
+                                <h5 class="my-1">Qual é o valor?</h5>
+                                <div class="input-group">
+                                    <span class="input-group-text fw-bold fs-3">R$</span>
+                                    <input ref="campoValor" class="form-control form-control-lg fw-bold fs-2"
+                                    type="text" inputmode="decimal" required maxlength="10"
+                                    v-model="dados.valor" v-ext-mask="'dinheiro'" v-on:keyup.enter="avancarPasso3()">
+                                </div>
+                            </div>
 
-                            //conversoes
-                            fieldConverter.stringToMoney(this.dados, 'valor');
+                            <div class="col col-12">
+                                <h5 class="my-1">Quando foi a {{labelTipo}}?</h5>
+                                <input class="form-control form-control-lg fw-bold fs-3" type="date" required v-model="dados.data">
+                            </div>
 
-                            const url = (this.tipo == 1 ? '/lancamento/lancar/receita' : '/lancamento/lancar/despesa');
+                            <template v-if="isCartaoCredito">
 
-                            let ret = await fetchData.fetchPostJson(url, this.dados);
+                                <div class="col col-12 col-lg-6">
+                                    <h5 class="my-1">Quantas parcelas?</h5>
+                                    <input class="form-control fs-5 w-50" type="number" min="1" max="36" v-model="dados.parcelas">
+                                </div>
 
-                            if (ret.ok) {
-                                mensagemSistema.showSplashSucesso(`${this.labelTipo} salva`);
-                                this.fechar();
-                                this.$emit('lancamento-realizado');
-                            }
-                            else {
-                                mensagemSistema.showMensagemErro(ret.message);
-                            }
-                        }
-                        catch (e) {
-                            mensagemSistema.showMensagemErro(e);
-                        }
-                    });
-                },
-            }
+                                <div class="col col-12 col-lg-6">
+                                    <h5 class="my-1">Qual fatura?</h5>
+                                    <div class="input-group">
+                                        <select class="form-select fs-5" v-model="dados.faturaMes">
+                                            <option value="1">JAN</option>
+                                            <option value="2">FEV</option>
+                                            <option value="3">MAR</option>
+                                            <option value="4">ABR</option>
+                                            <option value="5">MAI</option>
+                                            <option value="6">JUN</option>
+                                            <option value="7">JUL</option>
+                                            <option value="8">AGO</option>
+                                            <option value="9">SET</option>
+                                            <option value="10">OUT</option>
+                                            <option value="11">NOV</option>
+                                            <option value="12">DEZ</option>
+                                        </select>
+                                        <input class="form-control fs-5" type="number" inputmode="numeric" maxlength="4" min="2000" max="2100" v-model="dados.faturaAno">
+                                    </div>
+                                </div>
+
+                            </template>
+
+                            <div class="col col-12 mt-3 text-end">
+                                <button class="btn btn-primary" type="button" v-on:click="avancarPasso3()">
+                                    <span>Próximo</span>
+                                    <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+
+            </template>
+
+            <template v-else-if="passo == 3">
+
+                <form ref="formPasso3" onsubmit="return false;">
+                    <div class="container">
+                        <div class="row">
+
+                            <div class="col col-12">
+                                <h5 class="my-2">Informe uma curta descrição:</h5>
+                                <input ref="campoDescricao" class="form-control form-control-lg fs-4" type="text" required
+                                v-model="dados.descricao" v-on:input="buscarDigitacao()" v-on:keyup.enter="avancarPasso4()">
+                            </div>
+
+                            <div class="col col-12 mt-3 text-end">
+                                <button class="btn btn-primary" type="button" v-on:click="avancarPasso4()">
+                                    <span>Próximo</span>
+                                    <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="d-flex align-items-center mt-1 mb-2">
+                    <template v-if="!dados.descricao">
+                        <i class="fa-solid fa-clock-rotate-left fa-xl sys-fg-dark-4 me-2"></i>
+                        <div class="fs-5">{{labelTipo}}s recentes:</div>
+                    </template>
+                    <template v-else>
+                        <i class="fa-solid fa-magnifying-glass fa-xl sys-fg-dark-4 me-2"></i>
+                        <div class="fs-5">Resultado de pesquisa:</div>
+                    </template>
+                </div>
+
+                <ul class="list-group" v-if="sugestoes.length > 0">
+                    <li v-for="s in sugestoes" class="list-group-item sys-clicavel py-1" v-on:click="selecionarSugestao(s)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column flex-wrap">
+                                <div class="fw-bold fs-6">{{s.descricao}}</div>
+                                <small class="fst-italic"><span>{{s.categoria.categoriaNome}}</span><span v-if="s.categoria.subcategoriaNome"> / {{s.categoria.subcategoriaNome}}</span></small>
+                            </div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                </ul>
+
+            </template>
+
+            <template v-else-if="passo == 4">
+
+                <h5 class="my-2">Qual categoria?</h5>
+
+                <ul class="list-group">
+                    <li v-for="c in categorias" class="list-group-item sys-clicavel py-2" v-on:click="selecionarCategoria(c)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="fs-6" v-bind:class="{'ms-4' : c.subcategoriaId}">{{c.subcategoriaId ? c.subcategoriaNome : c.categoriaNome}}</div>
+                            <i aria-hidden="true" class="fa-solid fa-arrow-right fa-xl sys-fg-dark-2 me-1"></i>
+                        </div>
+                    </li>
+                </ul>
+
+            </template>
+
+            <template v-else-if="passo == 5">
+
+                <div class="container">
+
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="fs-3">Confira se está tudo certo:</div>
+                    </div>
+
+                    <div class="d-flex align-items-center my-4">
+                        <div class="resumo-icone-container">
+                            <i class="fa-solid fa-sack-dollar fa-3x sys-fg-dark-2 me-2"></i>
+                        </div>
+                        <div class="fs-1 fw-bold" v-bind:class="[this.tipo == 1 ? 'din-receita' : 'din-despesa']">
+                            <Moeda :valor="valorDecimal" :retirarCor="true" :retirarSinal="true"/>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center my-4">
+                        <div class="resumo-icone-container">
+                            <i class="fa-regular fa-calendar-days fa-3x sys-fg-dark-2 me-2"></i>
+                        </div>
+                        <div class="fs-2 fw-bold text-capitalize">{{dataPorExtenso}}</div>
+                    </div>
+
+                    <div class="d-flex align-items-center my-4">
+                        <div class="resumo-icone-container">
+                            <i class="fa-regular fa-pen-to-square fa-3x sys-fg-dark-2 me-2"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold">{{dados.descricao}}</div>
+                            <div class="fs-5 fst-italic lh-1">
+                                <span>{{dados.nomeCategoria}}</span><span v-if="dados.idSubcategoria"> / {{dados.nomeSubCategoria}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center my-4">
+                        <div class="resumo-icone-container">
+                            <i class="fa-solid fa-3x me-3" v-bind:class="utils.cssIconeByTipoConta(meioPagamentoSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioPagamentoSelecionado.cor}"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold">{{meioPagamentoSelecionado.nome}}</div>
+
+                            <div class="fs-6 fst-italic lh-1 d-flex">
+                                <div>{{meioPagamentoSelecionado.tipoDescricao}}</div>
+                                <div v-if="isCartaoCredito">
+                                    <span class="mx-1">-</span>
+                                    <span v-if="dados.parcelas == 1">Á vista</span>
+                                    <span class="fw-bold" v-else>{{dados.parcelas}} vezes</span>
+                                </div>
+                            </div>
+
+                            <div v-if="isCartaoCredito" class="fs-6 mt-1">Fatura: {{utils.mesAbreviado(dados.faturaMes)}} / {{dados.faturaAno}}</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-5">
+                         <button class="btn btn-primary btn-lg w-100" type="button" v-on:click="salvar()">
+                            <span class="sys-fg-dark-3 fw-bold">Lançar {{labelTipo}}</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </template>
+
+        </div>
+    </div>
+
+</script>
+
+<style>
+
+    .meio-list-selected {
+        background-color: var(--sys-color-light-4);
+    }
+
+        .meio-list-selected:hover {
+            filter: brightness(.95);
         }
 
-    </script>
-}
+    .resumo-icone-container {
+        width: 4.5rem;
+        text-align: center;
+    }
 
-@using (Html.VueStyle())
-{
-    <style type="text/css">
-
-        .meio-list-selected {
-            background-color: var(--sys-color-light-4);
-        }
-
-            .meio-list-selected:hover {
-                filter: brightness(.95);
-            }
-
-        .resumo-icone-container {
-            width: 4.5rem;
-            text-align: center;
-        }
-
-    </style>
-}
+</style>

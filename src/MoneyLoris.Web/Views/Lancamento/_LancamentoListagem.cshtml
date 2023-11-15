@@ -10,289 +10,280 @@
 <partial name="_LancamentoModal"></partial>
 <partial name="_TransferenciaModal"></partial>
 
-@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-lancamento-listagem">
+<script>
 
-        <section class="container-xxl container-titulo">
-            <div class="area-titulo">
-                @await Html.PartialAsync("_BotaoVoltar")
-                <div class="titulo">Lançamentos</div>
+    const LancamentoListagem = {
+
+        name: 'LancamentoListagem',
+        template: '#template-lancamento-listagem',
+        mixins: [BaseMixin],
+        components: {
+            Moeda, Pagination, LancamentoListagemFiltro, LancamentoTable,
+            LancamentoWizard, TransferenciaWizard, LancamentoModal, TransferenciaModal
+        },
+
+        data: () => ({
+            filtro: {},
+            totalResults: 0,
+            balanco: {},
+            lista: [],
+
+            loading: true, //força loading true para garantir que o template de loading customizado vai entrar desde o início
+        }),
+
+        methods: {
+
+            async pesquisar(filter) {
+
+                //atualiza filtro se informado
+                if (filter)
+                    this.filtro = filter;
+
+                //reseta paginacao
+                this.filtro.currentPage = 1;
+                await this.carregar();
+            },
+
+            async paginar(paginacao) {
+
+                this.filtro.currentPage = paginacao.currentPage;
+                this.filtro.resultsPerPage = paginacao.resultsPerPage;
+                await this.carregar();
+            },
+
+            async carregar() {
+                await this.setLoadingAndExecute(async () => {
+                    await this.obterListagem();
+                    await this.obterBalanco();
+                });
+            },
+
+            async obterListagem() {
+
+                //ajustes
+                if (this.filtro.idMeioPagamento == '' || this.filtro.idMeioPagamento == 'null')
+                    this.filtro.idMeioPagamento = null;
+
+                let ret = await fetchData.fetchPostJson(`/lancamento/pesquisar`, this.filtro);
+
+                if (ret.ok) {
+                    this.totalResults = ret.value.total;
+                    this.lista = ret.value.dataPage;
+                }
+                else {
+                    mensagemSistema.showMensagemErro(ret.message);
+                }
+            },
+
+            async obterBalanco() {
+
+                let ret = await fetchData.fetchPostJson(`/lancamento/balanco`, this.filtro);
+
+                if (ret.ok) {
+                    this.balanco = ret.value;
+                }
+                else {
+                    mensagemSistema.showMensagemErro(ret.message);
+                }
+            },
+
+
+            novaDespesa() {
+                this.$refs.lancWizard.initDespesa();
+            },
+
+            novaReceita() {
+                this.$refs.lancWizard.initReceita();
+            },
+
+            novaTransferencia() {
+                this.$refs.tranWizard.initTransferencia();
+            },
+
+            novoPagamentoFatura() {
+                this.$refs.tranWizard.initPagamentoFatura();
+            },
+
+            editarLancamento(l) {
+                if (l.operacao == 1) { // 1 - lançamento simples, 2 - transferencia
+                    this.$refs.lancModal.carregar(l.id);
+                }
+                else {
+                    this.$refs.tranModal.carregar(l.idLancamentoOrigemTransferencia);
+                }
+            }
+
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-lancamento-listagem">
+
+    <section class="container-xxl container-titulo">
+        <div class="area-titulo">
+            @await Html.PartialAsync("_BotaoVoltar")
+            <div class="titulo">Lançamentos</div>
+        </div>
+        <div class="area-opcoes">
+            @await Html.PartialAsync("_BotaoLancamentoDesktop")
+            <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
+                <i class="fa-solid fa-filter fa-lg text-white"></i>
             </div>
-            <div class="area-opcoes">
-                @await Html.PartialAsync("_BotaoLancamentoDesktop")
-                <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
-                    <i class="fa-solid fa-filter fa-lg text-white"></i>
-                </div>
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <LancamentoListagemFiltro v-on:lancamento-filtrar="pesquisar($event)"></LancamentoListagemFiltro>
-        
-        <section class="container-xxl lancamento-rolagem" v-ext-loading="loading">
+    <LancamentoListagemFiltro v-on:lancamento-filtrar="pesquisar($event)"></LancamentoListagemFiltro>
 
-            <div class="card">
-                <div class="card-body p-2">
-                    <div class="row g-0">
+    <section class="container-xxl lancamento-rolagem" v-ext-loading="loading">
 
-                        <div class="col col-7 d-none d-lg-block ps-2">
-                            <label class="form-label">Período</label>
-                            <div class="lh-1 fw-bold fs-5 text-capitalize">{{this.filtro.labelPeriodo}}</div>
-                        </div>
+        <div class="card">
+            <div class="card-body p-2">
+                <div class="row g-0">
 
-                        <div class="col col-12 col-lg-5">
+                    <div class="col col-7 d-none d-lg-block ps-2">
+                        <label class="form-label">Período</label>
+                        <div class="lh-1 fw-bold fs-5 text-capitalize">{{this.filtro.labelPeriodo}}</div>
+                    </div>
 
-                            <div class="balanco-container">
+                    <div class="col col-12 col-lg-5">
 
-                                <div class="text-center">
-                                    <label class="form-label">Receitas</label>
-                                    <div class="valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
-                                </div>
-                                <div class="text-center">
-                                    <label class="form-label">Despesas</label>
-                                    <div class="valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
-                                </div>
-                                <div class="text-center">
-                                    <label class="form-label">Balanço</label>
-                                    <div class="valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
-                                </div>
+                        <div class="balanco-container">
 
+                            <div class="text-center">
+                                <label class="form-label">Receitas</label>
+                                <div class="valor-rec"><Moeda :valor="balanco.receitas"></Moeda></div>
+                            </div>
+                            <div class="text-center">
+                                <label class="form-label">Despesas</label>
+                                <div class="valor-desp"><Moeda :valor="balanco.despesas"></Moeda></div>
+                            </div>
+                            <div class="text-center">
+                                <label class="form-label">Balanço</label>
+                                <div class="valor-saldo"><Moeda :valor="balanco.balanco"></Moeda></div>
                             </div>
 
                         </div>
 
                     </div>
+
                 </div>
             </div>
+        </div>
 
-            <div class="list-group mt-2 mb-5">
+        <div class="list-group mt-2 mb-5">
 
-                <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
+            <LancamentoTable v-bind:lista="lista" v-bind:totalResults="totalResults" v-on:editar-lancamento="editarLancamento($event)"></LancamentoTable>
 
-                <div class="list-group-item">
-                    <Pagination v-if="totalResults > 0"
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
-                    </Pagination>
-                </div>
-
+            <div class="list-group-item">
+                <Pagination v-if="totalResults > 0"
+                v-bind:currentPage="filtro.currentPage"
+                v-bind:resultsPerPage="filtro.resultsPerPage"
+                v-bind:totalResults="totalResults"
+                v-on:pagination-change="paginar($event)">
+                </Pagination>
             </div>
 
-        </section>
+        </div>
+
+    </section>
 
 
-        @await Html.PartialAsync("_BotaoLancamentoMobile")
+    @await Html.PartialAsync("_BotaoLancamentoMobile")
 
 
-        <LancamentoWizard ref="lancWizard" v-on:lancamento-realizado="pesquisar()"></LancamentoWizard>
-        <TransferenciaWizard ref="tranWizard" v-on:transferencia-realizada="pesquisar()"></TransferenciaWizard>
+    <LancamentoWizard ref="lancWizard" v-on:lancamento-realizado="pesquisar()"></LancamentoWizard>
+    <TransferenciaWizard ref="tranWizard" v-on:transferencia-realizada="pesquisar()"></TransferenciaWizard>
 
-        <LancamentoModal ref="lancModal" v-on:lancamento-salvo="pesquisar()"></LancamentoModal>
-        <TransferenciaModal ref="tranModal" v-on:transferencia-salva="pesquisar()"></TransferenciaModal>
+    <LancamentoModal ref="lancModal" v-on:lancamento-salvo="pesquisar()"></LancamentoModal>
+    <TransferenciaModal ref="tranModal" v-on:transferencia-salva="pesquisar()"></TransferenciaModal>
 
-    </script>
-}
+</script>
 
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
+<style>
 
-        const LancamentoListagem = {
+    .balanco-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: end;
+    }
 
-            name: 'LancamentoListagem',
-            template: '#template-lancamento-listagem',
-            mixins: [BaseMixin],
-            components: {
-                Moeda, Pagination, LancamentoListagemFiltro, LancamentoTable,
-                LancamentoWizard, TransferenciaWizard, LancamentoModal, TransferenciaModal
-            },
-
-            data: () => ({
-                filtro: {},
-                totalResults: 0,
-                balanco: {},
-                lista: [],
-
-                loading: true, //força loading true para garantir que o template de loading customizado vai entrar desde o início
-            }),
-
-            methods: {
-
-                async pesquisar(filter) {
-
-                    //atualiza filtro se informado
-                    if (filter)
-                        this.filtro = filter;
-
-                    //reseta paginacao
-                    this.filtro.currentPage = 1;
-                    await this.carregar();
-                },
-
-                async paginar(paginacao) {
-
-                    this.filtro.currentPage = paginacao.currentPage;
-                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
-                    await this.carregar();
-                },
-
-                async carregar() {
-                    await this.setLoadingAndExecute(async () => {
-                        await this.obterListagem();
-                        await this.obterBalanco();
-                    });
-                },
-
-                async obterListagem() {
-
-                    //ajustes
-                    if (this.filtro.idMeioPagamento == '' || this.filtro.idMeioPagamento == 'null')
-                        this.filtro.idMeioPagamento = null;
-
-                    let ret = await fetchData.fetchPostJson(`/lancamento/pesquisar`, this.filtro);
-
-                    if (ret.ok) {
-                        this.totalResults = ret.value.total;
-                        this.lista = ret.value.dataPage;
-                    }
-                    else {
-                        mensagemSistema.showMensagemErro(ret.message);
-                    }
-                },
-
-                async obterBalanco() {
-
-                    let ret = await fetchData.fetchPostJson(`/lancamento/balanco`, this.filtro);
-
-                    if (ret.ok) {
-                        this.balanco = ret.value;
-                    }
-                    else {
-                        mensagemSistema.showMensagemErro(ret.message);
-                    }
-                },
-
-
-                novaDespesa() {
-                    this.$refs.lancWizard.initDespesa();
-                },
-
-                novaReceita() {
-                    this.$refs.lancWizard.initReceita();
-                },
-
-                novaTransferencia() {
-                    this.$refs.tranWizard.initTransferencia();
-                },
-
-                novoPagamentoFatura() {
-                    this.$refs.tranWizard.initPagamentoFatura();
-                },
-
-                editarLancamento(l) {
-                    if (l.operacao == 1) { // 1 - lançamento simples, 2 - transferencia
-                        this.$refs.lancModal.carregar(l.id);
-                    }
-                    else {
-                        this.$refs.tranModal.carregar(l.idLancamentoOrigemTransferencia);
-                    }
-                }
-
-            }
+        .balanco-container .valor-rec {
+            font-weight: bold;
+            font-size: 1.25rem;
+            line-height: 1.25rem;
         }
 
-    </script>
-}
+        .balanco-container .valor-desp {
+            font-weight: bold;
+            font-size: 1.25rem;
+            line-height: 1.25rem;
+        }
 
-@using (Html.VueStyle())
-{
-    <style type="text/css">
+        .balanco-container .valor-saldo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .balanco-container {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-evenly;
-            align-items: end;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
         }
 
             .balanco-container .valor-rec {
-                font-weight: bold;
-                font-size: 1.25rem;
-                line-height: 1.25rem;
+                font-size: 1rem;
+                line-height: 1rem;
             }
 
             .balanco-container .valor-desp {
-                font-weight: bold;
-                font-size: 1.25rem;
-                line-height: 1.25rem;
+                font-size: 1rem;
+                line-height: 1rem;
             }
 
             .balanco-container .valor-saldo {
-                font-weight: bold;
-                font-size: 1.5rem;
-                line-height: 1;
+                font-size: 1rem;
+                line-height: 1rem;
             }
-
-        @@media (max-width: 991px) { /*lg*/
-
-            .balanco-container {
-                justify-content: space-between;
-                margin-bottom: 0.5rem;
-            }
-
-                .balanco-container .valor-rec {
-                    font-size: 1rem;
-                    line-height: 1rem;
-                }
-
-                .balanco-container .valor-desp {
-                    font-size: 1rem;
-                    line-height: 1rem;
-                }
-
-                .balanco-container .valor-saldo {
-                    font-size: 1rem;
-                    line-height: 1rem;
-                }
-        }
+    }
 
 
+
+    .barra-filtro-periodo {
+        display: none;
+    }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .barra-filtro-periodo {
-            display: none;
+            padding: 0.75rem 2rem;
+            background-color: var(--sys-color-menu-2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            height: 2.6rem;
         }
 
-        @@media (max-width: 991px) { /*lg*/
-
-            .barra-filtro-periodo {
-                padding: 0.75rem 2rem;
-                background-color: var(--sys-color-menu-2);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-size: 1rem;
-                font-weight: 500;
-                color: #fff;
-                height: 2.6rem;
+            .barra-filtro-periodo i {
+                font-size: 1.5rem;
             }
+    }
 
-                .barra-filtro-periodo i {
-                    font-size: 1.5rem;
-                }
-        }
+    .lancamento-rolagem {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+    }
 
+    @@media (max-width: 991px) { /*lg*/
         .lancamento-rolagem {
-            padding-top: 1rem;
-            padding-bottom: 2rem;
+            padding-top: 0.3rem;
         }
+    }
 
-        @@media (max-width: 991px) { /*lg*/
-            .lancamento-rolagem {
-                padding-top: 0.3rem;
-            }
-        }
-
-    </style>
-}
+</style>

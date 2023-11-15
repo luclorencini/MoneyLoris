@@ -2,592 +2,577 @@
 
 <partial name="/Views/Relatorio/LancamentoCategoria/_CategoriaAgrupadorDetalhe.cshtml" />
 
-@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-report-lanc-cat">
+<script>
 
-        <section class="sys-container-fullhd container-titulo">
-            <div class="area-titulo">
-                @await Html.PartialAsync("_BotaoVoltar")
-                <div class="titulo">Lançamentos por Categoria</div>
-            </div>
-            <div class="area-opcoes">
-                 <div class="d-none d-lg-flex align-items-center sys-bg-light-4 p-2 sys-clicavel" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
-                    <i class="fa-solid fa-question-circle fa-lg sys-fg-dark-2"></i>
-                    <small class="ms-2 fw-bold">O que são regimes?</small>
-                </div>
-                <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
-                    <i class="fa-solid fa-filter fa-lg text-white"></i>
-                </div>
-            </div>
-        </section>
+    const LancamentoCategoriaReport = {
 
-        <section class="sys-container-fullhd">
+        name: 'LancamentoCategoriaReport',
+        template: '#template-report-lanc-cat',
+        mixins: [BaseMixin],
+        components: { Moeda, CategoriaAgrupadorDetalhe },
 
-            <!-- filtro mobile -->
-            <div class="barra-filtro-periodo">
-                <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
-                <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
-                <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
-            </div>
+        data: () => ({
+            filtro: {},
+            dados: [],
+            allClosed: false
+        }),
 
-            <!-- filtro offcanvas -->
-            <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title">Opções de Filtro</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
+        computed: {
 
-                    <div class="col col-12 col-lg-10 d-flex align-items-center mt-3 mt-lg-0">
+            cabecalhoItens() {
+                let ci = []
 
-                        <!-- modo - desktop -->
-                        <div class="d-none d-lg-flex justify-content-between align-items-baseline w-100">
+                if (this.filtro && this.filtro.mes) {
+                    for (let i = this.filtro.mes; i < this.filtro.mes + this.filtro.quantidade; i++) {
 
-                            <div>
-                                <label class="form-label me-2">Regime Contábil:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
-                                    <label class="form-check-label"><span>Regime de Caixa</span></label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
-                                    <label class="form-check-label"><span>Regime de Competência</span></label>
-                                </div>
-                            </div>
-                                                       
-                        </div>
+                        let mes = (i <= 12 ? i : i - 12);
+                        let ano = (i <= 12 ? this.filtro.ano : this.filtro.ano + 1);
 
-                        <!-- modo - mobile -->
-                        <div class="d-lg-none">
-                            <label class="form-label" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
-                                <span>Regime Contábil:</span>
-                                <i class="fa-solid fa-question-circle ms-2 fa-md sys-fg-dark-2"></i>
-                                <small class="fst-italic ms-1 sys-fg-dark-2">(o que é isso?)</small>
-                            </label>
-                            <div class="form-check form-check">
-                                <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
-                                <label class="form-check-label"><small>Regime de Caixa</small></label>
-                            </div>
-                            <div class="form-check form-check">
-                                <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
-                                <label class="form-check-label"><small>Regime de Competência</small></label>
-                            </div>
-                        </div>
+                        let item = {
+                            mes: mes,
+                            mesAbreviado: utils.mesAbreviado(mes),
+                            ano: ano
+                        };
 
-                    </div>
-
-                    <div class="col col-12 col-lg-2 d-flex justify-content-end mt-5 mt-lg-2">
-                        <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
-                            <span>Limpar Filtro</span>
-                        </button>
-                        <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="obterRelatorio()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
-                            <i class="fa-solid fa-magnifying-glass me-1"></i>
-                            <span>Pesquisar</span>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- filtro desktop -->
-            <div class="row g-1 mb-1">
-                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center my-2">
-                    <label class="me-3 fw-bold">Filtros rápidos:</label>
-
-                    <div class="filtro-rapido-opcao" v-on:click="retrocederAno()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
-                    </div>
-
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarAnoAtual()">{{obterAnoAtual()}}</div>
-
-                    <div class="filtro-rapido-opcao me-4" v-on:click="avancarAno()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
-                    </div>
-
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos12Meses()">Últimos 12 meses</div>
-
-                </div>
-            </div>               
-
-        </section>
-
-        <section class="sys-container-fullhd" v-ext-loading="loading">
-
-            <div class="list-group list-group-flush">
-                <div class="list-group-item p-0">
-
-                    <div class="rep-linha rep-linha-titulo">
-
-                        <div class="item">
-                            <i class="sys-fg-dark-2 mx-2" v-bind:class="{'fa-solid fa-square-minus': !allClosed, 'fa-solid fa-square-plus': allClosed}" v-on:click="collapseAll()"></i>
-                        </div>
-
-                        <template v-if="filtro.quantidade > 1">
-                            <div class="mes mes-titulo" v-for="i in cabecalhoItens">
-                                <div class="m">{{i.mesAbreviado}}</div>
-                                <div class="y">{{i.ano}}</div>
-                            </div>
-                        </template>
-
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="list-group list-group-flush" v-for="n1 in dados">
-                <div class="list-group-item p-0">
-                    <div class="rep-linha nivel-1" v-bind:class="[n1.valor01 > 0 ? 'rep-linha-receita' : 'rep-linha-despesa']">
-
-                        <div class="item item-g1">
-                            <i class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n1.closed, 'fa-solid fa-square-plus': n1.closed}" v-on:click="collapse(n1)"></i>
-                            <span>{{n1.descricao}}</span>
-                        </div>
-
-                        <div class="mes valor-g1" v-for="n in filtro.quantidade">
-                            <Moeda :valor="n1[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
-                        </div>
-
-                    </div>
-
-                    <template v-if="!n1.closed && n1.items">
-                        <div class="list-group list-group-flush" v-for="n2 in n1.items">
-                            <div class="list-group-item p-0">
-                                <div class="rep-linha nivel-2">
-
-                                    <div class="item item-g2">
-                                        <i v-if="!n2.items" class="sys-fg-dark-4 fa-regular fa-square-minus me-2"></i>
-                                        <i v-else class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n2.closed, 'fa-solid fa-square-plus': n2.closed}" v-on:click="collapse(n2)"></i>
-                                        <span>{{n2.descricao}}</span>
-                                    </div>
-
-                                    <div class="mes valor-g2" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n2, index, true)">
-                                        <Moeda :valor="n2[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
-                                    </div>
-
-                                </div>
-
-                                <template v-if="!n2.closed && n2.items">
-                                    <div class="list-group list-group-flush" v-for="n3 in n2.items">
-                                        <div class="list-group-item p-0">
-                                            <div class="rep-linha nivel-3">
-
-                                                <div class="item item-g3" v-bind:class="{ 'fst-italic' : !  n3.descricao}">
-                                                    <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
-                                                </div>
-
-                                                <div class="mes valor-g3" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n3, index, false)">
-                                                    <Moeda :valor="n3[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-
-                            </div>
-                        </div>
-                    </template>
-
-                </div>
-            </div>
-
-        </section>
-
-        <CategoriaAgrupadorDetalhe ref="detalheOffset" v-on:lancamento-atualizado="obterRelatorio()"></CategoriaAgrupadorDetalhe>
-
-        <!-- Modal help -->
-        <div class="modal modal-lg fade" id="modal-help-regime" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Regimes Contábeis</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        <h5>Regime de Caixa:</h5>
-                        <p>Baseia-se na entrada e saída efetiva de recursos financeiros. Nesse método, as transações são registradas no momento em que o dinheiro é efetivamente recebido ou gasto. Portanto, as receitas são reconhecidas apenas quando o pagamento é realizado, e as despesas são consideradas somente quando o valor é pago.</p>
-                        <p>Assim, no regime de caixa, compras no cartão só são consideradas no mês que você paga a fatura. Ou seja, normalmente compras no cartão feitas em um mês só vão contabilizar no outro mês. Já compras à vista serão sempre contabilizadas no mês da compra.</p>
-
-                        <h5 class="mt-4">Regime de Competência:</h5>
-                        <p>Leva em consideração o momento em que as transações são realizadas, independentemente dos pagamentos. Nesse método as despesas e receitas são reconhecidas quando são incorridas, independentemente do pagamento ou recebimento efetivo.</p>
-                        <p>Assim, no regime de competência, os lançamentos são contabilizados no mês em que foram realizados, independente de ter sido no cartão, no débito ou no dinheiro.</p>
-
-                        <h5 class="mt-4">Em Resumo:</h5>
-                        <ul>
-                            <li><span class="fs-6 fw-bold">Regime de Competência</span> - contabiliza no mês que você <strong>FAZ</strong> a compra</li>
-                            <li><span class="fs-6 fw-bold">Regime de Caixa</span> - contabiliza no mês que você <strong>PAGA</strong> a compra</li>
-                        </ul>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const LancamentoCategoriaReport = {
-
-            name: 'LancamentoCategoriaReport',
-            template: '#template-report-lanc-cat',
-            mixins: [BaseMixin],
-            components: { Moeda, CategoriaAgrupadorDetalhe },
-
-            data: () => ({
-                filtro: {},
-                dados: [],
-                allClosed: false
-            }),
-
-            computed: {
-
-                cabecalhoItens() {
-                    let ci = []
-
-                    if (this.filtro && this.filtro.mes) {
-                        for (let i = this.filtro.mes; i < this.filtro.mes + this.filtro.quantidade; i++) {
-
-                            let mes = (i <= 12 ? i : i - 12);
-                            let ano = (i <= 12 ? this.filtro.ano : this.filtro.ano + 1);
-
-                            let item = {
-                                mes: mes,
-                                mesAbreviado: utils.mesAbreviado(mes),
-                                ano: ano
-                            };
-
-                            ci.push(item);
-                        }
+                        ci.push(item);
                     }
+                }
 
-                    return ci;
-                },
+                return ci;
             },
+        },
 
-            async mounted() {
+        async mounted() {
+            this.inicializarFiltro();
+            await this.obterRelatorio();
+        },
+
+        methods: {
+
+            async limpar() {
                 this.inicializarFiltro();
                 await this.obterRelatorio();
             },
 
-            methods: {
+            //métodos de filtro
 
-                async limpar() {
-                    this.inicializarFiltro();
-                    await this.obterRelatorio();
-                },
+            inicializarFiltro() {
 
-                //métodos de filtro
+                this.filtro.ano = this.obterAnoAtual();
 
-                inicializarFiltro() {
+                this.filtro.regime = 2;  // 2 - competencia
 
-                    this.filtro.ano = this.obterAnoAtual();
-
-                    this.filtro.regime = 2;  // 2 - competencia
-
-                    //desktop sempre filtra 12 meses, inicial do ano corrente
-                    if (window.innerWidth > 991) {
-                        this.filtro.mes = 1; //jan
-                        this.filtro.quantidade = 12;
-                    }
-
-                    //mobile sempre filtra 1 mes, partindo do mes corrente
-                    else {
-                        this.filtro.mes = this.obterMesAtual();
-                        this.filtro.quantidade = 1;
-                    }
-                },
-
-                async filtrarAnoAtual() {
-                    this.filtro.ano = this.obterAnoAtual();
-                    this.filtro.mes = 1;
-                    await this.obterRelatorio();
-                },
-
-                async retrocederAno() {
-                    this.filtro.ano = this.filtro.ano - 1;
-                    this.filtro.mes = 1;
-                    await this.obterRelatorio();
-                },
-
-                async avancarAno() {
-                    this.filtro.ano = this.filtro.ano + 1;
-                    this.filtro.mes = 1;
-                    await this.obterRelatorio();
-                },
-
-                async filtrarUltimos12Meses() {
-                    this.filtro.mes = this.obterMesAtual();
-                    this.filtro.ano = this.obterAnoAtual() - 1;
-                    await this.obterRelatorio();
-                },
-
-                async retrocederMes() {
-                    if (this.filtro.mes == 1) {
-                        this.filtro.mes = 12;
-                        this.filtro.ano = this.filtro.ano - 1;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes - 1;
-                    }
-
-                    await this.obterRelatorio();
-                },
-
-                async avancarMes() {
-                    if (this.filtro.mes == 12) {
-                        this.filtro.mes = 1;
-                        this.filtro.ano = this.filtro.ano + 1;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes + 1;
-                    }
-
-                    await this.obterRelatorio();
-                },
-
-                obterAnoAtual() {
-                    return new Date().getFullYear();
-                },
-
-                obterMesAtual() {
-                    return new Date().getMonth() + 1;
-                },
-
-
-
-                //métodos do report
-
-                async obterRelatorio() {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        //conversões
-                        fieldConverter.stringToInt(this.filtro, 'regime');
-
-                        let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
-
-                        if (ret.ok) {
-                            this.dados = ret.value;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
-                },
-
-                collapseAll() {
-
-                    for (n1 of this.dados) {
-                        for (n2 of n1.items) {
-                            n2.closed = this.allClosed;
-                            this.collapse(n2);
-                        }
-                    }
-
-                    this.allClosed = !this.allClosed;
-                },
-
-                collapse(d) {
-                    if (!d.closed) {
-                        d.closed = true;
-                    }
-                    else {
-                        d.closed = !d.closed;
-                    }
-                },
-
-                valorField(n) {
-                    return 'valor' + (n + '').padStart(2, '0');
-                },
-
-
-                //métodos do detalhe
-
-                verDetalhamento(node, index, todosDaCategoria) {
-
-                    let filtro = {
-                        idCategoria: node.idCategoria,
-                        idSubcategoria: node.idSubcategoria,
-                        ano: this.cabecalhoItens[index - 1].ano,
-                        mes: this.cabecalhoItens[index - 1].mes,
-                        regime: this.filtro.regime,
-                        todosDaCategoria
-                    };
-
-                    this.$refs.detalheOffset.carregar(filtro);
+                //desktop sempre filtra 12 meses, inicial do ano corrente
+                if (window.innerWidth > 991) {
+                    this.filtro.mes = 1; //jan
+                    this.filtro.quantidade = 12;
                 }
+
+                //mobile sempre filtra 1 mes, partindo do mes corrente
+                else {
+                    this.filtro.mes = this.obterMesAtual();
+                    this.filtro.quantidade = 1;
+                }
+            },
+
+            async filtrarAnoAtual() {
+                this.filtro.ano = this.obterAnoAtual();
+                this.filtro.mes = 1;
+                await this.obterRelatorio();
+            },
+
+            async retrocederAno() {
+                this.filtro.ano = this.filtro.ano - 1;
+                this.filtro.mes = 1;
+                await this.obterRelatorio();
+            },
+
+            async avancarAno() {
+                this.filtro.ano = this.filtro.ano + 1;
+                this.filtro.mes = 1;
+                await this.obterRelatorio();
+            },
+
+            async filtrarUltimos12Meses() {
+                this.filtro.mes = this.obterMesAtual();
+                this.filtro.ano = this.obterAnoAtual() - 1;
+                await this.obterRelatorio();
+            },
+
+            async retrocederMes() {
+                if (this.filtro.mes == 1) {
+                    this.filtro.mes = 12;
+                    this.filtro.ano = this.filtro.ano - 1;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes - 1;
+                }
+
+                await this.obterRelatorio();
+            },
+
+            async avancarMes() {
+                if (this.filtro.mes == 12) {
+                    this.filtro.mes = 1;
+                    this.filtro.ano = this.filtro.ano + 1;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes + 1;
+                }
+
+                await this.obterRelatorio();
+            },
+
+            obterAnoAtual() {
+                return new Date().getFullYear();
+            },
+
+            obterMesAtual() {
+                return new Date().getMonth() + 1;
+            },
+
+
+
+            //métodos do report
+
+            async obterRelatorio() {
+
+                await this.setLoadingAndExecute(async () => {
+
+                    //conversões
+                    fieldConverter.stringToInt(this.filtro, 'regime');
+
+                    let ret = await fetchData.fetchPostJson(`/relatorio/pesquisar`, this.filtro);
+
+                    if (ret.ok) {
+                        this.dados = ret.value;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
+                });
+            },
+
+            collapseAll() {
+
+                for (n1 of this.dados) {
+                    for (n2 of n1.items) {
+                        n2.closed = this.allClosed;
+                        this.collapse(n2);
+                    }
+                }
+
+                this.allClosed = !this.allClosed;
+            },
+
+            collapse(d) {
+                if (!d.closed) {
+                    d.closed = true;
+                }
+                else {
+                    d.closed = !d.closed;
+                }
+            },
+
+            valorField(n) {
+                return 'valor' + (n + '').padStart(2, '0');
+            },
+
+
+            //métodos do detalhe
+
+            verDetalhamento(node, index, todosDaCategoria) {
+
+                let filtro = {
+                    idCategoria: node.idCategoria,
+                    idSubcategoria: node.idSubcategoria,
+                    ano: this.cabecalhoItens[index - 1].ano,
+                    mes: this.cabecalhoItens[index - 1].mes,
+                    regime: this.filtro.regime,
+                    todosDaCategoria
+                };
+
+                this.$refs.detalheOffset.carregar(filtro);
             }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    <style type="text/css">
+<script type="text/x-template" id="template-report-lanc-cat">
+
+    <section class="sys-container-fullhd container-titulo">
+        <div class="area-titulo">
+            @await Html.PartialAsync("_BotaoVoltar")
+            <div class="titulo">Lançamentos por Categoria</div>
+        </div>
+        <div class="area-opcoes">
+             <div class="d-none d-lg-flex align-items-center sys-bg-light-4 p-2 sys-clicavel" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
+                <i class="fa-solid fa-question-circle fa-lg sys-fg-dark-2"></i>
+                <small class="ms-2 fw-bold">O que são regimes?</small>
+            </div>
+            <div class="d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltro">
+                <i class="fa-solid fa-filter fa-lg text-white"></i>
+            </div>
+        </div>
+    </section>
+
+    <section class="sys-container-fullhd">
+
+        <!-- filtro mobile -->
+        <div class="barra-filtro-periodo">
+            <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
+            <span class="text-capitalize">{{utils.mesPorExtenso(filtro.mes)}} {{filtro.ano}}</span>
+            <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
+        </div>
+
+        <!-- filtro offcanvas -->
+        <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Opções de Filtro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+
+                <div class="col col-12 col-lg-10 d-flex align-items-center mt-3 mt-lg-0">
+
+                    <!-- modo - desktop -->
+                    <div class="d-none d-lg-flex justify-content-between align-items-baseline w-100">
+
+                        <div>
+                            <label class="form-label me-2">Regime Contábil:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
+                                <label class="form-check-label"><span>Regime de Caixa</span></label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
+                                <label class="form-check-label"><span>Regime de Competência</span></label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- modo - mobile -->
+                    <div class="d-lg-none">
+                        <label class="form-label" data-bs-toggle="modal" data-bs-target="#modal-help-regime">
+                            <span>Regime Contábil:</span>
+                            <i class="fa-solid fa-question-circle ms-2 fa-md sys-fg-dark-2"></i>
+                            <small class="fst-italic ms-1 sys-fg-dark-2">(o que é isso?)</small>
+                        </label>
+                        <div class="form-check form-check">
+                            <input class="form-check-input" type="radio" value="1" v-model="filtro.regime">
+                            <label class="form-check-label"><small>Regime de Caixa</small></label>
+                        </div>
+                        <div class="form-check form-check">
+                            <input class="form-check-input" type="radio" value="2" v-model="filtro.regime">
+                            <label class="form-check-label"><small>Regime de Competência</small></label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col col-12 col-lg-2 d-flex justify-content-end mt-5 mt-lg-2">
+                    <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                        <span>Limpar Filtro</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="obterRelatorio()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>
+                        <span>Pesquisar</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- filtro desktop -->
+        <div class="row g-1 mb-1">
+            <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center my-2">
+                <label class="me-3 fw-bold">Filtros rápidos:</label>
+
+                <div class="filtro-rapido-opcao" v-on:click="retrocederAno()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
+                </div>
+
+                <div class="filtro-rapido-opcao" v-on:click="filtrarAnoAtual()">{{obterAnoAtual()}}</div>
+
+                <div class="filtro-rapido-opcao me-4" v-on:click="avancarAno()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
+                </div>
+
+                <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos12Meses()">Últimos 12 meses</div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <section class="sys-container-fullhd" v-ext-loading="loading">
+
+        <div class="list-group list-group-flush">
+            <div class="list-group-item p-0">
+
+                <div class="rep-linha rep-linha-titulo">
+
+                    <div class="item">
+                        <i class="sys-fg-dark-2 mx-2" v-bind:class="{'fa-solid fa-square-minus': !allClosed, 'fa-solid fa-square-plus': allClosed}" v-on:click="collapseAll()"></i>
+                    </div>
+
+                    <template v-if="filtro.quantidade > 1">
+                        <div class="mes mes-titulo" v-for="i in cabecalhoItens">
+                            <div class="m">{{i.mesAbreviado}}</div>
+                            <div class="y">{{i.ano}}</div>
+                        </div>
+                    </template>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="list-group list-group-flush" v-for="n1 in dados">
+            <div class="list-group-item p-0">
+                <div class="rep-linha nivel-1" v-bind:class="[n1.valor01 > 0 ? 'rep-linha-receita' : 'rep-linha-despesa']">
+
+                    <div class="item item-g1">
+                        <i class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n1.closed, 'fa-solid fa-square-plus': n1.closed}" v-on:click="collapse(n1)"></i>
+                        <span>{{n1.descricao}}</span>
+                    </div>
+
+                    <div class="mes valor-g1" v-for="n in filtro.quantidade">
+                        <Moeda :valor="n1[valorField(n)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                    </div>
+
+                </div>
+
+                <template v-if="!n1.closed && n1.items">
+                    <div class="list-group list-group-flush" v-for="n2 in n1.items">
+                        <div class="list-group-item p-0">
+                            <div class="rep-linha nivel-2">
+
+                                <div class="item item-g2">
+                                    <i v-if="!n2.items" class="sys-fg-dark-4 fa-regular fa-square-minus me-2"></i>
+                                    <i v-else class="sys-fg-dark-4 adm-clicavel me-2" v-bind:class="{'fa-solid fa-square-minus': !n2.closed, 'fa-solid fa-square-plus': n2.closed}" v-on:click="collapse(n2)"></i>
+                                    <span>{{n2.descricao}}</span>
+                                </div>
+
+                                <div class="mes valor-g2" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n2, index, true)">
+                                    <Moeda :valor="n2[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                </div>
+
+                            </div>
+
+                            <template v-if="!n2.closed && n2.items">
+                                <div class="list-group list-group-flush" v-for="n3 in n2.items">
+                                    <div class="list-group-item p-0">
+                                        <div class="rep-linha nivel-3">
+
+                                            <div class="item item-g3" v-bind:class="{ 'fst-italic' : !  n3.descricao}">
+                                                <span>{{n3.descricao ? n3.descricao : '(sem subcategoria)'}}</span>
+                                            </div>
+
+                                            <div class="mes valor-g3" v-for="index in filtro.quantidade" v-on:click="verDetalhamento(n3, index, false)">
+                                                <Moeda :valor="n3[valorField(index)]" :retirarCifrao="true" :retirarSinal="true"></Moeda>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+    </section>
+
+    <CategoriaAgrupadorDetalhe ref="detalheOffset" v-on:lancamento-atualizado="obterRelatorio()"></CategoriaAgrupadorDetalhe>
+
+    <!-- Modal help -->
+    <div class="modal modal-lg fade" id="modal-help-regime" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Regimes Contábeis</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <h5>Regime de Caixa:</h5>
+                    <p>Baseia-se na entrada e saída efetiva de recursos financeiros. Nesse método, as transações são registradas no momento em que o dinheiro é efetivamente recebido ou gasto. Portanto, as receitas são reconhecidas apenas quando o pagamento é realizado, e as despesas são consideradas somente quando o valor é pago.</p>
+                    <p>Assim, no regime de caixa, compras no cartão só são consideradas no mês que você paga a fatura. Ou seja, normalmente compras no cartão feitas em um mês só vão contabilizar no outro mês. Já compras à vista serão sempre contabilizadas no mês da compra.</p>
+
+                    <h5 class="mt-4">Regime de Competência:</h5>
+                    <p>Leva em consideração o momento em que as transações são realizadas, independentemente dos pagamentos. Nesse método as despesas e receitas são reconhecidas quando são incorridas, independentemente do pagamento ou recebimento efetivo.</p>
+                    <p>Assim, no regime de competência, os lançamentos são contabilizados no mês em que foram realizados, independente de ter sido no cartão, no débito ou no dinheiro.</p>
+
+                    <h5 class="mt-4">Em Resumo:</h5>
+                    <ul>
+                        <li><span class="fs-6 fw-bold">Regime de Competência</span> - contabiliza no mês que você <strong>FAZ</strong> a compra</li>
+                        <li><span class="fs-6 fw-bold">Regime de Caixa</span> - contabiliza no mês que você <strong>PAGA</strong> a compra</li>
+                    </ul>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<style>
+
+    .barra-filtro-periodo {
+        display: none;
+    }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .barra-filtro-periodo {
-            display: none;
-        }
-
-        @@media (max-width: 991px) { /*lg*/
-
-            .barra-filtro-periodo {
-                padding: 0.75rem 2rem;
-                background-color: var(--sys-color-menu-2);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-size: 1rem;
-                font-weight: 500;
-                color: #fff;
-                height: 2.6rem;
-            }
-
-                .barra-filtro-periodo i {
-                    font-size: 1.5rem;
-                }
-        }
-
-
-
-        .rep-linha {
-            display: grid;
-            grid-template-columns: auto repeat(12, 7%);
-            grid-auto-flow: column;
-            color: var(--sys-color-dark-1);
-        }
-
-        @@media (max-width: 991px) { /*lg*/
-            .rep-linha {
-                grid-template-columns: auto 9rem;
-            }
-        }
-
-        .rep-linha .item {
+            padding: 0.75rem 2rem;
+            background-color: var(--sys-color-menu-2);
             display: flex;
             align-items: center;
-            border: 1px solid var(--sys-color-light-2);
-            padding: 0 0.25rem;
-        }
-
-        .rep-linha .mes {
-            border: 1px solid var(--sys-color-light-2);
-        }
-
-        .rep-linha.nivel-2:hover, .rep-linha.nivel-3:hover {
-            background-color: var(--sys-color-light-3);
-        }
-
-        .rep-linha-titulo {
-            min-height: 1.25rem;
-        }
-
-        .rep-linha-receita {
-            background-color: var(--din-receita-bg);
-        }
-
-        .rep-linha-despesa {
-            background-color: var(--din-despesa-bg);
-        }
-
-
-        .mes-titulo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.5rem 0;
-        }
-
-            .mes-titulo .m {
-                font-size: 1.35rem;
-                line-height: 1.25rem;
-                font-weight: bold;
-            }
-
-            .mes-titulo .y {
-                font-size: 1rem;
-                line-height: 1.35rem;
-                font-weight: bold;
-            }
-
-        .rep-linha .item.item-g1 {
-            text-transform: uppercase;
-            font-weight: bold;
-            padding-left: 0.5rem;
-        }
-
-        .rep-linha .item.item-g2 {
-            font-weight: bold;
-            padding-left: 1.25rem;
-        }
-
-        .rep-linha .item.item-g3 {
-            padding-left: 2rem;
-        }
-
-        .valor-g1 {
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: end;
-            padding: 0 0.5rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .valor-g2 {
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: end;
-            padding: 0 0.5rem;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        .valor-g3 {
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: end;
-            padding: 0 0.5rem;
+            justify-content: space-between;
             font-size: 1rem;
             font-weight: 500;
+            color: #fff;
+            height: 2.6rem;
         }
 
-            .valor-g2:hover, .valor-g3:hover {
-                cursor: pointer;
-                background-color: var(--rel-hover-bg);
-                border-color: var(--rel-hover-border);
-                font-style: italic;
+            .barra-filtro-periodo i {
+                font-size: 1.5rem;
             }
+    }
 
-        :root {
-            --rel-hover-bg: #fff9c4; /* MDC YELLOW 100 */
-            --rel-hover-border: #fdd835; /* MDC YELLOW 600 */
+
+
+    .rep-linha {
+        display: grid;
+        grid-template-columns: auto repeat(12, 7%);
+        grid-auto-flow: column;
+        color: var(--sys-color-dark-1);
+    }
+
+    @@media (max-width: 991px) { /*lg*/
+        .rep-linha {
+            grid-template-columns: auto 9rem;
+        }
+    }
+
+    .rep-linha .item {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--sys-color-light-2);
+        padding: 0 0.25rem;
+    }
+
+    .rep-linha .mes {
+        border: 1px solid var(--sys-color-light-2);
+    }
+
+    .rep-linha.nivel-2:hover, .rep-linha.nivel-3:hover {
+        background-color: var(--sys-color-light-3);
+    }
+
+    .rep-linha-titulo {
+        min-height: 1.25rem;
+    }
+
+    .rep-linha-receita {
+        background-color: var(--din-receita-bg);
+    }
+
+    .rep-linha-despesa {
+        background-color: var(--din-despesa-bg);
+    }
+
+
+    .mes-titulo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.5rem 0;
+    }
+
+        .mes-titulo .m {
+            font-size: 1.35rem;
+            line-height: 1.25rem;
+            font-weight: bold;
         }
 
-        [data-bs-theme=dark] {
-            --rel-hover-bg: #111111;
-            --rel-hover-border: #ffff00;
+        .mes-titulo .y {
+            font-size: 1rem;
+            line-height: 1.35rem;
+            font-weight: bold;
         }
 
-        /*
-                                            color #ffda6a
-                                            border 997404
+    .rep-linha .item.item-g1 {
+        text-transform: uppercase;
+        font-weight: bold;
+        padding-left: 0.5rem;
+    }
 
-                                            */
+    .rep-linha .item.item-g2 {
+        font-weight: bold;
+        padding-left: 1.25rem;
+    }
 
-    </style>
-}
+    .rep-linha .item.item-g3 {
+        padding-left: 2rem;
+    }
+
+    .valor-g1 {
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        padding: 0 0.5rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .valor-g2 {
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        padding: 0 0.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .valor-g3 {
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        padding: 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+        .valor-g2:hover, .valor-g3:hover {
+            cursor: pointer;
+            background-color: var(--rel-hover-bg);
+            border-color: var(--rel-hover-border);
+            font-style: italic;
+        }
+
+    :root {
+        --rel-hover-bg: #fff9c4; /* MDC YELLOW 100 */
+        --rel-hover-border: #fdd835; /* MDC YELLOW 600 */
+    }
+
+    [data-bs-theme=dark] {
+        --rel-hover-bg: #111111;
+        --rel-hover-border: #ffff00;
+    }
+
+</style>
