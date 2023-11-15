@@ -2,196 +2,185 @@
 <partial name="_UsuarioCriacaoModalForm" />
 <partial name="_UsuarioInfoForm" />
 
-@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-usuario-list">
+<script>
 
-        <section class="container-xxl container-titulo">
-            <div class="area-titulo">
-                @await Html.PartialAsync("_BotaoVoltar")
-                <div class="titulo">Usuários</div>
-            </div>
-        </section>
+    const UsuarioList = {
 
-        <section class="container-xxl" v-ext-loading="loading">
+        name: 'UsuarioList',
+        template: '#template-usuario-list',
+        mixins: [BaseMixin],
+        components: { UsuarioCriacaoModalForm, UsuarioInfoForm, Pagination },
 
-            <div class="card">
-                <div class="card-body">
+        data: () => ({
+            filtro: {},
+            totalResults: 0,
+            lista: []
+        }),
 
-                    <h6 class="card-title">Opções de Pesquisa</h6>
+        async mounted() {
+            await this.pesquisar();
+        },
 
-                    <div class="row g-1">
+        methods: {
 
-                        <div class="col-md-5">
-                            <label class="form-label">Nome</label>
-                            <input class="form-control form-control-sm" v-model="filtro.nome" v-on:keyup.enter="pesquisar()">
-                        </div>
-                        <div class="col-8 col-md-2">
-                            <label class="form-label">Perfil</label>
-                            <select class="form-select form-select-sm" v-model="filtro.idPerfil">
-                                <option v-bind:value="null"></option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Usuário</option>
-                            </select>
-                        </div>
-                        <div class="col-4 col-md-2 ps-3">
-                            <label class="form-label">Situação</label>
-                            <div class="d-flex mt-1">
-                                <div class="form-check">
-                                    <label class="form-check-label">Ativo</label>
-                                    <input class="form-check-input" type="checkbox" v-model="filtro.ativo">
-                                </div>
+            async limpar() {
+                this.filtro = {};
+                await this.pesquisar();
+            },
+
+            async pesquisar() {
+
+                //reseta paginacao
+                this.filtro.currentPage = 1;
+                this.filtro.resultsPerPage = 25;
+                await this.carregar();
+            },
+
+            async paginar(paginacao) {
+
+                this.filtro.currentPage = paginacao.currentPage;
+                this.filtro.resultsPerPage = paginacao.resultsPerPage;
+                await this.carregar();
+            },
+
+            async carregar() {
+
+                await this.setLoadingAndExecute(async () => {
+
+                    //conversões
+                    if (this.filtro.ativo == false)
+                        this.filtro.ativo = null;
+
+                    fieldConverter.stringToInt(this.filtro, 'idPerfil');
+
+                    let ret = await fetchData.fetchPostJson(`usuario/pesquisar`, this.filtro);
+
+                    if (ret.ok) {
+                        this.totalResults = ret.value.total;
+                        this.lista = ret.value.dataPage;
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
+                });
+            },
+
+            novo() {
+                this.$refs.formCriacao.carregar();
+            },
+
+            info(id) {
+                this.$refs.formInfo.carregar(id);
+            },
+        }
+    }
+
+</script>
+
+<script type="text/x-template" id="template-usuario-list">
+
+    <section class="container-xxl container-titulo">
+        <div class="area-titulo">
+            @await Html.PartialAsync("_BotaoVoltar")
+            <div class="titulo">Usuários</div>
+        </div>
+    </section>
+
+    <section class="container-xxl" v-ext-loading="loading">
+
+        <div class="card">
+            <div class="card-body">
+
+                <h6 class="card-title">Opções de Pesquisa</h6>
+
+                <div class="row g-1">
+
+                    <div class="col-md-5">
+                        <label class="form-label">Nome</label>
+                        <input class="form-control form-control-sm" v-model="filtro.nome" v-on:keyup.enter="pesquisar()">
+                    </div>
+                    <div class="col-8 col-md-2">
+                        <label class="form-label">Perfil</label>
+                        <select class="form-select form-select-sm" v-model="filtro.idPerfil">
+                            <option v-bind:value="null"></option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Usuário</option>
+                        </select>
+                    </div>
+                    <div class="col-4 col-md-2 ps-3">
+                        <label class="form-label">Situação</label>
+                        <div class="d-flex mt-1">
+                            <div class="form-check">
+                                <label class="form-check-label">Ativo</label>
+                                <input class="form-check-input" type="checkbox" v-model="filtro.ativo">
                             </div>
                         </div>
-                        <div class="col-md-3 text-end mt-3">
-                            <div class="d-flex h-100 align-items-end justify-content-end">
-                                <button class="btn btn-sm btn-outline-secondary me-2" v-on:click="limpar()">Limpar</button>
-                                <button class="btn btn-sm btn-outline-primary" v-on:click="pesquisar()">Pesquisar</button>
-                            </div>
+                    </div>
+                    <div class="col-md-3 text-end mt-3">
+                        <div class="d-flex h-100 align-items-end justify-content-end">
+                            <button class="btn btn-sm btn-outline-secondary me-2" v-on:click="limpar()">Limpar</button>
+                            <button class="btn btn-sm btn-outline-primary" v-on:click="pesquisar()">Pesquisar</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <ul class="list-group mt-2">
-                <li class="list-group-item d-flex justify-content-between">
-                    <div class="fs-6">
-                        <span v-if="totalResults > 0">
-                            <span class="fw-bold fs-4 me-1">{{totalResults}}</span> Usuários encontradas
-                        </span>
+        <ul class="list-group mt-2">
+            <li class="list-group-item d-flex justify-content-between">
+                <div class="fs-6">
+                    <span v-if="totalResults > 0">
+                        <span class="fw-bold fs-4 me-1">{{totalResults}}</span> Usuários encontradas
+                    </span>
+                </div>
+                <div>
+                    <button class="btn btn-primary" v-on:click="novo()"><span>Novo Usuário</span></button>
+                </div>
+            </li>
+
+            <template v-if="totalResults > 0">
+                <li v-for="u in lista" class="list-group-item sys-list-group-item-clicavel d-flex justify-content-between" v-on:click="info(u.id)">
+                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center w-100">
+                        <div class="fw-bold w-100" v-bind:class="{'text-decoration-line-through': !u.ativo}">
+                            {{u.nome}}<span v-if="!u.ativo" class="badge bg-secondary ms-2">Inativo</span>
+                        </div>
+                        <div class="w-100">
+                            <i class="fa-regular fa-user sys-fg-dark-4 d-none d-md-inline-block pe-2"></i>
+                            <small class="">{{u.perfil}}</small>
+                            <small class="px-2">•</small>
+                            <span v-if="u.ultimoLogin">
+                                <i class="fa-solid fa-key sys-fg-dark-4 d-none d-md-inline-block pe-2"></i>
+                                <small class="fst-italic">acessou em {{utils.dataCurta(u.ultimoLogin)}} {{utils.horaCurta(u.ultimoLogin)}}</small>
+                            </span>
+                            <span v-else>
+                                <i class="fa-solid fa-key sys-fg-dark-1 d-none d-md-inline-block pe-2"></i>
+                                <small class="fst-italic">ainda não acessou</small>
+                            </span>
+                        </div>
                     </div>
                     <div>
-                        <button class="btn btn-primary" v-on:click="novo()"><span>Novo Usuário</span></button>
+                        <button type="button" class="btn sys-icon-button" data-bs-toggle="tooltip" title="Ver Detalhes"><i aria-hidden="true" class="fa-solid fa-magnifying-glass sys-fg-dark-2"></i></button>
                     </div>
                 </li>
+            </template>
+            <li v-else class="list-group-item d-flex justify-content-center py-3">
+                Nenhum registro encontrado
+            </li>
 
-                <template v-if="totalResults > 0">
-                    <li v-for="u in lista" class="list-group-item sys-list-group-item-clicavel d-flex justify-content-between" v-on:click="info(u.id)">
-                        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center w-100">
-                            <div class="fw-bold w-100" v-bind:class="{'text-decoration-line-through': !u.ativo}">
-                                {{u.nome}}<span v-if="!u.ativo" class="badge bg-secondary ms-2">Inativo</span>
-                            </div>
-                            <div class="w-100">
-                                <i class="fa-regular fa-user sys-fg-dark-4 d-none d-md-inline-block pe-2"></i>
-                                <small class="">{{u.perfil}}</small>
-                                <small class="px-2">•</small>
-                                <span v-if="u.ultimoLogin">
-                                    <i class="fa-solid fa-key sys-fg-dark-4 d-none d-md-inline-block pe-2"></i>
-                                    <small class="fst-italic">acessou em {{utils.dataCurta(u.ultimoLogin)}} {{utils.horaCurta(u.ultimoLogin)}}</small>
-                                </span>
-                                <span v-else>
-                                    <i class="fa-solid fa-key sys-fg-dark-1 d-none d-md-inline-block pe-2"></i>
-                                    <small class="fst-italic">ainda não acessou</small>
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <button type="button" class="btn sys-icon-button" data-bs-toggle="tooltip" title="Ver Detalhes"><i aria-hidden="true" class="fa-solid fa-magnifying-glass sys-fg-dark-2"></i></button>
-                        </div>
-                    </li>
-                </template>
-                <li v-else class="list-group-item d-flex justify-content-center py-3">
-                    Nenhum registro encontrado
-                </li>
+            <li class="list-group-item d-flex flex-column flex-md-row align-items-center justify-content-end">
+                <Pagination
+                v-bind:currentPage="filtro.currentPage"
+                v-bind:resultsPerPage="filtro.resultsPerPage"
+                v-bind:totalResults="totalResults"
+                v-on:pagination-change="paginar($event)">
+                </Pagination>
+            </li>
+        </ul>
 
-                <li class="list-group-item d-flex flex-column flex-md-row align-items-center justify-content-end">
-                    <Pagination
-                    v-bind:currentPage="filtro.currentPage"
-                    v-bind:resultsPerPage="filtro.resultsPerPage"
-                    v-bind:totalResults="totalResults"
-                    v-on:pagination-change="paginar($event)">
-                    </Pagination>
-                </li>
-            </ul>
+    </section>
 
-        </section>
+    <UsuarioCriacaoModalForm ref="formCriacao" v-on:usuario-criado="pesquisar()"></UsuarioCriacaoModalForm>
 
-        <UsuarioCriacaoModalForm ref="formCriacao" v-on:usuario-criado="pesquisar()"></UsuarioCriacaoModalForm>
+    <UsuarioInfoForm ref="formInfo" v-on:usuario-alterado="pesquisar()" v-on:usuario-excluido="pesquisar()"></UsuarioInfoForm>
 
-        <UsuarioInfoForm ref="formInfo" v-on:usuario-alterado="pesquisar()" v-on:usuario-excluido="pesquisar()"></UsuarioInfoForm>
-
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const UsuarioList = {
-
-            name: 'UsuarioList',
-            template: '#template-usuario-list',
-            mixins: [BaseMixin],
-            components: { UsuarioCriacaoModalForm, UsuarioInfoForm, Pagination },
-
-            data: () => ({
-                filtro: {},
-                totalResults: 0,
-                lista: []
-            }),
-
-            async mounted() {
-                await this.pesquisar();
-            },
-
-            methods: {
-
-                async limpar() {
-                    this.filtro = {};
-                    await this.pesquisar();
-                },
-
-                async pesquisar() {
-
-                    //reseta paginacao
-                    this.filtro.currentPage = 1;
-                    this.filtro.resultsPerPage = 25;
-                    await this.carregar();
-                },
-
-                async paginar(paginacao) {
-
-                    this.filtro.currentPage = paginacao.currentPage;
-                    this.filtro.resultsPerPage = paginacao.resultsPerPage;
-                    await this.carregar();
-                },
-
-                async carregar() {
-
-                    await this.setLoadingAndExecute(async () => {
-
-                        //conversões
-                        if (this.filtro.ativo == false)
-                            this.filtro.ativo = null;
-
-                        fieldConverter.stringToInt(this.filtro, 'idPerfil');
-
-                        let ret = await fetchData.fetchPostJson(`usuario/pesquisar`, this.filtro);
-
-                        if (ret.ok) {
-                            this.totalResults = ret.value.total;
-                            this.lista = ret.value.dataPage;
-                        }
-                        else {
-                            mensagemSistema.showMensagemErro(ret.message);
-                        }
-                    });
-                },
-
-                novo() {
-                    this.$refs.formCriacao.carregar();
-                },
-
-                info(id) {
-                    this.$refs.formInfo.carregar(id);
-                },
-            }
-        }
-
-    </script>
-}
-
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+</script>

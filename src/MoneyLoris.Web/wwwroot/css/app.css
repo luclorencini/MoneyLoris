@@ -24,7 +24,7 @@
 
 /* #endregion */
 
-/* lançamentos */
+/* #region lançamentos */
 
 :root {
     --lanc-futuro-bg: #f6faff; /* azul bebe */
@@ -40,7 +40,7 @@
 
 /* #endregion */
 
-/* lançamento launcher mobile */
+/* #region lançamento launcher mobile */
 
 :root {
     --ll-fg-despesa: #E53935; /* MDC RED 600 */
@@ -98,8 +98,6 @@
 
 /* #endregion */
 
-/* #endregion */
-
 /* #region Filtros Rapidos */
 
 .filtro-rapido-opcao {
@@ -122,5 +120,92 @@
         transition-duration: 0.1s;
         transform: scale(0.9);
     }
+
+/* #endregion */
+
+/* #region botão lançamento desktop */
+
+.btn-lancamento-lg {
+}
+
+    .btn-lancamento-lg .btn {
+        width: 16rem;
+    }
+
+        .btn-lancamento-lg .btn.dropdown-toggle::after {
+            color: var(--sys-color-dark-3);
+        }
+
+    .btn-lancamento-lg .dropdown-menu {
+        width: 16rem;
+        border-radius: 0;
+    }
+
+        .btn-lancamento-lg .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            height: 3rem;
+            cursor: pointer;
+        }
+
+            .btn-lancamento-lg .dropdown-menu .dropdown-item:active {
+                color: unset;
+                background-color: var(--bs-dropdown-link-hover-bg);
+            }
+
+            .btn-lancamento-lg .dropdown-menu .dropdown-item .icone {
+                width: 3.5rem;
+                text-align: center;
+                margin-left: -0.75rem;
+            }
+
+                .btn-lancamento-lg .dropdown-menu .dropdown-item .icone i {
+                    font-size: 1.6rem;
+                }
+
+            .btn-lancamento-lg .dropdown-menu .dropdown-item .texto {
+                font-size: 1.15rem;
+                font-weight: 500;
+            }
+
+/* #endregion */
+
+/* #region botão lançamento mobile */
+
+.barra-bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--sys-color-light-1);
+    border-top: 1px solid #ccc;
+}
+
+.offcanvas-bottom {
+    height: 16rem !important;
+}
+
+    .offcanvas-bottom .opcao-lancamento {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 50vw;
+        cursor: pointer;
+    }
+
+        .offcanvas-bottom .opcao-lancamento i {
+            font-size: 2.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .offcanvas-bottom .opcao-lancamento span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
 
 /* #endregion */

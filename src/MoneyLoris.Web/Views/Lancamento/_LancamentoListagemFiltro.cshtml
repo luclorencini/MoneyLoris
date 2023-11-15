@@ -1,434 +1,423 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-lancamento-listagem-filtro">
+﻿<script>
 
-        <!-- filtro mobile -->
-        <div class="barra-filtro-periodo">
-            <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
-            <span class="text-capitalize">{{filtro.labelPeriodo}}</span>
-            <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
-        </div>
+    const LancamentoListagemFiltro = {
 
-        <!-- filtro offcanvas -->
-        <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Opções de Filtro</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
+        name: 'LancamentoListagemFiltro',
+        template: '#template-lancamento-listagem-filtro',
+        mixins: [BaseMixin],
+        emits: ['lancamento-filtrar'],
 
-                <div class="container-xxl">
-                    <div class="row g-1">
+        data: () => ({
 
-                        <div class="col col-12 col-lg-4">
-                            <label class="form-label lh-1">Descrição</label>
-                            <input class="form-control form-control-sm" type="text" maxlength="30" placeholder="Procure lançamentos pela descrição" v-model="filtro.descricao" v-on:keyup.enter="pesquisar()">
-                        </div>
-
-                        <div class="col col-12 col-lg-3">
-                            <label class="form-label lh-1">Período</label>
-                            <div class="d-flex align-items-center">
-                                <input class="form-control form-control-sm" type="date" v-model="filtro.dataInicio">
-                                <span class="mx-2">a</span>
-                                <input class="form-control form-control-sm" type="date" v-model="filtro.dataFim">
-                            </div>
-                        </div>
-
-                        <div class="col col-12 col-lg-2">
-                            <label class="form-label lh-1">Conta / Cartão</label>
-                            <select class="form-select form-select-sm" v-model="filtro.idMeioPagamento">
-                                <option value="null">Todos</option>
-                                <optgroup label="Contas" v-if="contas.length > 0">
-                                    <option v-for="c in contas" :value="c.id">{{c.nome}}</option>
-                                </optgroup>
-                                <optgroup label="Cartões" v-if="cartoes.length > 0">
-                                    <option v-for="c in cartoes" :value="c.id">{{c.nome}}</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col col-12 col-lg-3">
-                            <label class="form-label lh-1">Categoria / Subcategoria</label>
-                            <select class="form-select form-select-sm" v-model="idCatSub">
-                                <option value="0-0">Todas</option>
-                                <optgroup label="Receitas" v-if="catReceitas.length > 0">
-                                    <option v-for="c in catReceitas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
-                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
-                                    </option>
-                                </optgroup>
-                                <optgroup label="Despesas" v-if="catDespesas.length > 0">
-                                    <option v-for="c in catDespesas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
-                                        {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
-                                    </option>
-                                </optgroup>
-                            </select>
-                        </div>
-
-                        <div class="col col-12 col-lg-3 d-flex align-items-center mt-3 mt-lg-0">
-                            <label class="form-label me-2">Filtrar por:</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" v-model="filtro.trazerDespesas">
-                                <label class="form-check-label"><small>Despesas</small></label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" v-model="filtro.trazerReceitas">
-                                <label class="form-check-label"><small>Receitas</small></label>
-                            </div>
-                        </div>
-                        <div class="col col-12 col-lg-3 d-flex align-items-center mt-3 mt-lg-0">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="filtro.somarTransferencias">
-                                <label class="form-check-label"><small>Somar Transferências e Pag. Faturas</small></label>
-                            </div>
-                        </div>
-                        <div class="col col-12 col-lg-2 d-flex align-items-center mt-3 mt-lg-0">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" v-model="filtro.maisAntigosPrimeiro">
-                                <label class="form-check-label"><small>Mais antigos primeiro</small></label>
-                            </div>
-                        </div>
-                        <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
-                            <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
-                                <span>Limpar Filtro</span>
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="pesquisar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
-                                <i class="fa-solid fa-magnifying-glass me-1"></i>
-                                <span>Pesquisar</span>
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- filtros rapidos desktop -->
-        <section class="container-xxl">
-            <div class="row g-1">
-                <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
-                    <label class="me-3 fw-bold">Filtros rápidos:</label>
-
-                    <div class="filtro-rapido-opcao" v-on:click="retrocederMes()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
-                    </div>
-
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAnterior()">{{labelMesAnterior}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">{{labelMesAtual}}</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarMesProximo()">{{labelMesProximo}}</div>
-
-                    <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
-                        <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
-                    </div>
-
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos30Dias()">30 dias</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarSemana()">Semana</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos7Dias()">7 dias</div>
-                    <div class="filtro-rapido-opcao" v-on:click="filtrarHoje()">Hoje</div>
-                </div>
-            </div>
-        </section>
-
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const LancamentoListagemFiltro = {
-
-            name: 'LancamentoListagemFiltro',
-            template: '#template-lancamento-listagem-filtro',
-            mixins: [BaseMixin],
-            emits: ['lancamento-filtrar'],
-
-            data: () => ({
-
-                filtro: {
-                    idMeioPagamento: '',
-                    idCategoria: null,
-                    idSubcategoria: null,
-                    trazerReceitas: true,
-                    trazerDespesas: true,
-                    somarTransferencias: false,
-                    maisAntigosPrimeiro: false
-                },
-
-                contas: [],
-                cartoes: [],
-
-                catReceitas: [],
-                catDespesas: [],
-                idCatSub: '0-0'
-            }),
-
-            computed: {
-
-                labelMesAtual() {
-                    let d = new Date();
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesAnterior() {
-                    let d = new Date();
-                    d.setMonth(d.getMonth() - 1);
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                },
-
-                labelMesProximo() {
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 1);
-                    return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
-                }
+            filtro: {
+                idMeioPagamento: '',
+                idCategoria: null,
+                idSubcategoria: null,
+                trazerReceitas: true,
+                trazerDespesas: true,
+                somarTransferencias: false,
+                maisAntigosPrimeiro: false
             },
 
-            watch: {
+            contas: [],
+            cartoes: [],
 
-                idCatSub(newValue, oldValue) {
+            catReceitas: [],
+            catDespesas: [],
+            idCatSub: '0-0'
+        }),
 
-                    let catIds = utils.parseCatSub(newValue);
+        computed: {
 
-                    this.filtro.idCategoria = catIds[0];
-                    this.filtro.idSubcategoria = catIds[1];
-                },
-
-                'filtro.idMeioPagamento'(newValue, oldValue) {
-
-                    this.filtro.somarTransferencias = (newValue == null || newValue == 'null' ? false : true);
-                    this.filtro.maisAntigosPrimeiro = (newValue == null || newValue == 'null' ? false : true);
-                }
+            labelMesAtual() {
+                let d = new Date();
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
             },
 
-            async mounted() {
+            labelMesAnterior() {
+                let d = new Date();
+                d.setMonth(d.getMonth() - 1);
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+            },
 
-                await this.initCamposFiltro();
+            labelMesProximo() {
+                let d = new Date();
+                d.setMonth(d.getMonth() + 1);
+                return `${utils.dataMesShort(d)} ${d.getFullYear()}`;
+            }
+        },
+
+        watch: {
+
+            idCatSub(newValue, oldValue) {
+
+                let catIds = utils.parseCatSub(newValue);
+
+                this.filtro.idCategoria = catIds[0];
+                this.filtro.idSubcategoria = catIds[1];
+            },
+
+            'filtro.idMeioPagamento'(newValue, oldValue) {
+
+                this.filtro.somarTransferencias = (newValue == null || newValue == 'null' ? false : true);
+                this.filtro.maisAntigosPrimeiro = (newValue == null || newValue == 'null' ? false : true);
+            }
+        },
+
+        async mounted() {
+
+            await this.initCamposFiltro();
+            this.filtrarMesAtual();
+        },
+
+        methods: {
+
+            pesquisar() {
+                this.dispararFiltro();
+            },
+
+            limpar() {
+                this.filtro.descricao = null;
+                this.filtro.idMeioPagamento = '';
+                this.filtro.idCategoria = null;
+                this.filtro.idSubcategoria = null;
+                this.filtro.trazerReceitas = true;
+                this.filtro.trazerDespesas = true;
+                this.filtro.somarTransferencias = false;
+
+                idCatSub: '0-0';
+
                 this.filtrarMesAtual();
             },
 
-            methods: {
+            async initCamposFiltro() {
 
-                pesquisar() {
-                    this.dispararFiltro();
-                },
+                try {
 
-                limpar() {
-                    this.filtro.descricao = null;
-                    this.filtro.idMeioPagamento = '';
-                    this.filtro.idCategoria = null;
-                    this.filtro.idSubcategoria = null;
-                    this.filtro.trazerReceitas = true;
-                    this.filtro.trazerDespesas = true;
-                    this.filtro.somarTransferencias = false;
+                    //clean-up
+                    this.transferencia = {};
+                    this.meiosOrigem = [];
+                    this.meiosDestino = [];
 
-                    idCatSub: '0-0';
+                    await this.setLoadingAndExecute(async () => {
 
-                    this.filtrarMesAtual();
-                },
+                        //busca contas
+                        let rco = await fetchData.fetchGetJson(`/common/contas`);
+                        this.contas = rco.value;
 
-                async initCamposFiltro() {
+                        //busca cartoes
+                        let rca = await fetchData.fetchGetJson(`/common/cartoes`);
+                        this.cartoes = rca.value;
 
-                    try {
+                        //busca categorias - receita
+                        let rcr = await fetchData.fetchGetJson(`/common/categorias/1`); // 1 - receita
+                        this.catReceitas = rcr.value;
 
-                        //clean-up
-                        this.transferencia = {};
-                        this.meiosOrigem = [];
-                        this.meiosDestino = [];
+                        //busca categorias - receita
+                        let rcd = await fetchData.fetchGetJson(`/common/categorias/2`); // 2 - despesa
+                        this.catDespesas = rcd.value;
 
-                        await this.setLoadingAndExecute(async () => {
+                    });
 
-                            //busca contas
-                            let rco = await fetchData.fetchGetJson(`/common/contas`);
-                            this.contas = rco.value;
-
-                            //busca cartoes
-                            let rca = await fetchData.fetchGetJson(`/common/cartoes`);
-                            this.cartoes = rca.value;
-
-                            //busca categorias - receita
-                            let rcr = await fetchData.fetchGetJson(`/common/categorias/1`); // 1 - receita
-                            this.catReceitas = rcr.value;
-
-                            //busca categorias - receita
-                            let rcd = await fetchData.fetchGetJson(`/common/categorias/2`); // 2 - despesa
-                            this.catDespesas = rcd.value;
-
-                        });
-
-                    }
-                    catch (e) {
-                        mensagemSistema.showMensagemErro(e);
-                    }
-
-                },
-
-                avancarMes() {
-
-                    if (this.filtro.mes == 11) {  // 11 - dez
-                        this.filtro.ano = this.filtro.ano + 1;
-                        this.filtro.mes = 0;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes + 1;
-                    }
-
-                    this.filtrarMes(this.filtro.ano, this.filtro.mes);
-                },
-
-                retrocederMes() {
-
-                    if (this.filtro.mes == 0) {  // 0 - jan
-                        this.filtro.ano = this.filtro.ano - 1;
-                        this.filtro.mes = 11;
-                    }
-                    else {
-                        this.filtro.mes = this.filtro.mes - 1;
-                    }
-
-                    this.filtrarMes(this.filtro.ano, this.filtro.mes);
-                },
-
-                filtrarMesAtual() {
-
-                    let d = new Date();
-
-                    this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                filtrarMesAnterior() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() - 1);
-
-                    this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                filtrarMesProximo() {
-
-                    let d = new Date();
-                    d.setMonth(d.getMonth() + 1);
-
-                    this.filtrarMes(d.getFullYear(), d.getMonth());
-                },
-
-                filtrarMes(ano, mes) {
-
-                    this.filtro.ano = ano;
-                    this.filtro.mes = mes;
-
-                    let i = utils.primeiroDiaMes(ano, mes);
-                    let f = utils.ultimoDiaMes(ano, mes);
-
-                    this._prepararFiltroPeriodo(i, f);
-                },
-
-                filtrarUltimos30Dias() {
-
-                    let f = new Date();
-                    let i = new Date();
-                    i.setMonth(i.getMonth() - 1);
-
-                    this._prepararFiltroPeriodo(i, f);
-                },
-
-                filtrarSemana() {
-
-                    const d = new Date();
-
-                    const i = new Date(d.setDate(d.getDate() - d.getDay()));
-                    const f = new Date(d.setDate(d.getDate() - d.getDay() + 6));
-
-                    this._prepararFiltroPeriodo(i, f);
-                },
-
-                filtrarUltimos7Dias() {
-
-                    let f = new Date();
-                    let i = new Date();
-                    i.setDate(i.getDate() - 7);
-
-                    this._prepararFiltroPeriodo(i, f);
-                },
-
-                filtrarHoje() {
-
-                    let d = new Date();
-
-                    this._prepararFiltroPeriodo(d, d);
-                },
-
-                _prepararFiltroPeriodo(i, f) {
-                    this.filtro.dataInicio = utils.dataYMD(i);
-                    this.filtro.dataFim = utils.dataYMD(f);
-                    this.dispararFiltro();
-                },
-
-                dispararFiltro() {
-
-                    //checagens
-                    if (utils.isNullOrEmpty(this.filtro.dataInicio)) {
-                        mensagemSistema.showMensagemErro('Período inicial é obrigatório');
-                        return;
-                    }
-
-                    if (utils.isNullOrEmpty(this.filtro.dataFim)) {
-                        mensagemSistema.showMensagemErro('Período final é obrigatório');
-                        return;
-                    }
-
-                    if (this.filtro.dataFim < this.filtro.dataInicio) {
-                        mensagemSistema.showMensagemErro('Data final deve ser maior que inicial');
-                        return;
-                    }
-
-
-                    //calculo de mes e ano
-                    this.filtro.ano = parseInt(this.filtro.dataInicio.substring(0, 4));
-                    this.filtro.mes = parseInt(this.filtro.dataInicio.substring(5, 7)) - 1;
-
-                    //label
-                    this.filtro.labelPeriodo = this.calcularlabelPeriodo();
-
-                    this.$emit('lancamento-filtrar', this.filtro);
-                },
-
-                calcularlabelPeriodo() {
-
-                    //se período selecionado é o começo e fim do mes, mostra só o nome do mes por extenso e ano
-
-                    const dti = utils.inputToDate(this.filtro.dataInicio);
-                    const dtf = utils.inputToDate(this.filtro.dataFim);
-
-                    const ai = dti.getFullYear();
-                    const mi = dti.getMonth();
-                    const af = dtf.getFullYear();
-                    const mf = dtf.getMonth();
-
-                    if (ai == af && mi == mf) {  //mesmo ano, mesmo mes
-
-                        const dp = utils.primeiroDiaMes(ai, mi);
-                        const du = utils.ultimoDiaMes(af, mf);
-
-                        if (dti.toISOString() == dp.toISOString() && dtf.toISOString() == du.toISOString()) { //primeiro e ultimo dias do mes
-
-                            let label = `${dti.toLocaleString('pt-BR', { month: 'long' })} ${ai}`;
-                            return label;
-
-                        }
-                    }
-
-                    //se não, mostra data inicial e data final
-                    const di = utils.inputToDate(this.filtro.dataInicio);
-                    const df = utils.inputToDate(this.filtro.dataFim);
-                    let label = `${utils.dataExtenso(di)} - ${utils.dataExtenso(df)}`;
-                    return label;
                 }
+                catch (e) {
+                    mensagemSistema.showMensagemErro(e);
+                }
+
+            },
+
+            avancarMes() {
+
+                if (this.filtro.mes == 11) {  // 11 - dez
+                    this.filtro.ano = this.filtro.ano + 1;
+                    this.filtro.mes = 0;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes + 1;
+                }
+
+                this.filtrarMes(this.filtro.ano, this.filtro.mes);
+            },
+
+            retrocederMes() {
+
+                if (this.filtro.mes == 0) {  // 0 - jan
+                    this.filtro.ano = this.filtro.ano - 1;
+                    this.filtro.mes = 11;
+                }
+                else {
+                    this.filtro.mes = this.filtro.mes - 1;
+                }
+
+                this.filtrarMes(this.filtro.ano, this.filtro.mes);
+            },
+
+            filtrarMesAtual() {
+
+                let d = new Date();
+
+                this.filtrarMes(d.getFullYear(), d.getMonth());
+            },
+
+            filtrarMesAnterior() {
+
+                let d = new Date();
+                d.setMonth(d.getMonth() - 1);
+
+                this.filtrarMes(d.getFullYear(), d.getMonth());
+            },
+
+            filtrarMesProximo() {
+
+                let d = new Date();
+                d.setMonth(d.getMonth() + 1);
+
+                this.filtrarMes(d.getFullYear(), d.getMonth());
+            },
+
+            filtrarMes(ano, mes) {
+
+                this.filtro.ano = ano;
+                this.filtro.mes = mes;
+
+                let i = utils.primeiroDiaMes(ano, mes);
+                let f = utils.ultimoDiaMes(ano, mes);
+
+                this._prepararFiltroPeriodo(i, f);
+            },
+
+            filtrarUltimos30Dias() {
+
+                let f = new Date();
+                let i = new Date();
+                i.setMonth(i.getMonth() - 1);
+
+                this._prepararFiltroPeriodo(i, f);
+            },
+
+            filtrarSemana() {
+
+                const d = new Date();
+
+                const i = new Date(d.setDate(d.getDate() - d.getDay()));
+                const f = new Date(d.setDate(d.getDate() - d.getDay() + 6));
+
+                this._prepararFiltroPeriodo(i, f);
+            },
+
+            filtrarUltimos7Dias() {
+
+                let f = new Date();
+                let i = new Date();
+                i.setDate(i.getDate() - 7);
+
+                this._prepararFiltroPeriodo(i, f);
+            },
+
+            filtrarHoje() {
+
+                let d = new Date();
+
+                this._prepararFiltroPeriodo(d, d);
+            },
+
+            _prepararFiltroPeriodo(i, f) {
+                this.filtro.dataInicio = utils.dataYMD(i);
+                this.filtro.dataFim = utils.dataYMD(f);
+                this.dispararFiltro();
+            },
+
+            dispararFiltro() {
+
+                //checagens
+                if (utils.isNullOrEmpty(this.filtro.dataInicio)) {
+                    mensagemSistema.showMensagemErro('Período inicial é obrigatório');
+                    return;
+                }
+
+                if (utils.isNullOrEmpty(this.filtro.dataFim)) {
+                    mensagemSistema.showMensagemErro('Período final é obrigatório');
+                    return;
+                }
+
+                if (this.filtro.dataFim < this.filtro.dataInicio) {
+                    mensagemSistema.showMensagemErro('Data final deve ser maior que inicial');
+                    return;
+                }
+
+
+                //calculo de mes e ano
+                this.filtro.ano = parseInt(this.filtro.dataInicio.substring(0, 4));
+                this.filtro.mes = parseInt(this.filtro.dataInicio.substring(5, 7)) - 1;
+
+                //label
+                this.filtro.labelPeriodo = this.calcularlabelPeriodo();
+
+                this.$emit('lancamento-filtrar', this.filtro);
+            },
+
+            calcularlabelPeriodo() {
+
+                //se período selecionado é o começo e fim do mes, mostra só o nome do mes por extenso e ano
+
+                const dti = utils.inputToDate(this.filtro.dataInicio);
+                const dtf = utils.inputToDate(this.filtro.dataFim);
+
+                const ai = dti.getFullYear();
+                const mi = dti.getMonth();
+                const af = dtf.getFullYear();
+                const mf = dtf.getMonth();
+
+                if (ai == af && mi == mf) {  //mesmo ano, mesmo mes
+
+                    const dp = utils.primeiroDiaMes(ai, mi);
+                    const du = utils.ultimoDiaMes(af, mf);
+
+                    if (dti.toISOString() == dp.toISOString() && dtf.toISOString() == du.toISOString()) { //primeiro e ultimo dias do mes
+
+                        let label = `${dti.toLocaleString('pt-BR', { month: 'long' })} ${ai}`;
+                        return label;
+
+                    }
+                }
+
+                //se não, mostra data inicial e data final
+                const di = utils.inputToDate(this.filtro.dataInicio);
+                const df = utils.inputToDate(this.filtro.dataFim);
+                let label = `${utils.dataExtenso(di)} - ${utils.dataExtenso(df)}`;
+                return label;
             }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    @* Não há css específico deste componente *@
-}
+<script type="text/x-template" id="template-lancamento-listagem-filtro">
+
+    <!-- filtro mobile -->
+    <div class="barra-filtro-periodo">
+        <i aria-hidden="true" class="fa-solid fa-chevron-left" v-on:click="retrocederMes()"></i>
+        <span class="text-capitalize">{{filtro.labelPeriodo}}</span>
+        <i aria-hidden="true" class="fa-solid fa-chevron-right" v-on:click="avancarMes()"></i>
+    </div>
+
+    <!-- filtro offcanvas -->
+    <div class="offcanvas-lg offcanvas-end" tabindex="-1" id="offcanvasFiltro">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Opções de Filtro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+
+            <div class="container-xxl">
+                <div class="row g-1">
+
+                    <div class="col col-12 col-lg-4">
+                        <label class="form-label lh-1">Descrição</label>
+                        <input class="form-control form-control-sm" type="text" maxlength="30" placeholder="Procure lançamentos pela descrição" v-model="filtro.descricao" v-on:keyup.enter="pesquisar()">
+                    </div>
+
+                    <div class="col col-12 col-lg-3">
+                        <label class="form-label lh-1">Período</label>
+                        <div class="d-flex align-items-center">
+                            <input class="form-control form-control-sm" type="date" v-model="filtro.dataInicio">
+                            <span class="mx-2">a</span>
+                            <input class="form-control form-control-sm" type="date" v-model="filtro.dataFim">
+                        </div>
+                    </div>
+
+                    <div class="col col-12 col-lg-2">
+                        <label class="form-label lh-1">Conta / Cartão</label>
+                        <select class="form-select form-select-sm" v-model="filtro.idMeioPagamento">
+                            <option value="null">Todos</option>
+                            <optgroup label="Contas" v-if="contas.length > 0">
+                                <option v-for="c in contas" :value="c.id">{{c.nome}}</option>
+                            </optgroup>
+                            <optgroup label="Cartões" v-if="cartoes.length > 0">
+                                <option v-for="c in cartoes" :value="c.id">{{c.nome}}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col col-12 col-lg-3">
+                        <label class="form-label lh-1">Categoria / Subcategoria</label>
+                        <select class="form-select form-select-sm" v-model="idCatSub">
+                            <option value="0-0">Todas</option>
+                            <optgroup label="Receitas" v-if="catReceitas.length > 0">
+                                <option v-for="c in catReceitas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                    {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                </option>
+                            </optgroup>
+                            <optgroup label="Despesas" v-if="catDespesas.length > 0">
+                                <option v-for="c in catDespesas" :value="utils.catSubToString(c.categoriaId, c.subcategoriaId)">
+                                    {{c.subcategoriaId ? `${c.categoriaNome} / ${c.subcategoriaNome}` : c.categoriaNome}}
+                                </option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="col col-12 col-lg-3 d-flex align-items-center mt-3 mt-lg-0">
+                        <label class="form-label me-2">Filtrar por:</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" v-model="filtro.trazerDespesas">
+                            <label class="form-check-label"><small>Despesas</small></label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" v-model="filtro.trazerReceitas">
+                            <label class="form-check-label"><small>Receitas</small></label>
+                        </div>
+                    </div>
+                    <div class="col col-12 col-lg-3 d-flex align-items-center mt-3 mt-lg-0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" v-model="filtro.somarTransferencias">
+                            <label class="form-check-label"><small>Somar Transferências e Pag. Faturas</small></label>
+                        </div>
+                    </div>
+                    <div class="col col-12 col-lg-2 d-flex align-items-center mt-3 mt-lg-0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" v-model="filtro.maisAntigosPrimeiro">
+                            <label class="form-check-label"><small>Mais antigos primeiro</small></label>
+                        </div>
+                    </div>
+                    <div class="col col-12 col-lg-4 d-flex align-items-end justify-content-end mt-5 mt-lg-2">
+                        <button class="btn btn-sm btn-outline-secondary me-2" type="button" v-on:click="limpar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                            <span>Limpar Filtro</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" v-on:click="pesquisar()" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFiltro">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i>
+                            <span>Pesquisar</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- filtros rapidos desktop -->
+    <section class="container-xxl">
+        <div class="row g-1">
+            <div class="col col-12 d-none d-lg-flex flex-wrap align-items-center mt-2">
+                <label class="me-3 fw-bold">Filtros rápidos:</label>
+
+                <div class="filtro-rapido-opcao" v-on:click="retrocederMes()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-left" ></i>
+                </div>
+
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesAnterior()">{{labelMesAnterior}}</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesAtual()">{{labelMesAtual}}</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarMesProximo()">{{labelMesProximo}}</div>
+
+                <div class="filtro-rapido-opcao me-4" v-on:click="avancarMes()">
+                    <i aria-hidden="true" class="fa-solid fa-chevron-right" ></i>
+                </div>
+
+                <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos30Dias()">30 dias</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarSemana()">Semana</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarUltimos7Dias()">7 dias</div>
+                <div class="filtro-rapido-opcao" v-on:click="filtrarHoje()">Hoje</div>
+            </div>
+        </div>
+    </section>
+
+</script>

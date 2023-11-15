@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MoneyLoris.Web.Base;
 
+[Obsolete]
 public static class VueHelper
 {
     private const string ScriptsKey = "VueComponentScripts";

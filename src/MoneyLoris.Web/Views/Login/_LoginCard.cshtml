@@ -1,154 +1,145 @@
-﻿@using (Html.VueTemplate())
-{
-    <script type="text/html" id="template-login-card">
+﻿<script>
 
-        <template v-if="exibir">
+    const LoginCard = {
 
-            <form ref="form">
+        name: 'LoginCard',
+        template: '#template-login-card',
+        mixins: [BaseMixin],
+        emits: ['alterar-senha'],
 
-                <div class="form-floating">
-                    <input type="text" ref="campoLogin" class="form-control" required v-model="login">
-                    <label>Login</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control" required v-model="senha" v-on:keyup.enter="signIn()">
-                    <label>Senha</label>
-                </div>
+        props: {
+            exibir: Boolean
+        },
 
-                <div class="d-flex justify-content-start">
-                    <div class="form-check form-switch form-control-lg mb-3">
-                        <label class="form-check-label"><small>Manter conectado</small></label>
-                        <input class="form-check-input" type="checkbox" v-model="manterConectado">
-                    </div>
-                </div>
-            </form>
+        data: () => ({
+            login: '',
+            senha: '',
+            manterConectado: false,
+            isPwa: false
+        }),
 
-            <button class="w-100 btn btn-lg btn-primary" v-on:click="signIn()">
-                <span class="sys-fg-dark-3 fw-bold">Entrar</span>
-            </button>
+        watch: {
+            async exibir(newValue, oldValue) {
+                if (newValue == true) {
 
-        </template>
+                    //reseta os campos
+                    this.login = '';
+                    this.senha = '';
+                    this.manterConectado = false;
 
-    </script>
-}
-
-@using (Html.VueScript())
-{
-    <script type="text/javascript">
-
-        const LoginCard = {
-
-            name: 'LoginCard',
-            template: '#template-login-card',
-            mixins: [BaseMixin],
-            emits: ['alterar-senha'],
-
-            props: {
-                exibir: Boolean
-            },
-
-            data: () => ({
-                login: '',
-                senha: '',
-                manterConectado: false,
-                isPwa: false
-            }),
-
-            watch: {
-                async exibir(newValue, oldValue) {
-                    if (newValue == true) {
-
-                        //reseta os campos
-                        this.login = '';
-                        this.senha = '';
-                        this.manterConectado = false;
-
-                        this.ajustaFoco();
-                    }
+                    this.ajustaFoco();
                 }
+            }
+        },
+
+        mounted() {
+
+            this.isPwa = appInstall.isPwaInstalled();
+
+            this.ajustaFoco();
+        },
+
+        methods: {
+
+            ajustaFoco() {
+                //bota foca no campo de login
+                this.setFocus('campoLogin');
             },
 
-            mounted() {
+            async signIn() {
 
-                this.isPwa = appInstall.isPwaInstalled();
-               
-                this.ajustaFoco();
-            },
+                let isValido = this.validarForm(this.$refs.form);
+                if (!isValido) return;
 
-            methods: {
-  
-                ajustaFoco() {
-                    //bota foca no campo de login
-                    this.setFocus('campoLogin');
-                },
+                await this.setLoadingAndExecute(async () => {
 
-                async signIn() {
+                    let dados = {
+                        login: this.login,
+                        senha: this.senha,
+                        manterConectado: this.manterConectado
+                    };
 
-                    let isValido = this.validarForm(this.$refs.form);
-                    if (!isValido) return;
+                    let ret = await fetchData.fetchPostJson('/Login/SignIn', dados);
+                    if (ret.ok) {
 
-                    await this.setLoadingAndExecute(async () => {
-
-                        let dados = {
-                            login: this.login,
-                            senha: this.senha,
-                            manterConectado: this.manterConectado
-                        };
-
-                        let ret = await fetchData.fetchPostJson('/Login/SignIn', dados);
-                        if (ret.ok) {
-
-                            if (ret.value.alterarSenha && ret.value.alterarSenha == true) {
-                                //alterar senha
-                                this.$emit('alterar-senha', this.login);
-                            }
-                            else {
-                                //redireciona direto
-                                utils.redirecionar(`/${ret.value.urlRedir}`);
-                            }
+                        if (ret.value.alterarSenha && ret.value.alterarSenha == true) {
+                            //alterar senha
+                            this.$emit('alterar-senha', this.login);
                         }
                         else {
-                            mensagemSistema.showMensagemErro(ret.message);
+                            //redireciona direto
+                            utils.redirecionar(`/${ret.value.urlRedir}`);
                         }
-                    });
-                }
+                    }
+                    else {
+                        mensagemSistema.showMensagemErro(ret.message);
+                    }
+                });
             }
         }
+    }
 
-    </script>
-}
+</script>
 
-@using (Html.VueStyle())
-{
-    <style type="text/css">
+<script type="text/x-template" id="template-login-card">
+
+    <template v-if="exibir">
+
+        <form ref="form">
+
+            <div class="form-floating">
+                <input type="text" ref="campoLogin" class="form-control" required v-model="login">
+                <label>Login</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" required v-model="senha" v-on:keyup.enter="signIn()">
+                <label>Senha</label>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <div class="form-check form-switch form-control-lg mb-3">
+                    <label class="form-check-label"><small>Manter conectado</small></label>
+                    <input class="form-check-input" type="checkbox" v-model="manterConectado">
+                </div>
+            </div>
+        </form>
+
+        <button class="w-100 btn btn-lg btn-primary" v-on:click="signIn()">
+            <span class="sys-fg-dark-3 fw-bold">Entrar</span>
+        </button>
+
+    </template>
+
+</script>
+
+<style>
+
+    .form-signin {
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+        margin: 2rem auto 5rem auto;
+    }
+
+    .form-floating {
+        position: relative;
+    }
+
+    .form-signin input[type="text"] {
+        margin-bottom: 4px;
+        border-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+        margin-bottom: 15px;
+        border-radius: 0;
+    }
+
+    @@media (max-width: 991px) { /*lg*/
 
         .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            margin: 2rem auto 5rem auto;
+            margin: 1rem auto 1rem auto;
         }
+    }
 
-        .form-floating {
-            position: relative;
-        }
-
-        .form-signin input[type="text"] {
-            margin-bottom: 4px;
-            border-radius: 0;
-        }
-
-        .form-signin input[type="password"] {
-            margin-bottom: 15px;
-            border-radius: 0;
-        }
-
-        @@media (max-width: 991px) { /*lg*/
-
-            .form-signin {
-                margin: 1rem auto 1rem auto;
-            }
-        }
-
-    </style>
-}
+</style>
