@@ -41,7 +41,7 @@
 
     <div class="input-group align-items-center">
         <i class="fa-solid fa-2x me-2" v-bind:class="utils.cssIconeByTipoConta(meioSelecionado.tipo)" v-bind:style="{ 'color': '#' + meioSelecionado.cor}"></i>
-        <select class="form-select" v-model="id" v-on:change="selecionarMeioPagamento(id)">
+        <select class="form-select" v-model="id" v-on:change="selecionarMeioPagamento(id)" disabled>
             <option v-for="m in meios" :value="m.id">{{m.nome}}</option>
         </select>
     </div>
