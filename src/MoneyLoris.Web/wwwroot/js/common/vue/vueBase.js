@@ -246,10 +246,10 @@ const VueFactory = {
 
         this._setupReusaveisAndDiretivas(app);
 
-        //monta o app
-        app.mount(el);
+        //monta o app e retorna a instancia
+        let vm = app.mount(el);
 
-        return app;
+        return vm;
     },
 
     _setupReusaveisAndDiretivas(app) {
